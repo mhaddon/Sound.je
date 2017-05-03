@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: vue/components/vue.eventList.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: vue/components/vue.eventList.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// @flow
+// Node Modules
+const Vue = require(`vue/dist/vue`);
+
+// Site Modules
+const Util = require(`${__base}/core/Util`);
+const store = require(`${__base}/vue/store`);
+const { Modal } = require(`${__base}/core/Router/Enum`);
+
+const vueEventList = Vue.extend({
+    /**
+     * The components design template, see the "text/x-template" tags in
+     * index.html
+     */
+    template: `#eventList-template`,
+    /**
+     * The components variables that it inherits from its parent
+     */
+    props: [],
+    /**
+     * Every component requires a data feild, but i do not need it as
+     * i inherit all the relevent data. So it is filled with nonsense.
+     */
+    data(): Object {
+        return {
+            parsedEvents: [],
+            eventOffset: 0,
+            eventCount: 2
+        };
+    },
+    created() {
+        store.dispatch(`getEvents`, {
+            limit: 50 // todo: add pagination
+        }).then(() => {
+            this.parseEvents();
+        });
+    },
+    computed: {
+        /**
+         * Are there previous events to those being shown?
+         * @returns {boolean}
+         */
+        isPreviousEvents(): boolean {
+            return !this.isMobile &amp;&amp; (this.eventOffset > 0);
+        },
+        /**
+         * Are there next events to those being shown?
+         * @returns {boolean}
+         */
+        isNextEvents(): boolean {
+            return !this.isMobile &amp;&amp; (this.parsedEvents.length - this.eventOffset - this.eventCount > 0);
+        },
+        isMobile: () => store.getters.isMobile
+    },
+    methods: {
+        openLocationModal(Place: Location) {
+            store.commit(`setModal`, {
+                modal: Modal.LOCATION,
+                id: Place.id
+            });
+        },
+        openEventModal(Event: NBEvent) {
+            store.commit(`setModal`, {
+                modal: Modal.EVENT,
+                id: Event.id
+            });
+        },
+        addEvent(event: NBEvent) {
+            if (typeof event !== `undefined`) {
+                this.parsedEvents.push(event);
+            }
+        },
+        previousEvent() {
+            this.eventOffset -= this.eventCount;
+
+            this.eventOffset = this.eventOffset.min(0);
+        },
+        nextEvent() {
+            this.eventOffset += this.eventCount;
+
+            this.eventOffset = this.eventOffset.max(this.parsedEvents.length - this.eventsCount).min(0);
+        },
+        getCurrentEvents(): NBEvent[] {
+            let currentEvents = this.parsedEvents.slice()
+                .sort((a, b) => Math.sign(a.dateTime - b.dateTime));
+            if (!this.isMobile) {
+                currentEvents = currentEvents
+                    .slice(this.eventOffset, this.eventOffset + this.eventCount);
+            }
+            return currentEvents;
+        },
+        upcomingEvents(): NBEvent[] {
+            return store.getters.occurrences
+                .sort((a, b) => Math.sign(a.startTime - b.startTime))
+                .map((e: Occurrence): EventParsed => {
+                    const event: EventParsed = (e.event: Object);
+                    event.startTime = e.startTime;
+                    event.times = null;
+                    return event;
+                });
+        },
+        parseEvents() {
+            const data = new Map();
+
+            for (const unparsedEvent of this.upcomingEvents()) {
+                const event = Util.parse(unparsedEvent); // Weird bug with object references, so we deepclone
+                const daysTime = new Date(event.startTime).setHours(0, 0, 0);
+                if (!data.has(daysTime)) {
+                    data.set(daysTime, {
+                        dateTime: event.startTime,
+                        displayDateTime: Util.parseDateTime(event.startTime),
+                        displayTime: Util.parseTime(event.startTime),
+                        Places: new Map()
+                    });
+                }
+
+                const currentDay = data.get(daysTime);
+                if (!currentDay.Places.has(event.location.id)) {
+                    currentDay.Places.set(event.location.id, Object.assign(event.location, {
+                        Events: new Map(),
+                        facebookUrl: `https://www.facebook.com/${event.location.facebookId}`
+                    }));
+                }
+
+                const currentPlace = currentDay.Places.get(event.location.id);
+
+                const eventNames:string[] = Util.stripArray(event.name.split(`;`).concat(event.artists.map((a: Artist): string => a.name)));
+
+                for (let i = 0; i &lt; eventNames.length; i++) {
+                    const eventName = eventNames[i];
+                    if (eventName.trim()) {
+                        const newEvent = JSON.parse(JSON.stringify(event));
+                        newEvent.name = eventName;
+                        delete newEvent.location;
+                        currentPlace.Events.set(`${event.id}#${i}`, Object.assign(newEvent, {
+                            facebookUrl: `https://www.facebook.com/${event.location.facebookId}`
+                        }));
+                    }
+                }
+            }
+
+            for (const e of Util.convertMapToArray(data)) {
+                this.addEvent(e);
+            }
+        }
+    }
+});
+
+module.exports = vueEventList;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="Ajax.html">Core/Ajax</a></li><li><a href="GlobalJS.html">Core/GlobalJS</a></li><li><a href="InfiniteController.html">Core/InfiniteController</a></li><li><a href="KeyController.html">Core/KeyController</a></li><li><a href="MusicPlayer.html">Core/MusicPlayer</a></li><li><a href="Router.html">Core/Router</a></li><li><a href="SchemaReader.html">Core/SchemaReader</a></li><li><a href="Util.html">Core/Util</a></li><li><a href="module-Types.html">Types</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="KeyController.Ajax.html">Ajax</a></li><li><a href="KeyController.KEY.html">KEY</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Mar 05 2017 16:07:47 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

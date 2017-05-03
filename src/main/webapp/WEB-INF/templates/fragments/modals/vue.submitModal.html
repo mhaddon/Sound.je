@@ -1,0 +1,99 @@
+<!--
+  ~  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU Affero General Public License version 3
+  ~  as published by the Free Software Foundation.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU Affero General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU Affero General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:v-bind="http://www.vuejs.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+>
+<head>
+    <title>Ploinki</title>
+</head>
+<body>
+<script type='text/x-template' id='submitModal-template' th:fragment="submitModal">
+    <div class="modal">
+        <a v-href="{ page: '$modalless' }" class="modal__bg modal__remove"></a>
+        <div class="modal__content modal__content--taller">
+            <div class="modal__header">
+                <p class="modal__headertext">Import Data</p>
+                <a v-if="editable" v-href="{ page: 'records', id: id, name: 'Artists' }" target='_blank'
+                   class="modal__headeritem">
+                    <i class="fa fa-edit" aria-hidden="true"></i>
+                </a>
+                <a v-bind:href="fbUrl" target='_blank' class="modal__headeritem">
+                    <i class="fa fa-facebook" aria-hidden="true"></i>
+                </a>
+                <a v-href="{ page: '$modalless' }" class="modal__headeritem modal__remove">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </a>
+            </div>
+            <div v-if="errorTitle"
+                 style="background-color:darkred; color:white; font-weight:bold; text-align:center; padding:5px;">
+                <p style="font-weight:bold;">Error: <span v-text="errorTitle"></span></p>
+                <p style="font-weight:400; font-size:0.8em;" v-text="errorMsg"></p>
+            </div>
+            <div class="modal__body" style="flex-wrap:wrap;">
+                <div class="modal__bodyleft" style="width:100%;">
+                    <form v-form="onMediaSubmit" action="/api/v1/Media/parseurl" method="POST">
+                        <label for="mediaurl">Import Medium (Facebook, Youtube, SoundCloud)</label>
+                        <div style="display:flex;">
+                            <input type="text" id="mediaurl" name="url" placeholder="media url"/>
+                            <input type="submit" value="import"
+                                   style="background-color:#376890; color:white; padding:12px 15px; width: 120px;"/>
+                        </div>
+                    </form>
+                    <hr/>
+                    <form v-form="onPlaceSubmit" action="/api/v1/Locations/parseurl" method="POST">
+                        <label for="placeurl">Import Facebook Place</label>
+                        <div style="display:flex;">
+                            <input type="text" id="placeurl" name="url" placeholder="fb place url/id"/>
+                            <input type="submit" value="import"
+                                   style="background-color:#376890; color:white; padding:12px 15px; width: 120px;"/>
+                        </div>
+                    </form>
+                    <hr/>
+                    <form v-form="onPageSubmit" action="/api/v1/ScannedPages/parseurl" method="POST">
+                        <label for="pageurl">Import ScannedPages</label>
+                        <div style="display:flex;">
+                            <input type="text" id="pageurl" name="url" placeholder="fb page url/id"/>
+                            <input type="submit" value="import"
+                                   style="background-color:#376890; color:white; padding:12px 15px; width: 120px;"/>
+                        </div>
+                    </form>
+                    <hr/>
+                    <form v-form="onEventSubmit" action="/api/v1/Events/parseurl" method="POST">
+                        <label for="eventurl">Import Event</label>
+                        <div style="display:flex;">
+                            <input type="text" id="eventurl" name="url" placeholder="fb event url/id"/>
+                            <input type="submit" value="import"
+                                   style="background-color:#376890; color:white; padding:12px 15px; width: 120px;"/>
+                        </div>
+                    </form>
+                    <hr/>
+                    <form v-form="onArtistSubmit" action="/api/v1/Artists/parseurl" method="POST">
+                        <label for="artisturl">Import Artist</label>
+                        <div style="display:flex;">
+                            <input type="text" id="artisturl" name="url" placeholder="fb page url"/>
+                            <input type="submit" value="import"
+                                   style="background-color:#376890; color:white; padding:12px 15px; width: 120px;"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+</body>
+</html>

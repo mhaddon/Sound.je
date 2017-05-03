@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: vue/components/vue.musicPlayer.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: vue/components/vue.musicPlayer.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// @flow
+// Node Modules
+const Vue = require(`vue/dist/vue`);
+
+// Site Modules
+const store = require(`${__base}/vue/store`);
+const musicFSMP = require(`${__base}/vue/components/vue.musicFSMP`);
+const MusicPlayer = require(`${__base}/core/musicplayer`);
+
+const vueMusicPlayer = Vue.extend({
+    /**
+     * The components design template, see the "text/x-template" tags in
+     * index.html
+     */
+    template: `#musicPlayer-template`,
+    /**
+     * The components variables that it inherits from its parent
+     */
+    props: [],
+    /**
+     * Every component requires a data feild, but i do not need it as
+     * i inherit all the relevent data. So it is filled with nonsense.
+     */
+    data(): Object {
+        return {
+            songIndex: 0,
+            playlist: [],
+            playlistGroup: `null`
+        };
+    },
+    /**
+     * Every component requires a data feild, but i do not need it as
+     * i inherit all the relevent data. So it is filled with nonsense.
+     */
+    components: {
+        "musicfsmp-component": musicFSMP
+    },
+    created() {
+        // this.musicPlayer.setVolume(0.75);
+    },
+    computed: {
+        paused(): boolean {
+            return store.getters.paused;
+        },
+        songName(): string {
+            return store.getters.songName;
+        },
+        artistName(): string {
+            return store.getters.artistName;
+        },
+        sliderCSS(): string {
+            const percentage = ((store.getters.currentTime / store.getters.duration) * 100);
+
+            return `width:${percentage}%;`;
+        },
+        currentTime(): string {
+            const minutes = Math.floor(store.getters.currentTime / 60);
+            // this is floored so it doesnt show 60 as a possible output
+            const seconds = Math.floor(store.getters.currentTime % 60);
+
+            return `${minutes.pad(1)}:${seconds.pad(2)}`;
+        },
+        duration(): string {
+            const minutes = Math.floor(store.getters.duration / 60);
+            // this is floored so it doesnt show 60 as a possible output
+            const seconds = Math.floor(store.getters.duration % 60);
+
+            return `${minutes.pad(1)}:${seconds.pad(2)}`;
+        }
+    },
+    methods: {
+        play() {
+            if (MusicPlayer.isPaused()) {
+                // this.musicPlayer.play();
+                // const media = this.musicPlayer.getMedia().orElseGet(getFirstMediaOnPage);
+                // media.play();
+
+                MusicPlayer.play();
+
+                // this.musicPlayer.getMedia()
+                //     .ifPresent(() => { this.musicPlayer.play() });
+            } else {
+                MusicPlayer.pause();
+            }
+        },
+        next() {
+            MusicPlayer.next();
+        },
+        back() {
+            MusicPlayer.previous();
+        },
+        changeVolume(event: Object) {
+            MusicPlayer.volumeChange(event.target.value / 1000);
+        },
+        openFSMP() {
+
+        },
+        seek(e: Element) {
+            const left = e.pageX - (e.currentTarget.getBoundingClientRect().left + document.body.scrollLeft);
+            const width = this.$el.querySelector(`.musicplayer__seeker`).offsetWidth;
+            const percent = left / width;
+            MusicPlayer.seek(percent);
+        }
+    }
+});
+
+module.exports = vueMusicPlayer;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="Ajax.html">Core/Ajax</a></li><li><a href="GlobalJS.html">Core/GlobalJS</a></li><li><a href="InfiniteController.html">Core/InfiniteController</a></li><li><a href="KeyController.html">Core/KeyController</a></li><li><a href="MusicPlayer.html">Core/MusicPlayer</a></li><li><a href="Router.html">Core/Router</a></li><li><a href="SchemaReader.html">Core/SchemaReader</a></li><li><a href="Util.html">Core/Util</a></li><li><a href="module-Types.html">Types</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="KeyController.Ajax.html">Ajax</a></li><li><a href="KeyController.KEY.html">KEY</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Mar 05 2017 16:07:47 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

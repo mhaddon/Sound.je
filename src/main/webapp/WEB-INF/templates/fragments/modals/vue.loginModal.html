@@ -1,0 +1,55 @@
+<!--
+  ~  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU Affero General Public License version 3
+  ~  as published by the Free Software Foundation.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU Affero General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU Affero General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+>
+<head>
+    <title>Ploinki</title>
+</head>
+<body>
+<script type='text/x-template' id='loginModal-template' th:fragment="loginModal">
+    <div class="modal">
+        <a v-href="{ page: '$modalless' }" class="modal__bg modal__remove"></a>
+        <div class="modal__content">
+            <div class="modal__header">
+                <p class="modal__headertext">Login &amp; Register</p>
+                <a v-href="{ page: '$modalless' }" class="modal__headeritem modal__remove">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </a>
+            </div>
+            <div v-if="errorTitle"
+                 style="background-color:darkred; color:white; font-weight:bold; text-align:center; padding:5px;">
+                <p style="font-weight:bold;">Error: <span v-text="errorTitle"></span></p>
+                <p style="font-weight:400; font-size:0.8em;" v-text="errorMsg"></p>
+            </div>
+            <div class="modal__body">
+                <div class="modal__bodyleft">
+                    <h3 class="login__title">Hello!</h3>
+                    <p class="login__subtitle">Returning or new, give us your email and lets get started!</p>
+                    <form v-form="onEmailSubmitted" action="/login/check" method="POST" class="login__form">
+                        <label for="login__email" class="srt">Email Address:</label>
+                        <input id="login__email" class="login__input" name="email" type="text" v-model="email"
+                               placeholder="you@awesome.com"/>
+                        <input type="submit" class="button login__button login__button--right" value="Next"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+/*!
+ *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License version 3
+ *  as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.musicplayer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-top: 1px solid #333333;
+  padding: 0;
+  text-shadow: 1px 1px 1px #000;
+
+  box-shadow: inset 0 0 5px #000000;
+
+  background: #161616;
+  background: linear-gradient(top, #222222, #111111);
+
+  z-index: 15;
+  display: flex;
+  align-items: center;
+
+  &__item {
+    color: #eee;
+    border: 2px solid #eee;
+    margin: 1px;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    padding: 2px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: .5s color ease,
+    .5s border ease;
+
+    &:hover {
+      color: white;
+      border: 2px solid white;
+    }
+
+    &--hide {
+      display: none;
+    }
+
+    &--square {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 5%;
+      width: 30px;
+      height: 30px;
+    }
+
+    &--volume {
+      position: relative;
+      &:hover, &:active {
+        .musicplayer__rangeslider {
+          visibility: visible;
+          opacity: 1;
+          transition-delay: 0s;
+        }
+      }
+    }
+  }
+
+  &__rangeslider {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% - 5px);
+    width: 300px;
+    padding: 25px; //The large padding is so its harder to accidentally close it
+    padding-bottom: 10px;
+    padding-right: 0;
+    cursor: auto;
+    z-index: 50;
+
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s linear 0.5s, opacity 0.5s linear;
+  }
+
+  &__rangesliderbg {
+    background-color: black;
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+    padding-bottom: 0px;
+  }
+
+  &__progressbar {
+    flex-grow: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 2px 4px;
+  }
+
+  &__titlebox {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 24px;
+    padding: 2px;
+  }
+
+  &__songname {
+    color: white;
+    font-size: 4vw;
+  }
+
+  &__artistname {
+    color: white;
+    font-size: 4.5vw;
+    margin-right: 5px;
+
+  }
+
+  &__seeker {
+    background-color: #363636;
+    position: relative;
+
+  }
+
+  &__buffercont {
+    height: 4px;
+    border: 1px rgb(2, 2, 2) groove;
+    box-shadow: inset 2px 0 2px #808080;
+  }
+
+  &__bufferitem {
+    background-color: rgba(200, 200, 200, 0.35);
+  }
+
+  &__slider {
+    background-color: #ccc;
+    background-image: linear-gradient(#2572eb 1px, #2C2C2C);
+    position: absolute;
+    bottom: 0;
+    width: 0;
+    top: 0;
+  }
+
+  &__timebox {
+    color: white;
+    font-family: Consolas, Lucida Console, monospace;
+    pointer-events: none;
+    padding: 0 5px;
+    font-size: 0.85em;
+    display: flex;
+  }
+
+  &__currenttime {
+    flex-grow: 100;
+  }
+
+  &__duration {
+    color: #bbb;
+  }
+}
+
+@media (min-width: 350px) {
+  .musicplayer {
+
+    &__songname {
+      font-size: 14px;
+    }
+
+    &__artistname {
+      font-size: 16px;
+    }
+  }
+}
+
+@media (min-width: 600px) {
+  .musicplayer {
+
+    &__item {
+
+      &--hide {
+        display: flex;
+      }
+    }
+
+  }
+}

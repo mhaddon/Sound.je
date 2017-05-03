@@ -1,0 +1,77 @@
+<!--
+  ~  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU Affero General Public License version 3
+  ~  as published by the Free Software Foundation.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU Affero General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU Affero General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:v-bind="http://www.vuejs.org"
+      xmlns:v-on="http://www.vuejs.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+>
+<head>
+    <title>Ploinki</title>
+</head>
+<body>
+<script type='text/x-template' id='smartTable-template' th:fragment="smartTable">
+    <article class="article smartTable">
+        <section style="display:flex;">
+            <p style="flex-grow:100; margin:5px;">
+                <span style="display:block; text-align:center;">Sort</span>
+                <input type="text" placeholder="sort" v-model="sort"/>
+            </p>
+            <p style="flex-grow:100; margin:5px;">
+                <span style="display:block; text-align:center;">Search</span>
+                <input type="text" placeholder="search" v-model="search"/>
+            </p>
+        </section>
+        <p style="text-align:right; float:right; font-size:0.8em; font-weight:400;">
+            <span v-text="shownElements"></span> out of <span v-text="totalElements"></span> results<br/>
+            over <span v-text="pageCount"></span> pages.
+        </p>
+
+        <ul style="display:flex; justify-content: space-around;">
+            <li v-for="page in getPages()">
+                <a href="#" v-on:click="changePage" v-text="page.value" v-bind:style="{ backgroundColor: page.colour }"
+                   style="margin:2px; background-color:black; padding:2px 5px; color:white; width:30px; display:block; text-align:center; cursor:pointer;"></a>
+            </li>
+        </ul>
+
+        <table style="font-size:0.9em; font-weight:400; border:1px solid black;">
+            <tr>
+                <td v-for="header in schemaData" style="background-color:#dedede; border-bottom:1px solid black;">
+                    <p v-text="header.name"
+                       style="text-align:center; font-size:1.25em; font-weight:400; padding:5px;"></p>
+                </td>
+            </tr>
+            <tr v-for="row in dataStore">
+                <td v-for="column in row">
+                    <a v-if="column.name === 'id'" v-href="{ page: 'records', name: name, id: column.value }"
+                       v-text="column.value"></a>
+                    <p v-else-if="column.view === 'Text'" v-text="column.value"></p>
+                    <p v-else-if="column.view === 'Boolean'" v-text="column.value ? 'true' : 'false'"></p>
+                    <p v-else-if="column.view === 'DateTime'" v-text="parseDateTime(column.value)"></p>
+                    <a v-else-if="column.view === 'FacebookId'" :href="getFacebookUrl(column.value)" target="_blank">facebook</a>
+                    <img v-else-if="column.view === 'ImageUrl'" :src="column.value"
+                         style="width:150px; max-height:200px;"/>
+                    <pre v-else-if="column.view === 'Object'" class="hover">
+                        <p v-text="getObjectName(column.value) || column.name"></p>
+                        <p class="hover__action" v-text="parseObject(column.value)"></p>
+                    </pre>
+                </td>
+            </tr>
+        </table>
+    </article>
+</script>
+</body>
+</html>

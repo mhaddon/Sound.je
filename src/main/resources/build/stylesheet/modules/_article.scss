@@ -1,0 +1,54 @@
+/*!
+ *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License version 3
+ *  as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.article {
+  flex-grow: 100;
+
+  &__textbox {
+    max-width: 500px;
+    margin: auto;
+    margin-bottom: 15px;
+  }
+
+  &__title {
+    text-align: center;
+    font-size: 2em;
+  }
+
+  &__text {
+
+  }
+
+  .l-main--desktop &--responsive {
+    flex-grow: 1;
+    border: 1px solid black;
+    background-color: white;
+    padding: 5px;
+    margin: -5px;
+    position: relative;
+    top: 8px;
+    margin-top: 36px;
+
+    .article__textbox {
+      position: absolute;
+      font-size: 12px;
+      top: -40px;
+      text-align: center;
+      right: 0px;
+      left: 0px;
+    }
+  }
+}

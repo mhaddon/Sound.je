@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Index</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Index</h1>
+
+    
+
+
+    
+
+
+    <h3>Sound.je 1.0.0</h3>
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h2 id="nestedbird-sound-je">NestedBird - Sound.je</h2>
+<p>This project contains the code for the website hosted at <a href="https://www.sound.je">https://www.sound.je</a>. It is a simple application to help bring together the musical community of Jersey (Channel Islands). This application has been a good learning experience for me in learning more about Java, Spring Boot and ECMAScript 6. Hopefully this project will also be of use to other people.</p>
+<p>This website makes use of many technologies built by other wonderful people, please review this page (credits link pending), to see a list of all of the people who deserve credit. <em>(If your name/project isnt there and should be, please tell me and i will add it).</em></p>
+<p>I will not likely provide much or any support for anyone wanting to host the server themselves. However, changes made may be merged into the main site at <a href="https://www.sound.je">https://www.sound.je</a>.</p>
+<p>This is an OpenSource project licensed under GNU General Public License v3 (29 June 2007). Please review LICENSE before you use or modify any of the code.</p>
+<p>More permissive licensing may be available on request.</p>
+<h4 id="getting-started">Getting Started</h4>
+<p>This is just a basic introduction on how to run the server yourself. There wont be too much detail as it is expected you understand the basics.
+Please review the gulp modules in ,/gulp to see what tasks there are available.</p>
+<h4 id="prerequisites">Prerequisites</h4>
+<blockquote>
+<p><strong>Java 8</strong> (This project uses OpenJDK)</p>
+<p><strong>A Relational Database</strong> (This project uses MySQL/MariaDB, other databases will require additional configuration).</p>
+<p><strong>Node &amp; NPM</strong> (If you want to run any of the gulp or npm tasks)</p>
+</blockquote>
+<h4 id="installing">Installing</h4>
+<blockquote>
+<p><strong>Clone the repository</strong> <em>(git clone <a href="https://github.com/.git">https://github.com/.git</a>)</em></p>
+<p><strong>Navigate to Directory</strong></p>
+<p><strong>Install node packages</strong> - run command - <em>(npm install)</em></p>
+<p><strong>Install gulp globally</strong> - run command -  <em>(sudo npm install gulp -g)</em></p>
+<pre><code>git clone https://github.com/.git
+cd _folder_
+npm install
+sudo npm install gulp -g
+</code></pre></blockquote>
+<h4 id="using-the-application">Using the application</h4>
+<blockquote>
+<p><strong>Building Javascript changes:</strong> - run command -  <em>gulp scripts:build</em></p>
+<p><strong>Building SCSS changes:</strong> - run command -  <em>gulp sass:build</em></p>
+<p><strong>Build Server</strong> -</p>
+<p><strong>Run Server</strong> - java -jar target/NestedBird-1.0.war</p>
+<p><strong>Run Server as live:</strong> - java -envTarget=live -jar target/NestedBird-1.0.war</p>
+<p><strong>Connect to server:</strong> - <a href="http://localhost:8081">http://localhost:8081</a></p>
+</blockquote>
+<h4 id="contributing">Contributing</h4>
+<p>If anyone wants to contribute to this project than that would be great.
+Changes may be pushed to the live site at <a href="https://www.sound.je">https://www.sound.je</a>.
+I would like it immensely if changes you make follow the same style and syntax as the rest of the project.
+There are linting tasks set up as gulp tasks that do this.</p>
+<h4 id="file-structure-">File Structure:</h4>
+<pre><code>  ├── docs/                         jsdoc
+  ├── gulp/                         gulp modules
+  └── src/main/                     project source
+      ├── webapp/WEB-INF/           html source
+      |   ├── fragments             html modules
+      |   ├── homepage              homepage layout
+      |   └── layout                general page layout
+      ├── resources
+      |   ├── build
+      |   |   ├── javascript        javascript source
+      |   |   └── stylesheet        sass source
+      |   ├── properties            server properties
+      |   ├── test                  frontend tests
+      |   ├── static                transpiled js and css
+      |   └── sql
+      |       ├── functions         sql functions
+      |       └── procedures        sql procedures
+      └── java/com.nestedbird       server source
+</code></pre><h4 id="license">License</h4>
+<pre><code> NestedBird  Copyright (C) 2017  Michael Haddon
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+</code></pre><p>More permissive licensing may be available on request.</p>
+<h5 id="flow-check-may-not-entirely-work-as-i-am-having-a-few-problems-with-it-understatement-">Flow Check may not entirely work as i am having a few problems with it (understatement)</h5>
+</article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="Ajax.html">Core/Ajax</a></li><li><a href="GlobalJS.html">Core/GlobalJS</a></li><li><a href="InfiniteController.html">Core/InfiniteController</a></li><li><a href="KeyController.html">Core/KeyController</a></li><li><a href="MusicPlayer.html">Core/MusicPlayer</a></li><li><a href="Router.html">Core/Router</a></li><li><a href="SchemaReader.html">Core/SchemaReader</a></li><li><a href="Util.html">Core/Util</a></li><li><a href="module-Types.html">Types</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="KeyController.Ajax.html">Ajax</a></li><li><a href="KeyController.KEY.html">KEY</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Mar 05 2017 16:07:47 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+/*!
+ *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License version 3
+ *  as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.artistmodal {
+  &__banner {
+    position: relative;
+    height: 200px;
+    min-height: 80px;
+    overflow: hidden;
+
+    background-color: #efefef;
+    background: url(images/bg2.png);
+  }
+
+  &__image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    max-width: 200%;
+  }
+
+  &__title {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 12px 15px;
+    background-color: #376890;
+    color: white;
+    font-weight: 400;
+    letter-spacing: 1px;
+    border: 1px solid rgba(0, 0, 0, 0.13);
+    border-left: 0;
+    margin: 0;
+    font-size: inherit;
+  }
+
+  &__subtitle {
+    color: rgba(0, 0, 0, 0.45);
+    font-weight: 400;
+    margin: 0;
+    font-size: 24px;
+  }
+
+  &__content {
+    padding: 12px 15px;
+    border-top: 1px solid rgba(0, 0, 0, 0.25);
+    background: #f9f9f9;
+  }
+
+  &__modalitem {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 15px;
+    color: black;
+  }
+
+  &__splitview {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__viewleft {
+    width: 100%;
+  }
+
+  &__viewright {
+    max-width: 300px;
+    margin: 15px auto;
+    display: block;
+    flex-grow: 100;
+  }
+}
+
+@media (min-width: 650px) {
+  .artistmodal {
+
+    &__splitview {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+
+    &__viewleft {
+      width: 0;
+      flex-grow: 100;
+      border-right: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    &__viewright {
+      margin: 0;
+    }
+  }
+}
+
+@media (min-height: 800px) {
+  .artistmodal {
+    &__banner {
+      height: 400px;
+    }
+  }
+}

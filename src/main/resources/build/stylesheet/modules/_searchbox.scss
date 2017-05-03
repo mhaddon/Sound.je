@@ -1,0 +1,92 @@
+/*!
+ *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License version 3
+ *  as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.searchbox {
+  &__form {
+    position: relative;
+    margin: 0 15px;
+  }
+  &__input {
+    border-radius: 2px;
+    color: rgba(50, 50, 50, 0.5);
+    padding-right: 100px;
+    padding-left: 45px;
+    transition: color ease 1s;
+
+    &:focus, &:hover {
+      color: black;
+    }
+
+    &::placeholder {
+      font-weight: bold;
+      color: rgba(50, 50, 50, 0.5);
+    }
+  }
+  &__icon {
+    position: absolute;
+    top: 7px;
+    left: 5px;
+    height: 120%;
+    width: 50px;
+    font-size: 2em;
+    border: 0;
+    background: none;
+    color: rgba(0, 0, 0, 0.25);
+
+    transition: color ease 1s;
+  }
+
+  &__input:hover + .searchbox__icon, &__input:focus + .searchbox__icon {
+    color: #315d81;
+  }
+
+  &__button {
+    border-radius: 2px;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    bottom: 2px;
+    display: inline;
+    width: 100px;
+    background: #315d81;
+    color: white;
+    font-weight: bold;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 400px) {
+  .searchbox {
+    &__input {
+      padding-left: 15px;
+    }
+    &__icon {
+      display: none;
+    }
+    &__button {
+      padding: 5px;
+      width: 70px;
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .searchbox {
+    &__icon {
+      left: -5px;
+    }
+  }
+}

@@ -1,0 +1,133 @@
+/*!
+ *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License version 3
+ *  as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.medium {
+  background-color: #f9f9f9;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+  margin-bottom: 15px;
+
+  &__titlebox {
+    font-weight: bold;
+    color: #3e74a1;
+    padding: 12px 15px;
+    border-bottom: 1px solid #3e74a1;
+    background-color: rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+  }
+
+  &__artistname {
+    font-size: 0.75em;
+    font-weight: 400;
+    white-space: nowrap;
+    color: inherit;
+  }
+
+  &__songname {
+    flex-grow: 100;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: inherit;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  &__playcontainer {
+    height: 200px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 40px;
+    text-stroke: 1px black;
+    text-shadow: 2px 2px 0 #000,
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+  }
+
+  &__playbutton {
+    position: relative;
+    z-index: 1;
+    color: #eee;
+
+    .fa-play {
+      margin-left: 4px;
+      cursor: pointer;
+    }
+  }
+
+  &__art {
+    position: absolute;
+    background-color: black;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    width: 100%; /* or any custom size */
+    height: 100%;
+    object-fit: contain;
+    opacity: 0.75;
+  }
+
+  &--large {
+    .medium__playcontainer {
+      padding-bottom: 56.25%;
+    }
+    .medium__playbutton {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+  .article--responsive .contentlist__item--responsive & {
+    margin: 0;
+
+    &__playcontainer {
+      margin-top: -49px;
+      height: 193px;
+    }
+
+    &__titlebox {
+      position: relative;
+      z-index: 2;
+      background-color: #d4d4d4;
+    }
+
+    &__playbutton {
+      margin-top: 52px;
+    }
+
+    &__video {
+      margin-top: -52px;
+    }
+
+    &.medium--loaded .medium {
+      &__titlebox {
+        opacity: 0;
+        transition: 1s ease opacity;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: vue/homepage.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: vue/homepage.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// @flow
+// Node Modules
+const Vue = require(`vue/dist/vue`);
+const VueTouch = require(`vue-touch`);
+const VueMultiSelect = require(`vue-multiselect`);
+
+// Site Modules
+const mediaList = require(`${__base}/vue/components/vue.mediaList`);
+const textarea = require(`${__base}/vue/components/vue.textarea`);
+const mediaBox = require(`${__base}/vue/components/vue.mediaBox`);
+const locationModal = require(`${__base}/vue/components/vue.locationModal`);
+const notfoundModal = require(`${__base}/vue/components/vue.notfoundModal`);
+const eventModal = require(`${__base}/vue/components/vue.eventModal`);
+const loginModal = require(`${__base}/vue/components/vue.loginModal`);
+const artistModal = require(`${__base}/vue/components/vue.artistModal`);
+const mediumModal = require(`${__base}/vue/components/vue.mediumModal`);
+const songModal = require(`${__base}/vue/components/vue.songModal`);
+const eventList = require(`${__base}/vue/components/vue.eventList`);
+const aboutPage = require(`${__base}/vue/components/vue.aboutPage`);
+const editRecordModal = require(`${__base}/vue/components/vue.editRecordModal`);
+const createRecordModal = require(`${__base}/vue/components/vue.createRecordModal`);
+const editableFormData = require(`${__base}/vue/components/vue.editableFormData`);
+const adminPage = require(`${__base}/vue/components/vue.adminPage`);
+const recordsPage = require(`${__base}/vue/components/vue.recordsPage`);
+const recordModal = require(`${__base}/vue/components/vue.recordModal`);
+const entityField = require(`${__base}/vue/components/vue.entityField`);
+const periodField = require(`${__base}/vue/components/vue.periodField`);
+const newsPage = require(`${__base}/vue/components/vue.newsPage`);
+const musicPlayer = require(`${__base}/vue/components/vue.musicPlayer`);
+const smartTable = require(`${__base}/vue/components/vue.smartTable`);
+const dateTimePicker = require(`${__base}/vue/components/vue.dateTimePicker`);
+const store = require(`${__base}/vue/store`);
+const router = require(`${__base}/core/Router`);
+const triggerManager = require(`${__base}/core/TriggerManager`);
+const { Page, Modal } = require(`${__base}/core/Router/Enum`);
+const authMixin = require(`${__base}/vue/mixins/auth`);
+const mobileMixin = require(`${__base}/vue/mixins/mobile`);
+const MusicPlayer = require(`${__base}/core/musicplayer`);
+const Util = require(`${__base}/core/Util`);
+
+
+require(`${__base}/core/KeyController`);
+require(`${__base}/vue/directives/href`);
+require(`${__base}/vue/directives/src`);
+require(`${__base}/vue/directives/infinite`);
+require(`${__base}/vue/directives/form`);
+
+/**
+ * Turns off Hammers (VueTouchs) feature which disables selecting of text
+ */
+delete Hammer.defaults.cssProps.userSelect;
+
+Vue.use(VueTouch);
+// Vue.use(VueMultiSelect);
+// Vue.use(VueFlatpickr);
+
+VueTouch.config.swipe = {
+    direction: `horizontal`,
+    threshold: 50
+};
+
+/**
+ * Register components globally
+ */
+Vue.component(`textarea-component`, textarea);
+Vue.component(`entityfield-component`, entityField);
+Vue.component(`periodfield-component`, periodField);
+Vue.component(`editableformdata-component`, editableFormData);
+Vue.component(`mediabox-component`, mediaBox);
+Vue.component(`musicplayer-component`, musicPlayer);
+Vue.component(`smarttable-component`, smartTable);
+Vue.component(`datetimepicker-component`, dateTimePicker);
+Vue.component(`multiselect`, VueMultiSelect.default);
+
+const viewModel = new Vue({
+    el: `#vueController`,
+    template: `#homepage-template`,
+    mixins: [
+        authMixin,
+        mobileMixin
+    ],
+    /**
+     * All the components that this vue class uses.
+     * vue component names have a - requirement, for some reason
+     */
+    components: {
+        "notfoundmodal-component": notfoundModal,
+        "locationmodal-component": locationModal,
+        "eventmodal-component": eventModal,
+        "mediummodal-component": mediumModal,
+        "recordmodal-component": recordModal,
+        "songmodal-component": songModal,
+        "artistmodal-component": artistModal,
+        "loginmodal-component": loginModal,
+        "aboutpage-component": aboutPage,
+        "newspage-component": newsPage,
+        "recordspage-component": recordsPage,
+        "editrecordmodal-component": editRecordModal,
+        "createrecordmodal-component": createRecordModal,
+        "adminpage-component": adminPage,
+        "medialist-component": mediaList,
+        "eventlist-component": eventList
+    },
+    created() {
+        router.parse(document.location.pathname);
+
+        window.onpopstate = () => {
+            router.parse(document.location.pathname);
+            ga(`NestedBird.send`, `pageview`, document.location.pathname);
+        };
+
+        const ieVersion = this.getIEVersion();
+        if (ieVersion) {
+            Util.OptionalDOM(`body`)
+                .ifPresent(body => body.addClass(`ie ie--${ieVersion}`).setAttribute(`ie`, ieVersion));
+        }
+
+        this.$nextTick(() => {
+            triggerManager.trigger(`onLoad`);
+            setTimeout(() => {
+                triggerManager.trigger(`onLoadDelay`);
+            }, 250);
+        });
+    },
+    computed: {
+        /**
+         * Retrieves the currently loaded modal
+         * @returns {number}
+         */
+        currentModal(): number {
+            return store.getters.currentModal;
+        },
+        isAdmin(): boolean {
+            return store.getters.isAdmin;
+        }
+    },
+    methods: {
+
+        getIEVersion() {
+            let version = false;
+            const ua = window.navigator.userAgent;
+            const msie = ua.indexOf(`MSIE `);
+            const trident = ua.indexOf(`Trident/`);
+            const edge = ua.indexOf(`Edge/`);
+
+            if (msie > 0) {
+                version = parseInt(ua.substring(msie + 5, ua.indexOf(`.`, msie)), 10);
+            } else if (trident > 0) {
+                version = 11;
+            } else if (edge > 0) {
+                version = 12;
+            }
+
+            return version;
+        },
+        isPage(page: String) {
+            return store.getters.currentPage === Page[page];
+        },
+        isModal(modal: String) {
+            return store.getters.currentModal === Modal[modal];
+        },
+        setPage(e) {
+            store.commit(`setPage`, { page: Page[e] });
+        },
+        onSwipeLeft(e) {
+            this.onSwipe(e, 1);
+        },
+        onSwipeRight(e) {
+            this.onSwipe(e, -1);
+        },
+        onSwipe(e, movement: number) {
+            if (store.getters.isMobile) {
+                const container = e.target.closest(`[data-SwipePage]`) || e.target;
+                const elements = [].slice.call(container.parentElement.querySelectorAll(`[data-SwipePage]`));
+                const currentIndex = elements.findIndex(e => e === container);
+                const newIndex = (currentIndex + movement).max(elements.length - 1).min(0);
+                store.commit(`setPage`, {
+                    page: parseInt(elements[newIndex].getAttribute(`data-SwipePage`), 10)
+                });
+            }
+        },
+        isMediaListVisible() {
+            return store.getters.currentPage === Page.MUSIC ||
+                (store.getters.currentPage === Page.EVENTS &amp;&amp; !store.getters.isMobile);
+        },
+        isMusicPlayerVisible() {
+            return this.isMediaListVisible() ||
+                MusicPlayer.isPlayable() ||
+                !MusicPlayer.isPaused();
+        },
+        onLogout(request: Promise&lt;string>) {
+            request
+                .then((response: string) => {
+                    store.dispatch(`processSession`, response);
+                    router.redirect(`/`);
+                });
+        }
+    }
+});
+
+module.exports = viewModel;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="Ajax.html">Core/Ajax</a></li><li><a href="GlobalJS.html">Core/GlobalJS</a></li><li><a href="InfiniteController.html">Core/InfiniteController</a></li><li><a href="KeyController.html">Core/KeyController</a></li><li><a href="MusicPlayer.html">Core/MusicPlayer</a></li><li><a href="Router.html">Core/Router</a></li><li><a href="SchemaReader.html">Core/SchemaReader</a></li><li><a href="Util.html">Core/Util</a></li><li><a href="module-Types.html">Types</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="KeyController.Ajax.html">Ajax</a></li><li><a href="KeyController.KEY.html">KEY</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Mar 05 2017 16:07:47 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

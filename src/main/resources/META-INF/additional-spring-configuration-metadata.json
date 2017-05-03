@@ -1,0 +1,44 @@
+{
+  "properties": [
+    {
+      "name": "registration.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Enables registration."
+    },
+    {
+      "name": "entitymanager.packagesToScan",
+      "type": "java.lang.String",
+      "description": "sets list of packages the application will scan."
+    },
+    {
+      "name": "facebook.access_token",
+      "type": "java.lang.String",
+      "description": "Facebook API token."
+    },
+    {
+      "name": "facebook.auto_post",
+      "type": "java.lang.Boolean",
+      "description": "Autopost events to facebook."
+    },
+    {
+      "name": "facebook.scan",
+      "type": "java.lang.Boolean",
+      "description": "Will we scan facebook automatically?."
+    },
+    {
+      "name": "soundcloud.client_id",
+      "type": "java.lang.String",
+      "description": "Soundcloud API key."
+    },
+    {
+      "name": "youtube.key",
+      "type": "java.lang.String",
+      "description": "Youtube API key."
+    },
+    {
+      "name": "server.external.url",
+      "type": "java.lang.String",
+      "description": "The websites external url."
+    }
+  ]
+}

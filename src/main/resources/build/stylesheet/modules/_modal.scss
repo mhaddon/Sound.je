@@ -1,0 +1,159 @@
+/*!
+ *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License version 3
+ *  as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.modal {
+
+  &__bg {
+    cursor: pointer;
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.25);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, 0.66);
+    position: fixed;
+    z-index: 10;
+    top: 5%;
+    left: 0;
+    right: 0;
+    width: 95%;
+    max-height: 90%;
+    max-width: 800px;
+    margin: auto;
+    background-color: #eee;
+    padding: 0;
+
+    &--taller {
+      top: 1%;
+      max-height: 99%;
+    }
+
+    &--wider {
+      max-width: 1000px;
+    }
+
+    &--fill {
+      top: 0;
+      max-height: 100%;
+    }
+
+    .l-main--musicplayer & {
+      max-height: calc(95% - 53px);
+    }
+
+    .l-main--musicplayer &--taller {
+      max-height: calc(99% - 53px);
+    }
+
+    .l-main--musicplayer &--fill {
+      max-height: calc(100% - 53px);
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    background-color: #376890;
+    min-height: 40px;
+  }
+
+  &__headertext {
+    flex-grow: 100;
+    color: white;
+    padding: 8px 15px;
+    font-weight: bold;
+    font-size: 1.25em;
+  }
+
+  &__headeritem {
+    color: white;
+    font-size: 1.25em;
+    text-align: center;
+    padding-left: 25px;
+    padding-right: 25px;
+    cursor: pointer;
+
+    border-left: 1px solid rgba(0, 0, 0, 0.15);
+  }
+
+  &__body {
+    display: block;
+    overflow-y: auto;
+  }
+
+  &__bodyleft {
+    color: black;
+    padding: 12px 15px;
+    flex-grow: 50;
+    display: block;
+  }
+
+  &__bodyright {
+    display: block;
+    flex-grow: 50;
+    max-width: 300px;
+    padding-top: 12px;
+    margin: auto;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    padding-bottom: 15px;
+  }
+
+  &__title {
+    text-align: center;
+    font-weight: 400;
+  }
+
+  &__righttitle {
+    text-align: center;
+    font-weight: 400;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  &__text {
+    font-size: 0.95em;
+    flex-grow: 100;
+
+  }
+
+  &__infoblock {
+    background-color: #376890;
+    padding: 5px;
+    text-align: center;
+    color: white;
+  }
+
+  &__mapimg {
+    width: 100%;
+    display: block;
+    margin: auto;
+    border: 1px solid #376890;
+    min-height: 150px;
+  }
+
+  &__descriptionblock {
+    color: black;
+    text-align: center;
+  }
+}

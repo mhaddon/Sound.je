@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: vue/components/vue.editableFormData.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: vue/components/vue.editableFormData.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// @flow
+// Node Modules
+const Vue = require(`vue/dist/vue`);
+
+// Site Modules
+const store = require(`${__base}/vue/store`);
+const mixinModal = require(`${__base}/vue/mixins/modal`);
+const SchemaReader = require(`${__base}/core/SchemaReader`);
+const Util = require(`${__base}/core/Util`);
+
+const vueEditableFormData = Vue.extend({
+    mixins: [
+        mixinModal
+    ],
+    /**
+     * The components design template, see the "text/x-template" tags in
+     * index.html
+     */
+    template: `#editableFormData-template`,
+    /**
+     * The components variables that it inherits from its parent
+     */
+    props: {
+        formData: {
+            type: Array,
+            default: []
+        },
+        hideuneditable: {
+            type: Boolean,
+            default: false
+        },
+        direction: {
+            type: String,
+            default: `column`
+        },
+        prefix: {
+            type: String,
+            default: null
+        },
+        index: {
+            type: Number,
+            default: null
+        }
+    },
+    /**
+     * Every component requires a data feild, but i do not need it as
+     * i inherit all the relevent data. So it is filled with nonsense.
+     */
+    data(): Object {
+        return {
+            editedFormData: this.formData,
+            loadedData: this.formData.length > 0,
+            loadedPages: {}
+        };
+    },
+    watch: {
+        formData() {
+            if (!this.loadedData) {
+                this.editedFormData = Util.parse(this.formData);
+                this.loadedData = true;
+            }
+        }
+    },
+    computed: {
+        locations(): Location[] {
+            return this.getAllLocations() || store.getters.locations;
+        },
+        artists(): Artist[] {
+            return this.getAllArtists() || store.getters.artists;
+        },
+        roles(): Role[] {
+            return this.getAllRoles() || store.getters.roles;
+        },
+        privileges(): Privilege[] {
+            return this.getAllPrivileges() || store.getters.privileges;
+        },
+        events(): NBEvent[] {
+            return this.getAllEvents() || store.getters.events;
+        }
+    },
+    methods: {
+        recordLoadedPage(page: string): boolean {
+            if (!this.loadedPages.hasOwnProperty(page)) {
+                this.loadedPages[page] = true;
+                return true;
+            }
+            return false;
+        },
+        getAllRoles() {
+            if (this.recordLoadedPage(`roles`)) {
+                store.dispatch(`getRoles`, {}).then(() => {
+                    this.$forceUpdate();
+                });
+            }
+        },
+        getAllPrivileges() {
+            if (this.recordLoadedPage(`privileges`)) {
+                store.dispatch(`getPrivileges`).then(() => {
+                    this.$forceUpdate();
+                });
+            }
+        },
+        getAllLocations() {
+            if (this.recordLoadedPage(`locations`)) {
+                store.dispatch(`getLocations`, {}).then(() => {
+                    this.$forceUpdate();
+                });
+            }
+        },
+        getAllArtists() {
+            if (this.recordLoadedPage(`artists`)) {
+                store.dispatch(`getArtists`, {}).then(() => {
+                    this.$forceUpdate();
+                });
+            }
+        },
+        getAllEvents() {
+            if (this.recordLoadedPage(`events`)) {
+                store.dispatch(`getEvents`, {}).then(() => {
+                    this.$forceUpdate();
+                });
+            }
+        },
+        getObjectName(name: string): string {
+            let returnVar = name;
+
+            if (this.prefix &amp;&amp; typeof this.index !== null) {
+                returnVar = `${this.prefix}[${this.index}].${name}`;
+            } else if (this.prefix) {
+                returnVar = `${this.prefix}.${name}`;
+            }
+
+            return returnVar;
+        },
+        getObjectId(object: Object): string | null {
+            return (typeof object === `object`) ? object.id : null;
+        },
+        shallowFormData(): Object {
+            return Object.assign(...Util.parse(this.editedFormData)
+                         .map(e => ({ [e.name]: e.value })));
+        },
+        addNew(column: Object) {
+            const parsedSchemaField = Util.parse(this.editedFormData).find(e => e.name === column.name);
+            const shallowFormData = this.shallowFormData();
+            const newItem = SchemaReader.bindSchemaToData({}, column.additionalSchemaData)
+                                        .map(e => SchemaReader.parseDataMappings(e, parsedSchemaField, shallowFormData));
+
+            this.getFormElement(column.name).value
+                .push(newItem);
+            this.$forceUpdate();
+        },
+        remove(index: number, column: Object) {
+            this.getFormElement(column.name).value.splice(index, 1);
+            this.$forceUpdate();
+        },
+        getFormElement(columnName: string): Object {
+            return this.editedFormData
+                .find(e => e.name === columnName);
+        },
+        isVisible(column: Object): boolean {
+            return !this.hideuneditable ? true : !(!column.enabled || column.name === `id`);
+        }
+    }
+});
+
+module.exports = vueEditableFormData;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="Ajax.html">Core/Ajax</a></li><li><a href="GlobalJS.html">Core/GlobalJS</a></li><li><a href="InfiniteController.html">Core/InfiniteController</a></li><li><a href="KeyController.html">Core/KeyController</a></li><li><a href="MusicPlayer.html">Core/MusicPlayer</a></li><li><a href="Router.html">Core/Router</a></li><li><a href="SchemaReader.html">Core/SchemaReader</a></li><li><a href="Util.html">Core/Util</a></li><li><a href="module-Types.html">Types</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="KeyController.Ajax.html">Ajax</a></li><li><a href="KeyController.KEY.html">KEY</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Mar 05 2017 16:07:47 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

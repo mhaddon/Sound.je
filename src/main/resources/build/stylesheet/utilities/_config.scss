@@ -1,0 +1,109 @@
+/*!
+ *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License version 3
+ *  as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// ==========================================================================
+// Global Config
+// ==========================================================================
+
+// Font Stacks
+
+$font-url--google: '//fonts.googleapis.com/css?family=Lato:100,300,400,700,900';
+$font-family--primary: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$font-family--secondary: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+// Font Weights
+
+$font-weight--thin: 100;
+$font-weight--light: 300;
+$font-weight--medium: 400;
+$font-weight--bold: 700;
+$font-weight--ultra-bold: 900;
+
+// Descriptive Base Colors
+
+$white: #fff;
+$black: #0b0b0b;
+$grey: #999;
+
+$fountain-blue: #52bab3;
+$emerald: #5ece7f;
+$sunglo: #e67478;
+$coral: #ff784f;
+$purple-majesty: #9279c3;
+$scooter: #39add1;
+
+$chelsea-cucumber: #69a74e;
+$sprout: #B5D6A7;
+
+// Color Usage
+
+$color-primary: $chelsea-cucumber;
+$color-secondary: $sprout;
+$color-accent: $emerald;
+$color-shadow: rgba($black, 0.1);
+
+// Color Palette Modifiers
+
+$color-palettes: (
+        green: (
+                xx-light : lighten($grey, 43%),
+                x-light : lighten($grey, 35%),
+                light : lighten($grey, 12%),
+                base : $grey,
+                dark : darken($grey, 8%),
+                x-dark : darken($grey, 16%)
+        ),
+        black: (
+                light : lighten($black, 10%),
+                base : $black,
+                dark : darken($black, 10%)
+        )
+);
+
+// UI Colors
+
+$ui-colors: (
+        default : $fountain-blue,
+        success : $emerald,
+        error : $sunglo,
+        warning : $coral,
+        info : $purple-majesty
+);
+
+// Text
+
+$base__font-size: 16px;
+$base__line: 24px;
+$letter-space: 1px;
+
+// Border radius
+
+$br--default: .4em;
+$br--round: 50%;
+
+// Transitions
+
+$trns-duration: .3s;
+
+// Path to Assets
+
+$path--rel: "../img";
+
+// Breakpoints
+
+$brkpoint-sm: 1px;
+$brkpoint-md: 768px;
+$brkpoint-lg: 1100px;

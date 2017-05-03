@@ -1,0 +1,139 @@
+<!--
+  ~  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU Affero General Public License version 3
+  ~  as published by the Free Software Foundation.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU Affero General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU Affero General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:v-bind="http://www.vuejs.org"
+      xmlns:v-on="http://www.vuejs.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+>
+<head>
+    <title>Sound of Jersey</title>
+</head>
+<body>
+<script type='text/x-template' id='homepage-template' th:fragment="content">
+    <section id="vueController" class="vueController">
+        <header class="header">
+            <h1 class="header__item header__item--title">
+                <a v-href="{}">
+                    <img src="/images/soundofjersey_white.svg" alt="Sound of Jersey" style="height: 40px;"/>
+                </a>
+            </h1>
+            <div class="header__item header__item--search searchbox">
+                <form v-on:submit="searchSite" method="GET" action="/search" class="searchbox__form">
+                    <input type="text" class="searchbox__input" placeholder="Search Local Music" name="query"
+                           v-model="searchQuery"/>
+                    <i class="searchbox__icon fa fa-search" aria-hidden="true"></i>
+                    <input type="submit" class="searchbox__button" value="Search"/>
+                </form>
+            </div>
+            <nav class="header__nav nav">
+                <a v-href="{}" class="nav__link" v-bind:class="{ 'nav__link--selected': isPage('EVENTS') }">
+                    <i class="nav__image fa fa-calendar" aria-hidden="true"></i>
+                </a>
+                <a v-href="{ page: 'Media' }" class="nav__link"
+                   v-bind:class="{ 'nav__link--selected': isPage('MUSIC') }">
+                    <i class="nav__image fa fa-music" aria-hidden="true"></i>
+                </a>
+                <a v-href="{ page: 'News' }" class="nav__link" v-bind:class="{ 'nav__link--selected': isPage('NEWS') }">
+                    <i class="nav__image fa fa-book" aria-hidden="true"></i>
+                </a>
+                <a v-href="{ page: 'About' }" class="nav__link"
+                   v-bind:class="{ 'nav__link--selected': isPage('ABOUT') }">
+                    <i class="nav__image fa fa-coffee" aria-hidden="true"></i>
+                </a>
+                <a v-if="isModerator" v-href="{ page: 'Admin' }" class="nav__link"
+                   v-bind:class="{ 'nav__link--selected': isPage('ADMIN') }">
+                    <i class="nav__image fa fa-cogs" aria-hidden="true"></i>
+                </a>
+                <form v-if="isModerator" v-form="onLogout" action="/logout" method="POST" class="nav__link">
+                    <button class="button nav__image fa fa-sign-out" aria-hidden="true"></button>
+                </form>
+            </nav>
+        </header>
+        <main class="l-main"
+              v-bind:class="{ 'l-main--desktop': !isMobile, 'l-main--mobile': isMobile, 'l-main--musicplayer': isMusicPlayerVisible() }">
+            <eventlist-component v-show="isPage('EVENTS')" data-SwipePage="1" v-on:swipeleft="onSwipeLeft">
+                <h2 style='text-align:center;'>
+                    Loading...<br/>
+                    <i class='fa fa-spinner fa-spin'></i>
+                </h2>
+            </eventlist-component>
+            <medialist-component v-show="isMediaListVisible()" data-SwipePage="2" v-on:swipeleft="onSwipeLeft"
+                                 v-on:swiperight="onSwipeRight">
+                <h2 style='text-align:center;'>
+                    Loading...<br/>
+                    <i class='fa fa-spinner fa-spin'></i>
+                </h2>
+            </medialist-component>
+            <musicplayer-component v-show="isMusicPlayerVisible()">
+
+            </musicplayer-component>
+            <newspage-component v-show="isPage('NEWS')" data-SwipePage="3" v-on:swipeleft="onSwipeLeft"
+                                v-on:swiperight="onSwipeRight">
+                <h2 style='text-align:center;'>
+                    Loading...<br/>
+                    <i class='fa fa-spinner fa-spin'></i>
+                </h2>
+            </newspage-component>
+            <aboutpage-component v-show="isPage('ABOUT')" data-SwipePage="4" v-on:swiperight="onSwipeRight">
+                <h2 style='text-align:center;'>
+                    Loading...<br/>
+                    <i class='fa fa-spinner fa-spin'></i>
+                </h2>
+            </aboutpage-component>
+            <adminpage-component v-show="isPage('ADMIN')">
+                <h2 style='text-align:center;'>
+                    Loading...<br/>
+                    <i class='fa fa-spinner fa-spin'></i>
+                </h2>
+            </adminpage-component>
+            <recordspage-component v-show="isPage('RECORDS')">
+                <h2 style='text-align:center;'>
+                    Loading...<br/>
+                    <i class='fa fa-spinner fa-spin'></i>
+                </h2>
+            </recordspage-component>
+            <searchpage-component v-show="isPage('SEARCH')">
+                <h2 style='text-align:center;'>
+                    Loading...<br/>
+                    <i class='fa fa-spinner fa-spin'></i>
+                </h2>
+            </searchpage-component>
+
+            <locationmodal-component v-if="isModal('LOCATION')"></locationmodal-component>
+            <eventmodal-component v-if="isModal('EVENT')"></eventmodal-component>
+            <artistmodal-component v-if="isModal('ARTIST')"></artistmodal-component>
+            <songmodal-component v-if="isModal('SONG')"></songmodal-component>
+            <mediummodal-component v-if="isModal('MEDIUM')"></mediummodal-component>
+            <loginmodal-component v-if="isModal('LOGIN')"></loginmodal-component>
+            <recordmodal-component v-if="isModal('RECORD')"></recordmodal-component>
+            <editrecordmodal-component v-if="isModal('EDITRECORD')"></editrecordmodal-component>
+            <createrecordmodal-component v-if="isModal('CREATERECORD')"></createrecordmodal-component>
+            <notfoundmodal-component v-if="isModal('NOTFOUND')"></notfoundmodal-component>
+            <passwordresetmodal-component v-if="isModal('PASSWORDRESET')"></passwordresetmodal-component>
+            <registermodal-component v-if="isModal('REGISTER')"></registermodal-component>
+            <loginpasswordmodal-component v-if="isModal('LOGINPASSWORD')"></loginpasswordmodal-component>
+            <submitmodal-component v-if="isModal('SUBMIT')"></submitmodal-component>
+
+            <div class="homepage__notificationbox">
+                <notificationmessage-component v-for="notification in notifications" :key="notification.id"
+                                               :notification="notification"></notificationmessage-component>
+            </div>
+        </main>
+    </section>
+</script>
+</body>
+</html>

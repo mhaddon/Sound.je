@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core/Router/Router.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: core/Router/Router.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License version 3
+ *  as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.
+ */
+// @flow
+// Node_Modules
+import Optional from "optional-js";
+// Site Modules
+import store from "nestedbird/vue/store";
+import { Ajax } from "nestedbird/core/Ajax";
+import { Notification } from "nestedbird/core/Util";
+import href from "./Href";
+import { Modal } from "./Enum";
+import Route from "./Route";
+import Routes from "./Routes";
+
+/**
+ * The router parses pathnames by finding a matching route for the pathname.
+ * @copyright Copyright (C) 2017  Michael Haddon
+ * @author Michael Haddon
+ * @since 23 Feb 2017
+ * @class
+ * @memberOf module:Core/Router
+ * @param {Object} [routes] Object with all possible routes defined
+ */
+class Router {
+    /**
+     * Array of all possible routes
+     * @member module:Core/Router.Router#routes
+     * @type Route[]
+     */
+    routes: Route[];
+
+    /**
+     * Creates all the route objects from a route defining object.
+     * see routes.js
+     *
+     * @param {object} [routes]   Object with all possible routes defined
+     * @throws {TypeError} arguments must not be null
+     */
+    constructor(routes: Object = {}) {
+        if (typeof routes !== `object`) throw new TypeError(`routes is not an object`);
+        this.routes = [];
+        for (const routeKey of Object.keys(routes)) {
+            const routeValue = routes[routeKey];
+            this.routes.push(new Route(routeKey, routeValue));
+        }
+    }
+
+    /**
+     * Loops over every route and if they match it processes the route
+     *
+     * @member module:Core/Router.Route#parse
+     * @method
+     * @param {string} pathname
+     * @throws {TypeError} arguments must not be null
+     */
+    parse(pathname: string) {
+        if (typeof pathname !== `string`) throw new TypeError(`pathname is not a string`);
+
+        const firstRoute = this.routes
+            .find(route => route.match(pathname));
+
+        const response = Optional.ofNullable(firstRoute)
+            .map(route => route.parse(pathname))
+            .orElse(404);
+
+        if (response === 404) {
+            Ajax.setMetaTag(`robots`, `noindex`);
+            Notification.create(`Resource Not Found`).record();
+        } else if ((response === 403) &amp;&amp; (pathname !== `/login`)) {
+            Ajax.setMetaTag(`robots`, `noindex`);
+            Notification.create(`Insufficient permissions`).record();
+            this.parse(`/login`);
+        }
+
+        store.commit(`setQuery`, this.parseQuery());
+        Ajax.setMetaTag(`og:url`, `${document.location.origin}${document.location.pathname}`);
+    }
+
+    /**
+     * parses a HrefDirectiveObject
+     * @member module:Core/Router.Route#parseObject
+     * @method
+     * @param {hrefDirectiveObject} object
+     */
+    parseObject(object: hrefDirectiveObject) {
+        this.parse(this.hrefDirectiveObjectToUrl(object));
+    }
+
+    /**
+     * parses a HrefDirectiveObject to its url
+     * @member module:Core/Router.Route#hrefDirectiveObjectToUrl
+     * @method
+     * @param {hrefDirectiveObject} object
+     * @returns string
+     */
+    hrefDirectiveObjectToUrl(object: hrefDirectiveObject): string {
+        return href.calculate(object);
+    }
+
+    /**
+     * redirects the user to a url and parses this url
+     * @member module:Core/Router.Route#redirect
+     * @method
+     * @param {string} pathname
+     * @throws {TypeError} arguments must not be null
+     */
+    redirect(pathname: string) {
+        if (typeof pathname !== `string`) throw new TypeError(`pathname is not a string`);
+        window.history.pushState({}, ``, pathname); // pushstate must come BEFORE we define the document.title
+        this.parse(pathname.split(`?`, 1)[0]);
+        window.ga(`NestedBird.send`, `pageview`, document.location.pathname);
+
+        if (store.getters.currentModal === Modal.NONE) {
+            store.commit(`setLastModallessUrl`, window.location.pathname);
+        }
+    }
+
+    /**
+     * redirects the url to a path query, but does not process it
+     * @member module:Core/Router.Route#redirectQuery
+     * @method
+     * @param {string} query
+     * @throws {TypeError} arguments must not be null
+     */
+    redirectQuery(query: string) {
+        // pushstate must come BEFORE we define the document.title
+        window.history.pushState({}, ``, `${window.location.pathname}?${query}`);
+        this.updateQuery();
+        window.ga(`NestedBird.send`, `pageview`, document.location.pathname);
+    }
+
+    /**
+     * Updates the current query information
+     * @member module:Core/Router.Route#updateQuery
+     * @method
+     * @param {string} location [null]    query info to parse, prefix with ?
+     */
+    updateQuery(location: ?string = null) {
+        store.commit(`setQuery`, this.parseQuery(location));
+    }
+
+    /**
+     * Retrieves the query values from the current url
+     * @member module:Core/Router.Route#parseQuery
+     * @method
+     * @param {string} location [window.location.search]    query info to parse, prefix with ?
+     * @returns {Object}
+     */
+    parseQuery(location: ?string): Object {
+        return Object.assign(...(location || window.location.search)
+            .substr(1).split(`&amp;`)
+            .map((e: string): Object => {
+                const queryPieces = e.split(`=`);
+                return {
+                    [queryPieces[0]]: decodeURIComponent(queryPieces[1])
+                };
+            }));
+    }
+
+    /**
+     * redirects the user to a url and parses this url
+     * @member module:Core/Router.Route#redirectObject
+     * @method
+     * @param {hrefDirectiveObject} object
+     */
+    redirectObject(object: hrefDirectiveObject) {
+        this.redirect(this.hrefDirectiveObjectToUrl(object));
+    }
+
+    /**
+     * Binds event listeners to the page to listen to page events
+     * @member module:Core/Router.Route#bindListeners
+     * @method
+     */
+    bindListeners() {
+        if (typeof window.onpopstate !== `function`) {
+            window.onpopstate = () => {
+                this.parse(document.location.pathname);
+                ga(`NestedBird.send`, `pageview`, document.location.pathname);
+            };
+        }
+    }
+
+    /**
+     * initialises the Router for first page load
+     * @member module:Core/Router.Route#processFirstPageLoad
+     * @method
+     */
+    processFirstPageLoad() {
+        this.parse(document.location.pathname);
+        this.bindListeners();
+    }
+}
+
+export default new Router(Routes);</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-Types.html">Types</a></li><li><a href="Directives.html">Vue/Directives</a></li><li><a href="Pages.html">Vue/Pages</a></li><li><a href="Store.html">Vue/Store</a></li></ul><h3>Classes</h3><ul><li><a href="Ajax.Ajax.html">Ajax</a></li><li><a href="InfiniteController.Listener.html">Listener</a></li><li><a href="InfiniteController.ScrollContainer.html">ScrollContainer</a></li><li><a href="KeyController.exports.default.html">exports.default</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Notification.html">Notification</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul><h3>Namespaces</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="Components.AboutPage.html">AboutPage</a></li><li><a href="Components.AdminPage.html">AdminPage</a></li><li><a href="Components.ArtistModal.html">ArtistModal</a></li><li><a href="Components.CreateRecordModal.html">CreateRecordModal</a></li><li><a href="Components.DateTimePicker.html">DateTimePicker</a></li><li><a href="Components.EditableFormData.html">EditableFormData</a></li><li><a href="Components.EditRecordModal.html">EditRecordModal</a></li><li><a href="Components.EntityField.html">EntityField</a></li><li><a href="Components.EventList.html">EventList</a></li><li><a href="Components.EventModal.html">EventModal</a></li><li><a href="Components.FacebookBox.html">FacebookBox</a></li><li><a href="Components.LocationModal.html">LocationModal</a></li><li><a href="Components.LoginModal.html">LoginModal</a></li><li><a href="Components.LoginPasswordModal.html">LoginPasswordModal</a></li><li><a href="Components.MarkdownTextarea.html">MarkdownTextarea</a></li><li><a href="Components.MediaBox.html">MediaBox</a></li><li><a href="Components.MediumModal.html">MediumModal</a></li><li><a href="Components.MultiEntityField.html">MultiEntityField</a></li><li><a href="Components.NewsPage.html">NewsPage</a></li><li><a href="Components.NotFoundModal.html">NotFoundModal</a></li><li><a href="Components.PasswordResetModal.html">PasswordResetModal</a></li><li><a href="Components.RecordModal.html">RecordModal</a></li><li><a href="Components.RecordsPage.html">RecordsPage</a></li><li><a href="Components.RegisterModal.html">RegisterModal</a></li><li><a href="Components.SearchPage.html">SearchPage</a></li><li><a href="Components.SongModal.html">SongModal</a></li><li><a href="Components.SubmitModal.html">SubmitModal</a></li><li><a href="Directives.form.html">form</a></li><li><a href="Directives.FormDirectiveHelper.html">FormDirectiveHelper</a></li><li><a href="Directives.href.html">href</a></li><li><a href="Directives.infinite.html">infinite</a></li><li><a href="Directives.src.html">src</a></li><li><a href="Directives.SrcDirectiveHelper.html">SrcDirectiveHelper</a></li><li><a href="Mixins.Auth.html">Auth</a></li><li><a href="Mixins.IeVersion.html">IeVersion</a></li><li><a href="Mixins.Mobile.html">Mobile</a></li><li><a href="Mixins.Modal.html">Modal</a></li><li><a href="Mixins.Tag.html">Tag</a></li><li><a href="Pages.ViewModel.html">ViewModel</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Wed May 03 2017 12:29:53 GMT+0100 (BST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

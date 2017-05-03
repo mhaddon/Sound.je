@@ -1,0 +1,70 @@
+<!--
+  ~  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU Affero General Public License version 3
+  ~  as published by the Free Software Foundation.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU Affero General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU Affero General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:v-bind="http://www.vuejs.org"
+      xmlns:v-on="http://www.vuejs.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+>
+<head>
+    <title>Ploinki</title>
+</head>
+<body>
+<script type='text/x-template' id='musicPlayer-template' th:fragment="musicPlayer">
+    <div class="musicplayer">
+        <div class="musicplayer__item musicplayer__item--hide" v-on:click="back">
+            <i class="fa fa-step-backward"></i>
+        </div>
+        <div class="musicplayer__item" v-on:click="play">
+            <i class="fa fa-play" v-if="paused" style=""></i>
+            <i class="fa fa-pause" v-if="!paused"></i>
+        </div>
+        <div class="musicplayer__item" v-on:click="next">
+            <i class="fa fa-step-forward"></i>
+        </div>
+        <div class="musicplayer__progressbar">
+            <p class="musicplayer__titlebox">
+                <a href="#" class="musicplayer__artistname" v-text="artistName"></a>
+                <a href="#" class="musicplayer__songname" v-text="songName"></a>
+            </p>
+            <div class="musicplayer__seeker" style="cursor:pointer;" v-on:click="seek">
+                <div class="musicplayer__buffercont"></div>
+                <div class="musicplayer__slider" v-bind:style="sliderCSS"></div>
+            </div>
+            <div class="musicplayer__timebox" v-if="true">
+                <span class="musicplayer__currenttime" v-text="currentTime">0:00</span>
+                <span class="musicplayer__duration" v-text="duration">0:00</span>
+            </div>
+        </div>
+        <div class="musicplayer__item musicplayer__item--volume">
+            <div class="musicplayer__rangeslider">
+                <div class="musicplayer__rangesliderbg">
+                    <input class="rangeslider" type="range" min="0" max="1000" value="750" v-on:input="changeVolume"/>
+                </div>
+            </div>
+            <i class="fa fa-volume-up"></i>
+        </div>
+        <div class="st5" v-on:click="openFSMP" style="display:none;">
+            <span class="openFull facont">
+                <i class="fa fa-arrows-alt"></i>
+            </span>
+            <div class="FSMPBCKGRND"></div>
+            <musicfsmp-component v-if="false" style="text-align:center;"></musicfsmp-component>
+        </div>
+    </div>
+</script>
+</body>
+</html>

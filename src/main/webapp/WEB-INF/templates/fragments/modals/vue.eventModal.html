@@ -1,0 +1,111 @@
+<!--
+  ~  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU Affero General Public License version 3
+  ~  as published by the Free Software Foundation.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU Affero General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU Affero General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:v-bind="http://www.vuejs.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+>
+<head>
+    <title>Ploinki</title>
+</head>
+<body>
+<script type='text/x-template' id='eventModal-template' th:fragment="eventModal">
+    <div class="modal artistmodal">
+        <a v-href="{ page: '$modalless' }" class="modal__bg modal__remove"></a>
+        <div class="modal__content modal__content--taller modal__content--wider">
+            <div class="modal__header">
+                <p class="modal__headertext">Event</p>
+                <a v-if="editable" v-href="{ page: 'records', id: id, name: 'Events' }" target='_blank'
+                   class="modal__headeritem">
+                    <i class="fa fa-edit" aria-hidden="true"></i>
+                </a>
+                <a v-bind:href="fbUrl" target='_blank' class="modal__headeritem">
+                    <i class="fa fa-facebook" aria-hidden="true"></i>
+                </a>
+                <a v-href="{ page: '$modalless' }" class="modal__headeritem modal__remove">
+                    <i class="fa fa-times" aria-hidden="true"></i>
+                </a>
+            </div>
+            <div class="artistmodal__banner">
+                <img class="artistmodal__image" :src="imageUrl"
+                     onerror="this.src='/images/blackwide.jpg';this.onerror='';"/>
+                <h2 class="artistmodal__title" v-text="artistNames"></h2>
+            </div>
+            <div class="modal__body" style="flex-wrap:wrap;">
+                <nav class="artistmodal__nav nav" style="width: 100%;">
+                    <a v-href="{ page: 'Events', id: id, name: name, query: { page: 'about' } }"
+                       class="nav__link nav__link--slim"
+                       v-bind:class="{ 'nav__link--selected': isPage('about') || isPage() }">
+                        About
+                    </a>
+                    <a v-href="{ page: 'Events', id: id, name: name, query: { page: 'artists' } }"
+                       class="nav__link nav__link--slim" v-bind:class="{ 'nav__link--selected': isPage('artists') }">
+                        Artists
+                    </a>
+                    <a v-href="{ page: 'Locations', name: Event.location.name, id: Event.location.id }"
+                       class="nav__link nav__link--slim">
+                        Location
+                    </a>
+                </nav>
+
+                <div v-show="isPage('artists')" class="artistmodal__modalitem">
+                    <h3 class="artistmodal__subtitle">Artists</h3>
+                    <div class="modal__text artistmodal__content">
+                        <a class="artistblock" :class="{ 'artistblock--nodesc': !artist.description }"
+                           v-if="hasArtists"
+                           v-for="artist in Event.artists"
+                           v-href="{ page: 'Artists', name: artist.name, id: artist.id }">
+                            <p class="artistblock__title"
+                               v-text="artist.name"></p>
+                            <p class="artistblock__description" v-text="artist.description"></p>
+                        </a>
+                        <p v-if="!hasArtists">
+                            Unfortunately we do not seem to have the artists at this event recorded in our system.
+                            Please message us if we are missing anyone!
+                        </p>
+                    </div>
+                </div>
+
+                <div v-show="isPage('about') || isPage()" class="artistmodal__modalitem">
+                    <h3 class="artistmodal__subtitle">About</h3>
+                    <div class="artistmodal__splitview">
+                        <div class="modal__text artistmodal__content artistmodal__viewleft" v-html="description"></div>
+                        <div class="modal__text artistmodal__content artistmodal__viewright">
+                            <a v-href="{ page: 'Locations', name: Event.location.name, id: Event.location.id }"
+                               class="modal__righttitle" v-text="Event.location.name"></a>
+                            <div class="modal__infoblock" v-if="getTime()" v-text="getTime()"></div>
+                            <a v-bind:href="mapLinkUrl" target="_blank">
+                                <img class="modal__mapimg" v-src="mapUrl"/>
+                            </a>
+                            <div class="modal__descriptionblock">
+                                <p>
+                                    <span v-text="Event.location.street"></span>, <span
+                                        v-text="Event.location.city"></span>
+                                </p>
+                                <p>
+                                    <span v-text="Event.location.country"></span>, <span
+                                        v-text="Event.location.postcode"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+</body>
+</html>

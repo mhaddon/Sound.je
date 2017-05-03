@@ -1,0 +1,51 @@
+<!--
+  ~  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU Affero General Public License version 3
+  ~  as published by the Free Software Foundation.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU Affero General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU Affero General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+>
+<head>
+    <title>Ploinki</title>
+</head>
+<body>
+<script type='text/x-template' id='searchPage-template' th:fragment="searchPage">
+    <article class="article aboutPage" v-infinite="{ page: page, limit: limit, fn: getSearchResults }">
+        <div class="searchpage">
+            <div class="searchpage__results searchpage__results--search">
+                <p class="searchpage__title article__title">Search</p>
+                <a v-for="(data, index) in searchData" class="searchpage__container article__textbox" v-href="data.url">
+                    <p v-text="data.category" class="searchpage__category"></p>
+                    <p v-text="data.name" class="searchpage__name"></p>
+                </a>
+            </div>
+            <div class="searchpage__results searchpage__results--events" v-if="eventData.length">
+                <p class="searchpage__title article__title">Events</p>
+                <a v-for="(data, index) in eventData" class="article__textbox eventbox"
+                   v-if="getNextOccurrence(data.entity.times).isPresent()" v-href="data.url"
+                   :class="{ 'eventbox--infuture': data.entity.inFuture }">
+                    <p class="eventbox__title" v-text="processArtistNames(data.entity.allArtistNames)"></p>
+                    <div class="eventbox__infobox">
+                        <p class="eventbox__location" v-text="data.entity.location.name"></p>
+                        <p class="eventbox__time" v-text="getNextOccurrence(data.entity.times).get()"></p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </article>
+</script>
+</body>
+</html>

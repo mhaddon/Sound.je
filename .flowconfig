@@ -1,0 +1,16 @@
+[ignore]
+.*/node_modules/.*
+<PROJECT_ROOT>/src/main/resources/static/.*
+<PROJECT_ROOT>/src/main/resources/test/.*
+<PROJECT_ROOT>/target/.*
+
+[include]
+
+[libs]
+flow-typed/npm/
+src/main/resources/build/javascript/nestedbird/_types/
+src/main/resources/build/javascript/
+
+[options]
+module.ignore_non_literal_requires=true
+# module.munge_underscores=true

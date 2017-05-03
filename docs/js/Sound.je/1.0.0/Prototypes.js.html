@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core/GlobalJS/Prototypes.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: core/GlobalJS/Prototypes.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ NestedBird  Copyright (C) 2017  Michael Haddon
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.
+ */
+// @flow
+// Node Modules
+
+// Site Modules
+
+/**
+ * This code contains native class prototypes that has been extended with new functionality
+ * @copyright Copyright (C) 2017  Michael Haddon
+ * @author Michael Haddon
+ * @since 23 Feb 2017
+ * @class
+ * @member module:Core/GlobalJS.Prototypes
+ */
+const Prototypes = {};
+
+if (typeof Array.prototype.chain === `undefined`) {
+    /**
+     *
+     * @source https://github.com/hemanth/functional-programming-jargon#monad
+     * @param {function} fn
+     */
+    // eslint-disable-next-line no-extend-native
+    (Array: any).prototype.chain = function chain(fn) {
+        return this.reduce((a, b) => a.concat(fn(b)), []);
+    };
+}
+
+if (typeof Array.prototype.flatMap === `undefined`) {
+    /**
+     * flatmaps an array
+     * @source https://gist.github.com/samgiles/762ee337dff48623e729
+     * @param {function} fn
+     * @returns {*}
+     */
+    (Array: any).prototype.flatMap = function flatMap(fn) {
+        return Array.prototype.concat.apply([], this.map(fn));
+    };
+}
+
+if (typeof Number.prototype.pad === `undefined`) {
+    /**
+     * pads a number to a string
+     * @param {number} size     minimum string length
+     * @returns {string}
+     */
+    // eslint-disable-next-line no-extend-native
+    (Number: any).prototype.pad = function pad(size): string {
+        return this.toString().pad(size);
+    };
+}
+
+if (typeof String.prototype.pad === `undefined`) {
+    /**
+     * returns a padded string
+     * @param {number} size     minimum string length
+     * @returns {string}
+     */
+    // eslint-disable-next-line no-extend-native
+    (String: any).prototype.pad = function pad(size): string {
+        let s = this;
+        while (s.length &lt; (size || 2)) {
+            s = `0${s}`;
+        }
+        return s;
+    };
+}
+
+if (typeof Number.prototype.min === `undefined`) {
+    /**
+     * Defines the minimum value this variable should be.
+     * For example:
+     * (100).min(200)
+     * Will return 200 because 200 is the minimum amount and 100 is smaller than that
+     * (200).min(100)
+     * will return 200 because it exceeds the minimum
+     * @param {number} num      minimum value
+     * @returns {number}
+     */
+    // eslint-disable-next-line no-extend-native
+    (Number: any).prototype.min = function min(num): number {
+        return (this &lt; num) ? num : this;
+    };
+}
+
+if (typeof Number.prototype.max === `undefined`) {
+    /**
+     * Defines the maximum value this variable should be.
+     * For example:
+     * (200).max(100)
+     * Will return 100 because 100 is the maximum amount and 200 is greater than that
+     * (100).max(200)
+     * will return 100 because it is smaller than the maximum
+     * @param {number} num      maximum value
+     * @returns {number}
+     */
+    // eslint-disable-next-line no-extend-native
+    (Number: any).prototype.max = function max(num: number): number {
+        return (this > num) ? num : this;
+    };
+}
+
+if (typeof Element.prototype.hasClass === `undefined`) {
+    /**
+     * Does an element have a specific class
+     * @param {string} className        Classname to search
+     * @returns {boolean}
+     */
+    // eslint-disable-next-line no-extend-native
+    (Element: any).prototype.hasClass = function hasClass(className): boolean {
+        let classList;
+        if (this.classList) {
+            classList = this.classList.contains(className);
+        } else {
+            classList = new RegExp(`(^| )${className}( |$)`, `gi`).test(this.className);
+        }
+        return classList;
+    };
+}
+
+if (typeof Element.prototype.outerSize === `undefined`) {
+    /**
+     * Calculate the outsize of an element
+     * @source http://stackoverflow.com/a/23270007
+     * @returns {{width: (Number|number), height: (Number|number)}}
+     */
+    // eslint-disable-next-line no-extend-native
+    (Element: any).prototype.outerSize = function outerSize() {
+        const style = this.currentStyle || window.getComputedStyle(this);
+        const width = this.offsetWidth || 0;
+        const height = this.offsetHeight || 0;
+        const marginWidth = (parseFloat(style.marginLeft) || 0) + (parseFloat(style.marginRight) || 0);
+        const marginHeight = (parseFloat(style.marginTop) || 0) + (parseFloat(style.marginBottom) || 0);
+        const paddingWidth = (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0);
+        const paddingHeight = (parseFloat(style.paddingTop) || 0) + (parseFloat(style.paddingBottom) || 0);
+        const borderWidth = (parseFloat(style.borderLeftWidth) || 0) + (parseFloat(style.borderRightWidth) || 0);
+        const borderHeight = (parseFloat(style.borderTopWidth) || 0) + (parseFloat(style.borderBottomWidth) || 0);
+
+        return {
+            width: parseInt((width + marginWidth) - (paddingWidth + borderWidth), 10) || 0,
+            height: parseInt((height + marginHeight) - (paddingHeight + borderHeight), 10) || 0
+        };
+    };
+}
+
+if (typeof Element.prototype.addClass === `undefined`) {
+    /**
+     * Add a class to an element
+     * @param {string} className    class to add
+     * @return {this|Element}
+     */
+    // eslint-disable-next-line no-extend-native
+    (Element: any).prototype.addClass = function addClass(className): Element {
+        if (this.classList) {
+            this.classList.add(className);
+        } else {
+            this.className += ` ${className}`;
+        }
+        return this;
+    };
+}
+
+if (typeof Element.prototype.removeClass === `undefined`) {
+    /**
+     * remove a class from an element
+     * @param {string} className    class to remove
+     * @returns {this|Element}
+     */
+    // eslint-disable-next-line no-extend-native
+    (Element: any).prototype.removeClass = function removeClass(className): Element {
+        if (this.classList) {
+            this.classList.remove(className);
+        } else {
+            const regex = new RegExp(`(^|\\b)${className.split(` `).join(`|`)}(\\b|$)`, `gi`);
+            this.className = this.className.replace(regex, ` `);
+        }
+
+        return this;
+    };
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="Ajax.html">Core/Ajax</a></li><li><a href="GlobalJS.html">Core/GlobalJS</a></li><li><a href="InfiniteController.html">Core/InfiniteController</a></li><li><a href="KeyController.html">Core/KeyController</a></li><li><a href="MusicPlayer.html">Core/MusicPlayer</a></li><li><a href="Router.html">Core/Router</a></li><li><a href="SchemaReader.html">Core/SchemaReader</a></li><li><a href="Util.html">Core/Util</a></li><li><a href="module-Types.html">Types</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="KeyController.Ajax.html">Ajax</a></li><li><a href="KeyController.KEY.html">KEY</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Mar 05 2017 16:07:47 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

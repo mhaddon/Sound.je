@@ -1,0 +1,100 @@
+<!--
+  ~  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU Affero General Public License version 3
+  ~  as published by the Free Software Foundation.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU Affero General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU Affero General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:v-on="http://www.vuejs.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+>
+<head>
+    <title>Ploinki</title>
+</head>
+<body>
+<script type='text/x-template' id='editableFormData-template' th:fragment="editableFormData">
+    <div style="flex-grow: 100; display: flex;" :style="{ flexDirection: direction }">
+        <fieldset v-for="column in editedFormData" :key="column.name" v-show="isVisible(column)"
+                  style="flex-grow: 100; display: flex;">
+            <label :for="column.name" v-text="column.name"></label>
+
+            <input v-if="column.name === 'id'" type="text" :id="column.name" :name="getObjectName(column.name)"
+                   :value="column.value" disabled="disabled"/>
+            <datetimepicker-component v-else-if="column.view === 'DateTime'" :name="getObjectName(column.name)"
+                                      :value="column.value"></datetimepicker-component>
+
+            <entityfield-component v-else-if="column.view === 'BaseEntity'"
+                                   :name="getObjectName(column.name)"
+                                   :data="column"
+                                   :type="getEntityType(column.type)"
+                                   :elements="getEntityElements(column.type)"></entityfield-component>
+
+            <entityfield-component v-else-if="column.view === 'BaseEntityArray'"
+                                   :name="getObjectName(column.name)"
+                                   :multi="true"
+                                   :data="column"
+                                   :type="getEntityType(column.type)"
+                                   :elements="getEntityElements(column.type)"></entityfield-component>
+
+            <periodfield-component v-else-if="column.view === 'Period'" :id="column.name"
+                                   :name="getObjectName(column.name)" :value="column.value"></periodfield-component>
+
+            <textarea-component v-else-if="column.view === 'TextBlock'" :id="column.name"
+                                :name="getObjectName(column.name)" :value="column.value"></textarea-component>
+
+            <markdowntextarea-component v-else-if="column.view === 'Markdown'" :id="column.name"
+                                        :name="getObjectName(column.name)"
+                                        :value="column.value"></markdowntextarea-component>
+
+
+            <div v-else-if="column.view === 'FacebookId'">
+                <a :href="'https://www.facebook.com/' + column.value" v-text="column.value" target="_blank"></a>
+                <input type="text" :id="column.name" :name="getObjectName(column.name)" :value="column.value"/>
+            </div>
+
+            <div v-else-if="column.view === 'ImageUrl'">
+                <a :href="column.value" target="_blank">
+                    <img :src="column.value" style="width:150px; margin:0;"/>
+                </a>
+                <input type="text" :id="column.name" :name="getObjectName(column.name)" :value="column.value"/>
+            </div>
+
+            <div v-else-if="column.view === 'Enumeration'">
+                <select :id="column.name" :name="getObjectName(column.name)">
+                    <option v-for="option in column.enumDetails" :value="option" v-text="option"
+                            :selected="option === column.value ? 'selected' : null"></option>
+                </select>
+            </div>
+
+            <input v-else-if="column.view === 'Boolean'" type="checkbox" :id="column.name"
+                   :name="getObjectName(column.name)" :checked="column.value"
+                   style="display:inline; width:auto; position:relative; top:3px;"/>
+
+            <div v-else-if="column.view === 'Array'">
+                <div v-for="(item, index) in column.value" style="flex-grow: 100; display: flex;">
+                    <editableformdata-component :index="index" :formData="item" :hideuneditable="true"
+                                                :direction="'row'" :prefix="column.name"></editableformdata-component>
+                    <div v-on:click="remove(index, column)" class="button fa fa-times"></div>
+                </div>
+                <div v-on:click="addNew(column)" class="button">Add New</div>
+            </div>
+
+            <input v-else-if="column.view === 'Object'" type="text" :id="column.name" :name="getObjectName(column.name)"
+                   :value="getObjectId(column.value)"/>
+            <input v-else="" type="text" :id="column.name" :name="getObjectName(column.name)" :value="column.value"/>
+
+        </fieldset>
+    </div>
+</script>
+</body>
+</html>

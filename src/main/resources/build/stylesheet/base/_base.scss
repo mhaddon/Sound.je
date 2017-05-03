@@ -1,0 +1,190 @@
+/*!
+ *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License version 3
+ *  as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// ==========================================================================
+// Base Styles
+// ==========================================================================
+
+* {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #efefef;
+  background: url(images/bg2.png);
+}
+
+body {
+  color: palette(grey);
+  font-size: $base__font-size;
+  font-family: $font-family--primary;
+  line-height: ($base__line/$base__font-size);
+}
+
+// Text
+
+h1 {
+  @extend %hdln-prim;
+  a {
+    color: inherit;
+    font-weight: inherit;
+    text-decoration: inherit;
+  }
+}
+
+h2 {
+  @extend %hdln-sec;
+}
+
+h3 {
+  font-size: em(18px);
+}
+
+h4 {
+  margin-top: em(22px, 14px);
+  margin-bottom: em(32px, 14px);
+  color: palette(grey, x-light);
+  text-transform: uppercase;
+  letter-spacing: $letter-space;
+  font-weight: $font-weight--medium;
+  font-size: em(14px);
+}
+
+a {
+  color: palette(grey, dark);
+  text-decoration: none;
+  font-weight: $font-weight--medium;
+}
+
+p {
+  margin: 0;
+  font-weight: $font-weight--light;
+  font-size: em(18px);
+  line-height: (27px/18px);
+}
+
+blockquote {
+  @media (min-width: 769px) {
+    margin: em(32px, 24px) 0;
+    padding: 0 0 0 5%;
+    border-left: em(8px, 24px) solid palette(grey, xx-light);
+    font-size: em(24px);
+  }
+  font-weight: $font-weight--light;
+  font-style: italic;
+  font-size: em(20px);
+}
+
+// Lists
+
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+// Images
+
+img {
+  margin-bottom: em(24px);
+  max-width: 100%;
+  height: auto;
+}
+
+// Form elements
+
+input,
+textarea {
+  display: block;
+  padding: 15px;
+  outline: 0;
+  border: 0;
+}
+
+input[type='text'],
+input[type='password'],
+textarea {
+  width: 100%;
+}
+
+input:focus,
+textarea:focus {
+  transition: $trns_duration;
+}
+
+// Button
+
+button {
+  outline: 0;
+}
+
+// Layout
+
+footer {
+  border-top: 1px solid palette(grey, xx-light);
+  p {
+    font-size: em(16px);
+    margin-top: em(22px, 16px);
+  }
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+
+  &.modalopen {
+    overflow: hidden;
+  }
+}
+
+.vueController {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: 60px;
+  height: auto !important;
+}
+
+table {
+  width: 100%;
+  th, td {
+    font-weight: 400;
+  }
+  th {
+
+  }
+  td {
+    padding: 2px;
+    font-weight: 300;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+
+    &:last-child {
+      border-right: none;
+    }
+  }
+
+  tbody tr {
+    &:hover {
+      background-color: #f7f7f7;
+    }
+  }
+}

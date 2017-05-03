@@ -1,0 +1,230 @@
+/*!
+ *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License version 3
+ *  as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.rangeslider {
+  width: 100%;
+
+  -webkit-appearance: none;
+  border-radius: 0px;
+  vertical-align: middle;
+  margin: -8px 0 0 0;
+  padding: 0;
+  position: relative;
+  vertical-align: middle;
+  overflow-x: hidden;
+  overflow-y: visible;
+  background: transparent;
+  border: 0px solid white;
+  height: 30px;
+  cursor: pointer;
+
+  $thumbInside: #adadad;
+  $thumbBorder: #e8e8e8;
+  $beforeThumb: #cc181e;
+  $trackBG: #757575;
+
+  /*    &::-webkit-slider-thumb {
+          -webkit-appearance: none !important;
+          position: relative;
+          pointer-events:none;
+          height:8px;
+          width:8px;
+      }
+
+      &::-webkit-slider-runnable-track{
+          background: $trackBG;
+          height: 8px;
+      }
+
+      &::-webkit-slider-thumb:before{
+          content:"-";
+          font-style: 0;
+          line-height:0;
+          position: absolute;
+          left:-3000px;
+          right:0;
+          top:0;
+          bottom:0;
+          background: $beforeThumb;
+      }
+
+      // THE ACTUAL THUMB
+      &::-webkit-slider-thumb:after {
+          content: "";
+          position: absolute;
+          left:-4px;
+          right:-4px;
+          top:-4px;
+          bottom:-4px;
+          background: $thumbInside;
+          border-radius: 50%;
+          border:5px solid $thumbBorder;
+          z-index: 10;
+      }
+
+      &:hover::-webkit-slider-thumb:after,
+          &:focus::-webkit-slider-thumb:after{
+          background: $beforeThumb;
+      }
+
+      &:disabled::-webkit-slider-thumb:before{
+          background-color: #a1151a;
+      }
+
+      &:disabled::-webkit-slider-thumb:after {
+          background: #adadad !important;
+      }*/
+
+  //webkit changed how things work with sliders..............................
+
+  &::-webkit-range-track {
+    background: $trackBG;
+  }
+
+  &::-webkit-range-thumb {
+    background: $thumbInside;
+    border-radius: 50%;
+    border: 5px solid $thumbBorder;
+    height: 8px;
+    width: 8px;
+    position: relative;
+  }
+
+  &:hover::-webkit-range-thumb {
+    background: $beforeThumb;
+  }
+
+  &::-webkit-range-thumb:before {
+    content: "-";
+    font-style: 0;
+    line-height: 0;
+    position: absolute;
+    left: -3000px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: $beforeThumb;
+  }
+
+  //ie
+
+  &::-ms-fill-lower {
+    background: $beforeThumb;
+  }
+
+  &::-ms-track {
+    background: $trackBG;
+  }
+
+  &::-ms-thumb {
+    background: $thumbInside;
+    border-radius: 50%;
+    border: 5px solid $thumbBorder;
+    height: 8px;
+    width: 8px;
+  }
+
+  &:hover::-ms-thumb {
+    background: $beforeThumb;
+  }
+
+  //firefox
+
+  &::-moz-range-track {
+    background: $trackBG;
+  }
+
+  &::-moz-range-thumb {
+    background: $thumbInside;
+    border-radius: 50%;
+    border: 5px solid $thumbBorder;
+    height: 8px;
+    width: 8px;
+    position: relative;
+  }
+
+  &:hover::-moz-range-thumb {
+    background: $beforeThumb;
+  }
+
+  &::-moz-range-thumb:before {
+    content: "-";
+    font-style: 0;
+    line-height: 0;
+    position: absolute;
+    left: -3000px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: $beforeThumb;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &.big {
+    height: 50px;
+
+    &::-webkit-slider-thumb {
+      height: 40px;
+      width: 20px;
+    }
+
+    &::-webkit-slider-thumb:after {
+      border-radius: 5px;
+    }
+
+    &::-webkit-slider-runnable-track {
+      height: 40px;
+    }
+
+    &::-ms-thumb {
+      border-radius: 5px;
+      height: 40px;
+      width: 20px;
+    }
+
+    &::-moz-range-thumb {
+      border-radius: 5px;
+      height: 40px;
+      width: 20px;
+    }
+  }
+}
+
+.MouseToolTip {
+  position: absolute;
+  display: none;
+  background-color: black;
+  border: 1px solid #eee;
+  color: #eee;
+  z-index: 1000;
+  font-size: 14px;
+  padding: 5px;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    width: 0;
+    height: 0;
+    display: block;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 6px solid #eee;
+  }
+}

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: vue/components/vue.youtubeBox.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: vue/components/vue.youtubeBox.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// @flow
+// Node Modules
+const Vue = require(`vue/dist/vue`);
+
+// Site Modules
+const { MediaType } = require(`${__base}/core/musicplayer/_types`);
+const MusicPlayer = require(`${__base}/core/musicplayer`);
+
+/**
+ * The different states that Youtube videos can have
+ */
+const YTState = {
+    UNSTARTEDVIDEO: -1,
+    END: 0,
+    ONPLAY: 1,
+    ONPAUSE: 2,
+    BUFFERING: 3,
+    VIDEOQUEUED: 4
+};
+
+/**
+ * This component is responsible for controlling Youtube videos
+ * @type {Vue}
+ */
+const vueYoutubeBox = Vue.extend({
+    /**
+     * The components design template, see the "text/x-template" tags in
+     * index.html
+     */
+    template: `#youtubeBox-template`,
+    /**
+     * The components variables that it inherits from its parent
+     */
+    props: [`id`, `Medium`],
+    /**
+     * Every component requires a data feild, but i do not need it as
+     * i inherit all the relevent data. So it is filled with nonsense.
+     */
+    data(): Object {
+        return {};
+    },
+    /**
+     * When the element is created we need to load the youtube media and bind all the events that this
+     * object controls
+     */
+    created() {
+        this.$nextTick(() => {
+            new YT.Player(this.getElementId(), {
+                height: `480`,
+                width: `853`,
+                videoId: this.id,
+                playerVars: {
+                    autoplay: 1,
+                    controls: 0,
+                    modestbranding: 1,
+                    rel: 0,
+                    showinfo: 1,
+                    iv_load_policy: 3
+                },
+                events: {
+                    onStateChange: this.onStateChange,
+                    onReady: this.onReady
+                }
+            });
+        });
+    },
+    /**
+     * Unload the element from the page
+     */
+    beforeDestroy() {
+        MusicPlayer.reset();
+    },
+    methods: {
+        /**
+         * Define all the MusicPlayer event callbacks, so the musicplayer knows how to talk to the media element.
+         * In the future this may be changed to use an inheritance system instead
+         */
+        setEvents() {
+            MusicPlayer.onPlay(() => {
+                MusicPlayer.getMedia().ifPresent((media: Object) => {
+                    media.playVideo();
+                    MusicPlayer.videoPoll = window.setInterval(MusicPlayer.tick.bind(MusicPlayer), 25);
+                });
+            });
+
+            MusicPlayer.onSeek(() => {
+                MusicPlayer.getMedia().ifPresent((media: Object) => {
+                    media.seekTo(MusicPlayer.getCurrentTime(), true);
+                });
+            });
+
+            MusicPlayer.onVolumeChange((volume: number) => {
+                MusicPlayer.getMedia().ifPresent((media: Object) => {
+                    media.setVolume(volume * 100);
+                });
+            });
+
+            MusicPlayer.onPause(() => {
+                MusicPlayer.getMedia().ifPresent((media: Object) => {
+                    media.pauseVideo();
+                });
+                window.clearInterval(MusicPlayer.videoPoll);
+            });
+
+            MusicPlayer.onTick(() => {
+                MusicPlayer.getMedia().ifPresent((media: Object) => {
+                    MusicPlayer.setBufferPercent(Math.floor(media.getVideoLoadedFraction() * 100));
+                    MusicPlayer.setCurrentTime(media.getCurrentTime());
+                });
+            });
+
+            MusicPlayer.onLoad(() => {
+                MusicPlayer.getMedia().ifPresent((media: Object) => {
+                    MusicPlayer.setDuration(media.getDuration());
+                });
+            });
+
+            MusicPlayer.onReset(() => {
+                // this.MusicPlayer.media.destroy();
+                MusicPlayer.media = null;
+                MusicPlayer.setType(MediaType.None);
+                window.clearInterval(MusicPlayer.videoPoll);
+            });
+        },
+        /**
+         * Retrieves the elements dom id
+         * @returns {string}
+         */
+        getElementId(): string {
+            return `player_${this.id}`;
+        },
+        /**
+         * When the youtube media changes its state, we will process the result below
+         * @param state
+         */
+        onStateChange(state: Object) {
+            const stateData = state[`data`];
+            if (stateData === YTState.END) {
+                MusicPlayer.end();
+            } else if (stateData === YTState.ONPLAY) {
+                MusicPlayer.play();
+            } else if (stateData === YTState.ONPAUSE) {
+                MusicPlayer.pause();
+            } else if (stateData === YTState.BUFFERING) {
+                // buffering
+            } else if (stateData === YTState.VIDEOQUEUED) {
+                // video cued
+            } else if (stateData === YTState.UNSTARTEDVIDEO) {
+                // unstarted video
+            }
+        },
+        /**
+         * When the media is ready to play we need to prepare the MusicPlayer, then start playing the media
+         * @param videoinfo
+         */
+        onReady(videoinfo: Object) {
+            MusicPlayer.pause();
+            MusicPlayer.setType(MediaType.YouTube);
+
+            MusicPlayer.setMedia(videoinfo.target);
+            MusicPlayer.media.targetElement = videoinfo.target.a;
+            this.setEvents();
+
+            MusicPlayer.volumeChange(MusicPlayer.getVolume());
+
+            MusicPlayer.setSongName(this.Medium.song.name);
+            MusicPlayer.setArtistName(this.Medium.song.artist.name);
+
+            MusicPlayer.load();
+        }
+    }
+});
+
+module.exports = vueYoutubeBox;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="Ajax.html">Core/Ajax</a></li><li><a href="GlobalJS.html">Core/GlobalJS</a></li><li><a href="InfiniteController.html">Core/InfiniteController</a></li><li><a href="KeyController.html">Core/KeyController</a></li><li><a href="MusicPlayer.html">Core/MusicPlayer</a></li><li><a href="Router.html">Core/Router</a></li><li><a href="SchemaReader.html">Core/SchemaReader</a></li><li><a href="Util.html">Core/Util</a></li><li><a href="module-Types.html">Types</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="KeyController.Ajax.html">Ajax</a></li><li><a href="KeyController.KEY.html">KEY</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Mar 05 2017 16:07:47 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: vue/components/vue.smartTable.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: vue/components/vue.smartTable.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// @flow
+// Node Modules
+const Vue = require(`vue/dist/vue`);
+const Optional = require(`optional-js`);
+
+// Site Modules
+const store = require(`${__base}/vue/store`);
+const Util = require(`${__base}/core/Util`);
+const Router = require(`${__base}/core/Router`);
+const SchemaData = require(`${__base}/core/SchemaReader/SchemaData`);
+const SchemaReader = require(`${__base}/core/SchemaReader`);
+
+class PageObject {
+    value: number;
+    colour: string;
+    active: boolean;
+
+    constructor(value: number, colour: string, active: boolean) {
+        this.value = value;
+        this.colour = colour;
+        this.active = active;
+    }
+}
+
+const vueSmartTable = Vue.extend({
+    /**
+     * The components design template, see the "text/x-template" tags in
+     * index.html
+     */
+    template: `#smartTable-template`,
+    /**
+     * The components variables that it inherits from its parent
+     */
+    props: [
+        `APIUrl`
+    ],
+    /**
+     * Every component requires a data feild, but i do not need it as
+     * i inherit all the relevent data. So it is filled with nonsense.
+     */
+    data(): Object {
+        return {
+            name: store.getters.pathName,
+            pageCount: 1,
+            totalElements: 0,
+            dataStore: [],
+            schemaData: [],
+            sortTimeout: 0,
+            searchTimeout: 0,
+            currentFormData: []
+        };
+    },
+    mounted() {
+        this.width = this.$el.getBoundingClientRect().width;
+
+        this.getData();
+    },
+    beforeDestroy() {
+
+    },
+    computed: {
+        shownElements(): number {
+            return this.dataStore.length;
+        },
+        search: {
+            get(): string {
+                return store.getters.pathQuery.query || ``;
+            },
+            set(search: string) {
+                store.commit(`setQueryField`, {
+                    name: `query`,
+                    value: search
+                });
+            }
+        },
+        sort: {
+            get(): string {
+                return store.getters.pathQuery.sort || ``;
+            },
+            set(sort: string) {
+                store.commit(`setQueryField`, {
+                    name: `sort`,
+                    value: sort
+                });
+            }
+        },
+        page: {
+            get(): number {
+                return parseInt(store.getters.pathQuery.page || 0, 10);
+            },
+            set(page: number) {
+                store.commit(`setQueryField`, {
+                    name: `page`,
+                    value: page
+                });
+            }
+        },
+        limit: {
+            get(): number {
+                return parseInt(store.getters.pathQuery.limit || 15, 10);
+            },
+            set(limit: number) {
+                store.commit(`setQueryField`, {
+                    name: `limit`,
+                    value: limit
+                });
+            }
+        }
+    },
+    watch: {
+        search() {
+            this.searchData();
+        },
+        sort() {
+            this.searchData();
+        },
+        page() {
+            this.getData();
+        },
+        limit() {
+            this.searchData();
+        }
+    },
+    methods: {
+        getObjectId(object: Object): string | null {
+            return (typeof object === `object`) ? object.id : null;
+        },
+        getObjectName(object: Object): string | null {
+            let value = null;
+            if (typeof object === `object`) {
+                value = object.name || object.id || null;
+            }
+            return value;
+        },
+        parseObject(object: Object): string {
+            return JSON.stringify(Util.clean(object), null, 2);
+        },
+        parseDateTime(dateTime: string): string {
+            return `${Util.parseDateTime(dateTime)} ${Util.parseTime(dateTime)}`;
+        },
+        getFacebookUrl(facebookId: string): string {
+            return `https://www.facebook.com/${facebookId}`;
+        },
+        getPages(): PageObject[] {
+            const maxPages = Math.floor(this.width / 75);
+            const pageArray: PageObject[] = [];
+
+            for (let i = 0; i &lt; maxPages; i++) {
+                let number = i;
+                if (maxPages &lt; this.pageCount) {
+                    number = (this.page - Math.floor(maxPages / 2)).min(0) + i;
+                }
+
+                if (number &lt; this.pageCount) {
+                    pageArray.push(new PageObject(
+                        number + 1,
+                        number === this.page ? `#376890` : `grey`,
+                        number === this.page));
+                }
+            }
+
+            return pageArray;
+        },
+        changePage(e) {
+            this.page = parseInt(e.target.innerText, 10) - 1;
+        },
+        getApiQuery(): string {
+            return [
+                (this.search) ? `query=${this.search}&amp;` : ``,
+                (this.sort) ? `sort=${this.sort}&amp;` : ``,
+                (this.page &amp;&amp; this.page > 0) ? `page=${this.page}&amp;` : ``,
+                (this.size &amp;&amp; this.size > 0) ? `limit=${this.size}&amp;` : ``
+            ].join(``);
+        },
+        getAPIUrl(): string {
+            return `${this.APIUrl}?${this.getAPIUrl()}`;
+        },
+        searchData() {
+            window.clearTimeout(this.searchTimeout);
+            this.searchTimeout = window.setTimeout(() => {
+                this.page = 0;
+                this.getData();
+            }, 250);
+        },
+        getData(): Promise&lt;Optional&lt;SchemaData>> {
+            Router.redirectQuery(this.getApiQuery());
+            return SchemaReader.create(this.APIUrl, this.getApiQuery()).retrieveList()
+                .then((schemaDataOptional: Optional&lt;SchemaData>) => {
+                    schemaDataOptional.ifPresent((schemaData: SchemaData) => {
+                        this.dataStore = schemaData.elements;
+                        this.pageCount = schemaData.pageCount;
+                        this.totalElements = schemaData.totalElements;
+                        this.schemaData = schemaData.schema;
+                    });
+                });
+        }
+    }
+});
+
+module.exports = vueSmartTable;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="Ajax.html">Core/Ajax</a></li><li><a href="GlobalJS.html">Core/GlobalJS</a></li><li><a href="InfiniteController.html">Core/InfiniteController</a></li><li><a href="KeyController.html">Core/KeyController</a></li><li><a href="MusicPlayer.html">Core/MusicPlayer</a></li><li><a href="Router.html">Core/Router</a></li><li><a href="SchemaReader.html">Core/SchemaReader</a></li><li><a href="Util.html">Core/Util</a></li><li><a href="module-Types.html">Types</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="KeyController.Ajax.html">Ajax</a></li><li><a href="KeyController.KEY.html">KEY</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Mar 05 2017 16:07:47 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

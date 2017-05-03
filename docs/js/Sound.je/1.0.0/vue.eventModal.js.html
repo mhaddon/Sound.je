@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: vue/components/vue.eventModal.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: vue/components/vue.eventModal.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// @flow
+// Node Modules
+const Vue = require(`vue/dist/vue`);
+
+// Site Modules
+const Util = require(`${__base}/core/Util`);
+const store = require(`${__base}/vue/store`);
+const { Modal } = require(`${__base}/core/Router/Enum`);
+const mixinModal = require(`${__base}/vue/mixins/modal`);
+
+const vueEventModal = Vue.extend({
+    mixins: [
+        mixinModal
+    ],
+    /**
+     * The components design template, see the "text/x-template" tags in
+     * index.html
+     */
+    template: `#eventModal-template`,
+    /**
+     * The components variables that it inherits from its parent
+     */
+    props: [],
+    /**
+     * Every component requires a data feild, but i do not need it as
+     * i inherit all the relevent data. So it is filled with nonsense.
+     */
+    data(): Object {
+        return {
+            id: store.getters.pathIdDecoded,
+            name: store.getters.pathName
+        };
+    },
+    computed: {
+        hasArtists(): boolean {
+            return this.Event.artists &amp;&amp; this.Event.artists.length;
+        },
+        editable(): boolean {
+            return store.getters.isLoggedIn &amp;&amp;
+                store.getters.hasRole(`PRIV_GET_ENTITY_SCHEMA`) &amp;&amp;
+                store.getters.hasRole(`PRIV_UPDATE_ENTITY`);
+        },
+        Event(): NBEvent {
+            return store.getters.getEvent(this.id);
+        },
+        calculatedStartTime(): number | null {
+            let calculatedTime = null;
+            Util.getNextEventTime(this.Event.times).ifPresent((e: number) => {
+                calculatedTime = e;
+            });
+            return calculatedTime;
+        },
+        startTime: {
+            get(): number | null {
+                return store.getters.pathQuery.startTime ||
+                     this.calculatedStartTime;
+            },
+            set(startTime: string) {
+                store.commit(`setQuery`, {
+                    name: `startTime`,
+                    value: startTime
+                });
+            }
+        },
+        mapUrl(): string {
+            return [
+                `https://maps.google.com/maps/api/staticmap`,
+                `?center=${this.Event.location.coordinates}`,
+                `&amp;zoom=13`,
+                `&amp;size=600x400`,
+                `&amp;maptype=roadmap`,
+                `&amp;sensor=false`,
+                `&amp;scale=2`,
+                `&amp;markers=color:blue%7Clabel:${this.Event.location.name}%7C${this.Event.location.coordinates}`,
+                `&amp;key=AIzaSyAPTF7YjFmUJKcX552G7drMMPq8_p1yC08`
+            ].join(``);
+        },
+        mapLinkUrl(): string {
+            return [
+                `https://www.google.com/maps/place/`,
+                `${this.Event.location.name}/@${this.Event.location.coordinates},12.5z`
+            ].join(``);
+        },
+        description(): string {
+            return this.Event.description ||
+                `Sorry, we do not have any further information about this event.`;
+        },
+        fbUrl(): string {
+            return `https://www.facebook.com/${this.Event.facebookId}`;
+        },
+        name(): string {
+            let returnVar = this.Event.name || ``;
+            if (this.Event.hasOwnProperty(`name`)) {
+                const strippedArr = Util.stripArray(returnVar.split(`;`).concat(this.Event.artists.map((a) => a.name)));
+                if (strippedArr.length > 1) {
+                    returnVar = `${strippedArr.slice(0, -1).join(`, `)} and ${strippedArr.slice(-1)}`;
+                } else {
+                    returnVar = strippedArr[0];
+                }
+            }
+            return returnVar;
+        }
+    },
+    methods: {
+        getTime(): string | null {
+            let returnVar = null;
+            if (this.startTime) {
+                const date = Util.parseTime(parseInt(this.startTime, 10));
+                const time = Util.parseDateTime(parseInt(this.startTime, 10));
+                returnVar = `${date} ${time}`;
+            }
+            return returnVar;
+        },
+        closeModal() {
+            store.commit(`setModal`, {
+                modal: Modal.NONE
+            });
+        }
+    }
+});
+
+module.exports = vueEventModal;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="Ajax.html">Core/Ajax</a></li><li><a href="GlobalJS.html">Core/GlobalJS</a></li><li><a href="InfiniteController.html">Core/InfiniteController</a></li><li><a href="KeyController.html">Core/KeyController</a></li><li><a href="MusicPlayer.html">Core/MusicPlayer</a></li><li><a href="Router.html">Core/Router</a></li><li><a href="SchemaReader.html">Core/SchemaReader</a></li><li><a href="Util.html">Core/Util</a></li><li><a href="module-Types.html">Types</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="KeyController.Ajax.html">Ajax</a></li><li><a href="KeyController.KEY.html">KEY</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Mar 05 2017 16:07:47 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

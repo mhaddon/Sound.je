@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    "syntax-flow",
+    ["transform-runtime", { "polyfill": false }],
+    "transform-flow-strip-types",
+    "transform-private-underscore"
+  ],
+  "presets": [ "env" ]
+}

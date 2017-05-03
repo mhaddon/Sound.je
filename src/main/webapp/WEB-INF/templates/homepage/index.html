@@ -1,0 +1,123 @@
+<!--
+  ~  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU Affero General Public License version 3
+  ~  as published by the Free Software Foundation.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU Affero General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU Affero General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      layout:decorator="include/layout">
+<head>
+    <title>Sound of Jersey</title>
+    <meta name="description" property="description"
+          content='Sound of Jersey is a website designed to help support musicians in the Channel Islands.'/>
+
+    <meta name="twitter:site" property="twitter:site" content="@SoundJersey"/>
+
+    <meta name='og:type' property="og:type" content='article'/>
+    <meta name='og:locale' property="og:locale" content='en_GB'/>
+    <meta name='og:title' property="og:title" content='Support Jersey Music'/>
+    <meta name='og:description' property="og:description"
+          content='Sound of Jersey is a website designed to help support musicians in the Channel Islands.'/>
+    <meta name='og:url' property="og:url" content='https://www.sound.je/'/>
+    <meta name='og:site_name' property="og:site_name" content='Sound of Jersey'/>
+    <meta name='og:image' property="og:image" content='https://www.sound.je/images/cover.jpg'/>
+
+    <meta name="google-site-verification" property="google-site-verification"
+          content="GSL7tR5OIk6fJqxQpywrAb8dKdQXyBe183KOBcJlxrc"/>
+    <meta name="msvalidate.01" property="msvalidate.01" content="CC9B2CFEEB87E2204AAC630150E87A35"/>
+
+    <meta name="_csrf" property="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" property="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <meta name="robots" property="robots" content=""/>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/images/icons/apple-icon-57x57.png"/>
+    <link rel="apple-touch-icon" sizes="60x60" href="/images/icons/apple-icon-60x60.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="/images/icons/apple-icon-72x72.png"/>
+    <link rel="apple-touch-icon" sizes="76x76" href="/images/icons/apple-icon-76x76.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="/images/icons/apple-icon-114x114.png"/>
+    <link rel="apple-touch-icon" sizes="120x120" href="/images/icons/apple-icon-120x120.png"/>
+    <link rel="apple-touch-icon" sizes="144x144" href="/images/icons/apple-icon-144x144.png"/>
+    <link rel="apple-touch-icon" sizes="152x152" href="/images/icons/apple-icon-152x152.png"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/icons/apple-icon-180x180.png"/>
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/icons/android-icon-192x192.png"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32x32.png"/>
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/icons/favicon-96x96.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/icons/favicon-16x16.png"/>
+    <link rel="manifest" href="/images/icons/manifest.json"/>
+    <meta name="msapplication-TileColor" content="#ffffff"/>
+    <meta name="msapplication-TileImage" content="/images/icons/ms-icon-144x144.png"/>
+    <meta name="theme-color" content="#ffffff"/>
+</head>
+<body th:classappend="${profile}">
+<section th:fragment="includes">
+    <script th:replace="fragments/pages/vue.aboutPage :: aboutPage"></script>
+    <script th:replace="fragments/pages/vue.newsPage :: newsPage"></script>
+    <script th:replace="fragments/pages/vue.adminPage :: adminPage"></script>
+    <script th:replace="fragments/pages/vue.recordsPage :: recordsPage"></script>
+    <script th:replace="fragments/pages/vue.searchPage :: searchPage"></script>
+
+    <script th:replace="fragments/modals/vue.locationModal :: locationModal"></script>
+    <script th:replace="fragments/modals/vue.loginModal :: loginModal"></script>
+    <script th:replace="fragments/modals/vue.artistModal :: artistModal"></script>
+    <script th:replace="fragments/modals/vue.songModal :: songModal"></script>
+    <script th:replace="fragments/modals/vue.mediumModal :: mediumModal"></script>
+    <script th:replace="fragments/modals/vue.eventModal :: eventModal"></script>
+    <script th:replace="fragments/modals/vue.notfoundModal :: notfoundModal"></script>
+    <script th:replace="fragments/modals/vue.recordModal :: recordModal"></script>
+    <script th:replace="fragments/modals/vue.editRecordModal :: editRecordModal"></script>
+    <script th:replace="fragments/modals/vue.passwordResetModal :: passwordResetModal"></script>
+    <script th:replace="fragments/modals/vue.createRecordModal :: createRecordModal"></script>
+    <script th:replace="fragments/modals/vue.registerModal :: registerModal"></script>
+    <script th:replace="fragments/modals/vue.loginPasswordModal :: loginPasswordModal"></script>
+    <script th:replace="fragments/modals/vue.submitModal :: submitModal"></script>
+
+    <script th:replace="fragments/modules/vue.eventList :: eventList"></script>
+    <script th:replace="fragments/modules/vue.mediaBox :: mediaBox"></script>
+    <script th:replace="fragments/modules/vue.youtubeBox :: youtubeBox"></script>
+    <script th:replace="fragments/modules/vue.facebookBox :: facebookBox"></script>
+    <script th:replace="fragments/modules/vue.soundcloudBox :: soundcloudBox"></script>
+    <script th:replace="fragments/modules/vue.mediaList :: mediaList"></script>
+    <script th:replace="fragments/modules/vue.textarea :: textarea"></script>
+    <script th:replace="fragments/modules/vue.editableFormData :: editableFormData"></script>
+    <script th:replace="fragments/modules/vue.dateTimePicker :: dateTimePicker"></script>
+    <script th:replace="fragments/modules/vue.smartTable :: smartTable"></script>
+    <script th:replace="fragments/modules/vue.entityField :: entityField"></script>
+    <script th:replace="fragments/modules/vue.periodField :: periodField"></script>
+    <script th:replace="fragments/modules/vue.notificationMessage :: notificationMessage"></script>
+    <script th:replace="fragments/modules/vue.notificationMessage :: notificationMessage"></script>
+    <script th:replace="fragments/modules/vue.multiEntityField :: multiEntityField"></script>
+    <script th:replace="fragments/modules/vue.markdownTextarea :: markdownTextarea"></script>
+
+    <script th:replace="fragments/homepage :: content"></script>
+</section>
+<section th:fragment="content" id="vueController">
+    <div class="loadingcont">
+        <h1>Loading...</h1>
+        <p class="fa fa-spinner fa-spin fa-pulse fa-2x" aria-hidden="true"></p>
+    </div>
+</section>
+<div th:fragment="footer">
+    <div th:switch="${profile}">
+        <script th:case="live" th:src="@{/main.min.js(v=${version})}"></script>
+        <script th:case="*" th:src="@{/main.js(v=${version})}"></script>
+    </div>
+    <script type="text/javascript" src="//www.youtube.com/player_api" async="async" defer="defer"></script>
+    <script type="text/javascript" src="//w.soundcloud.com/player/api.js" async="async" defer="defer"></script>
+    <link rel="stylesheet" href="//unpkg.com/flatpickr/dist/flatpickr.min.css"/>
+    <script type="text/javascript" src="//unpkg.com/flatpickr" async="async" defer="defer"></script>
+</div>
+</body>
+</html>

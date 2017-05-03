@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core/musicplayer/MusicPlayer.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: core/musicplayer/MusicPlayer.js</h1>
+
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ NestedBird  Copyright (C) 2017  Michael Haddon
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.
+ */
+// @flow
+// Node Modules
+const Optional = require(`optional-js`);
+
+// Site Modules
+const Playlist = require(`./Playlist`);
+const PlaylistController = require(`./PlaylistController`);
+const store = require(`${__base}/vue/store`);
+
+/**
+ * Singleton class that controls the music player on the page.
+ * The majority of the state for the music player is stored in the vuex store 
+ * so vue can make use of the reactive variables.
+ * The main purpose of this class is to create a common interface for controlling the music players of many different
+ * APIs.
+ * @copyright Copyright (C) 2017  Michael Haddon
+ * @author Michael Haddon
+ * @since 23 Feb 2017
+ * @class
+ * @memberOf module:Core/MusicPlayer
+ */
+class MusicPlayer {
+    /**
+     * Overridable callback that is fired when the music player is reset
+     * See [onReset]{@link module:Core/MusicPlayer.MusicPlayer#onReset}
+     * @member module:Core/MusicPlayer.MusicPlayer#onResetCB
+     * @type Function
+     * @defaultvalue () => {}
+     */
+    onResetCB: Function;
+    
+    /**
+     * Overridable callback that is fired when the currently loaded song is played
+     * See [onPlay]{@link module:Core/MusicPlayer.MusicPlayer#onPlay}
+     * @member module:Core/MusicPlayer.MusicPlayer#onPlayCB
+     * @type Function
+     * @defaultvalue () => {}
+     */
+    onPlayCB: Function;
+
+    /**
+     * Overridable callback that is fired when the currently loaded song is seeked
+     * See [onSeek]{@link module:Core/MusicPlayer.MusicPlayer#onSeek}
+     * @member module:Core/MusicPlayer.MusicPlayer#onSeekCB
+     * @type Function
+     * @defaultvalue () => {}
+     */
+    onSeekCB: Function;
+
+    /**
+     * Overridable callback that is fired when the currently loaded song is paused
+     * See [onPause]{@link module:Core/MusicPlayer.MusicPlayer#onPause}
+     * @member module:Core/MusicPlayer.MusicPlayer#onPauseCB
+     * @type Function
+     * @defaultvalue () => {}
+     */
+    onPauseCB: Function;
+
+    /**
+     * Overridable callback that is fired when the currently loaded song progresses
+     * See [onTick]{@link module:Core/MusicPlayer.MusicPlayer#onTick}
+     * @member module:Core/MusicPlayer.MusicPlayer#onTickCB
+     * @type Function
+     * @defaultvalue () => {}
+     */
+    onTickCB: Function;
+
+    /**
+     * Overridable callback that is fired when the currently loaded song is loaded
+     * See [onLoad]{@link module:Core/MusicPlayer.MusicPlayer#onLoad}
+     * @member module:Core/MusicPlayer.MusicPlayer#onLoadCB
+     * @type Function
+     * @defaultvalue () => {}
+     */
+    onLoadCB: Function;
+
+    /**
+     * Overridable callback that is fired when the currently loaded song ends
+     * See [onEnd]{@link module:Core/MusicPlayer.MusicPlayer#onEnd}
+     * @member module:Core/MusicPlayer.MusicPlayer#onEndCB
+     * @type Function
+     * @defaultvalue () => {}
+     */
+    onEndCB: Function;
+
+    /**
+     * Overridable callback that is fired when the currently loaded song progresses to the next song
+     * See [onNext]{@link module:Core/MusicPlayer.MusicPlayer#onNext}
+     * @member module:Core/MusicPlayer.MusicPlayer#onNextCB
+     * @type Function
+     * @defaultvalue () => {}
+     */
+    onNextCB: Function;
+
+    /**
+     * Overridable callback that is fired when the currently loaded song progresses to the previous song
+     * See [onPrevious]{@link module:Core/MusicPlayer.MusicPlayer#onPrevious}
+     * @member module:Core/MusicPlayer.MusicPlayer#onPreviousCB
+     * @type Function
+     * @defaultvalue () => {}
+     */
+    onPreviousCB: Function;
+
+    /**
+     * Overridable callback that is fired when the currently loaded song changes volume
+     * See [onVolumeChange]{@link module:Core/MusicPlayer.MusicPlayer#onVolumeChange}
+     * @member module:Core/MusicPlayer.MusicPlayer#onVolumeChangeCB
+     * @type Function
+     * @defaultvalue () => {}
+     */
+    onVolumeChangeCB: Function;
+
+    /**
+     * When a video has finished playing we need to unload the vue container that holds this box.
+     * To do this we have a special callback to unload the vue element of the currently playing video
+     * @member module:Core/MusicPlayer.MusicPlayer#unload
+     * @type Function
+     * @defaultvalue () => {}
+     */
+    unload: Function;
+
+    /**
+     * Currently loaded media element
+     * This could be a Facebook video element, Soundcloud song element, or a Youtube video element.
+     * Meaning the contents of this element can change drastically.
+     * The only constant behaviour is that all the media elements have a targetElement field which links the object to
+     * the HTML block that is responsible for it existing.
+     * This targetElement field is added by us, so it may not be in the documentation.
+     * @member module:Core/MusicPlayer.MusicPlayer#media
+     * @type Object
+     * @defaultvalue null
+     */
+    media: Object | null;
+
+    /**
+     * Certain APIs do not have a callback onTick or onProgress by default, so we need to make our own interval callback
+     * This field stores the setInterval identifier
+     * @member module:Core/MusicPlayer.MusicPlayer#videoPoll
+     * @type number
+     * @defaultvalue 0
+     */
+    videoPoll: number;
+    
+    constructor() {
+        this.media = null;
+        this.videoPoll = 0;
+        this.resetMethods();
+        this.unload = () => {};
+    }
+
+    /**
+     * Resets the callback methods to do nothing. This is important because if these events are not overwritten but we
+     * call them and they have not been cleared then bogus stuff might happen
+     * @member module:Core/MusicPlayer.MusicPlayer#resetMethods
+     * @method
+     */
+    resetMethods() {
+        this.onResetCB = () => {};
+        this.onPlayCB = () => {};
+        this.onSeekCB = () => {};
+        this.onPauseCB = () => {};
+        this.onTickCB = () => {};
+        this.onLoadCB = () => {};
+        this.onEndCB = () => {};
+        this.onNextCB = () => {};
+        this.onPreviousCB = () => {};
+        this.onVolumeChangeCB = () => {};
+    }
+
+    /**
+     * Set the media
+     * @see module:Core/MusicPlayer.MusicPlayer#media
+     * @member module:Core/MusicPlayer.MusicPlayer#setMedia
+     * @method
+     * @param {object} media
+     * @throws {TypeError} arguments must not be null
+     */
+    setMedia(media: Object) {
+        if (typeof media !== `object`) throw new TypeError(`media is not an object`);
+        this.reset();
+        this.media = media;
+    }
+
+    /**
+     * Destroy all the stored callback events, this stops callback events persisting between media items
+     * @member module:Core/MusicPlayer.MusicPlayer#reset
+     * @method
+     * @param {...Object} [params] list of parameters that are passed to [onResetCB]{@link module:Core/MusicPlayer.MusicPlayer#onResetCB}
+     */
+    reset(...params: mixed[]) {
+        this.setPlayable(false);
+        this.videoPoll = 0;
+        this.onResetCB(...params);
+
+        this.resetMethods();
+    }
+
+    /**
+     * Sets the onResetCB callback
+     * @see module:Core/MusicPlayer.MusicPlayer#onResetCB
+     * @member module:Core/MusicPlayer.MusicPlayer#onReset
+     * @method
+     * @param {function} fn
+     * @throws {TypeError} arguments must not be null
+     */
+    onReset(fn: Function) {
+        if (typeof fn !== `function`) throw new TypeError(`fn is not a function`);
+        this.onResetCB = fn;
+    }
+
+    /**
+     * Plays the currently loaded media, if no media is found than we load one from the Media-HPTicker playlist
+     * @member module:Core/MusicPlayer.MusicPlayer#play
+     * @method
+     * @param {...Object} [params] list of parameters that are passed to [onPlayCB]{@link module:Core/MusicPlayer.MusicPlayer#onPlayCB}
+     */
+    play(...params: mixed[]) {
+        this.media = this.getMedia().orElseGet(() => {
+            /**
+             * If no media is loaded then we will play the first item in the Media-HPTicker playlist
+             */
+            this.setPlaylist(`Media-HPTicker`);
+            this.playMedia(this.getPlaylist().getPlayingElement());
+        });
+
+        this.getMedia().ifPresent(() => {
+            this.setPaused(false);
+            this.onPlayCB(...params);
+        });
+    }
+
+    /**
+     * Sets the onPlayCB callback
+     * @see module:Core/MusicPlayer.MusicPlayer#onPlayCB
+     * @member module:Core/MusicPlayer.MusicPlayer#onPlay
+     * @method
+     * @param {function} fn
+     * @throws {TypeError} arguments must not be null
+     */
+    onPlay(fn: Function) {
+        if (typeof fn !== `function`) throw new TypeError(`fn is not a function`);
+        this.onPlayCB = fn;
+    }
+
+    /**
+     * Pauses the currently loaded media
+     * @member module:Core/MusicPlayer.MusicPlayer#pause
+     * @method
+     * @param {...Object} [params] list of parameters that are passed to [onPauseCB]{@link module:Core/MusicPlayer.MusicPlayer#onPauseCB}
+     */
+    pause(...params: mixed[]) {
+        this.setPaused(true);
+        this.onPauseCB(...params);
+    }
+
+    /**
+     * Sets the onPauseCB callback
+     * @see module:Core/MusicPlayer.MusicPlayer#onPauseCB
+     * @member module:Core/MusicPlayer.MusicPlayer#onPause
+     * @method
+     * @param {function} fn
+     * @throws {TypeError} arguments must not be null
+     */
+    onPause(fn: Function) {
+        if (typeof fn !== `function`) throw new TypeError(`fn is not a function`);
+        this.onPauseCB = fn;
+    }
+
+    /**
+     * Plays a media by its vue element
+     * @member module:Core/MusicPlayer.MusicPlayer#playMedia
+     * @method
+     * @param {Object} element - vue media element
+     * @throws {TypeError} arguments must not be null
+     */
+    playMedia(element: Object) {
+        if (typeof element !== `object`) throw new TypeError(`element is not an object`);
+        this.unload();
+        element.loaded = true;
+        this.unload = function unload() {
+            this.loaded = false;
+        }.bind(element);
+
+        this.getPlaylist().setIdToPlayingElement();
+    }
+
+    /**
+     * Plays the next media in the current playlist
+     * @member module:Core/MusicPlayer.MusicPlayer#next
+     * @method
+     * @param {...Object} [params] list of parameters that are passed to [onNextCB]{@link module:Core/MusicPlayer.MusicPlayer#onNextCB}
+     */
+    next(...params: mixed[]) {
+        this.playMedia(this.getPlaylist().getNextElement());
+        this.onNextCB(...params);
+    }
+
+    /**
+     * Sets the onNextCB callback
+     * @see module:Core/MusicPlayer.MusicPlayer#onNextCB
+     * @member module:Core/MusicPlayer.MusicPlayer#onNext
+     * @method
+     * @param {function} fn
+     * @throws {TypeError} arguments must not be null
+     */
+    onNext(fn: Function) {
+        if (typeof fn !== `function`) throw new TypeError(`fn is not a function`);
+        this.onNextCB = fn;
+    }
+
+    /**
+     * Plays the previous media in the current playlist
+     * @member module:Core/MusicPlayer.MusicPlayer#previous
+     * @method
+     * @param {...Object} [params] list of parameters that are passed to [onPreviousCB]{@link module:Core/MusicPlayer.MusicPlayer#onPreviousCB}
+     */
+    previous(...params: mixed[]) {
+        this.playMedia(this.getPlaylist().getPreviousElement());
+        this.onPreviousCB(...params);
+    }
+
+    /**
+     * Sets the onPreviousCB callback
+     * @see module:Core/MusicPlayer.MusicPlayer#onPreviousCB
+     * @member module:Core/MusicPlayer.MusicPlayer#onPrevious
+     * @method
+     * @param {function} fn
+     * @throws {TypeError} arguments must not be null
+     */
+    onPrevious(fn: Function) {
+        if (typeof fn !== `function`) throw new TypeError(`fn is not a function`);
+        this.onPreviousCB = fn;
+    }
+
+    /**
+     * Signifies that there has been an update in the currently loaded media
+     * @member module:Core/MusicPlayer.MusicPlayer#tick
+     * @method
+     * @param {...Object} [params] list of parameters that are passed to [onTickCB]{@link module:Core/MusicPlayer.MusicPlayer#onTickCB}
+     */
+    tick(...params: mixed[]) {
+        this.onTickCB(...params);
+    }
+
+    /**
+     * Sets the onTickCB callback
+     * @see module:Core/MusicPlayer.MusicPlayer#onTickCB
+     * @member module:Core/MusicPlayer.MusicPlayer#onTick
+     * @method
+     * @param {function} fn
+     * @throws {TypeError} arguments must not be null
+     */
+    onTick(fn: Function) {
+        if (typeof fn !== `function`) throw new TypeError(`fn is not a function`);
+        this.onTickCB = fn;
+    }
+
+    /**
+     * Signifies that the current media has loaded
+     * @member module:Core/MusicPlayer.MusicPlayer#load
+     * @method
+     * @param {...Object} [params] list of parameters that are passed to [onLoadCB]{@link module:Core/MusicPlayer.MusicPlayer#onLoadCB}
+     */
+    load(...params: mixed[]) {
+        this.setPlayable(true);
+        this.onLoadCB(...params);
+    }
+
+    /**
+     * Sets the onLoadCB callback
+     * @see module:Core/MusicPlayer.MusicPlayer#onLoadCB
+     * @member module:Core/MusicPlayer.MusicPlayer#onLoad
+     * @method
+     * @param {function} fn
+     * @throws {TypeError} arguments must not be null
+     */
+    onLoad(fn: Function) {
+        if (typeof fn !== `function`) throw new TypeError(`fn is not a function`);
+        this.onLoadCB = fn;
+    }
+
+    /**
+     * Changes the current volume
+     * @member module:Core/MusicPlayer.MusicPlayer#volumeChange
+     * @method
+     * @param {number} volume   new volume
+     * @param {...Object} [params] list of parameters that are passed to [onVolumeChangeCB]{@link module:Core/MusicPlayer.MusicPlayer#onVolumeChangeCB}
+     */
+    volumeChange(volume: number, ...params: mixed[]) {
+        this.setVolume(volume.min(0).max(1));
+        this.onVolumeChangeCB(this.getVolume(), ...params);
+    }
+
+    /**
+     * Sets the onVolumeChangeCB callback
+     * @see module:Core/MusicPlayer.MusicPlayer#onVolumeChangeCB
+     * @member module:Core/MusicPlayer.MusicPlayer#onVolumeChange
+     * @method
+     * @param {function} fn
+     * @throws {TypeError} arguments must not be null
+     */
+    onVolumeChange(fn: Function) {
+        if (typeof fn !== `function`) throw new TypeError(`fn is not a function`);
+        this.onVolumeChangeCB = fn;
+    }
+
+    /**
+     * Signifies that the current media has ended
+     * @member module:Core/MusicPlayer.MusicPlayer#end
+     * @method
+     * @param {...Object} [params] list of parameters that are passed to [onEndCB]{@link module:Core/MusicPlayer.MusicPlayer#onEndCB}
+     */
+    end(...params: mixed[]) {
+        this.setPaused(true);
+        this.onEndCB(...params);
+        this.next();
+    }
+
+    /**
+     * Sets the onEndCB callback
+     * @see module:Core/MusicPlayer.MusicPlayer#onEndCB
+     * @member module:Core/MusicPlayer.MusicPlayer#onEnd
+     * @method
+     * @param {function} fn
+     * @throws {TypeError} arguments must not be null
+     */
+    onEnd(fn: Function) {
+        if (typeof fn !== `function`) throw new TypeError(`fn is not a function`);
+        this.onEndCB = fn;
+    }
+
+    /**
+     * Seeks through the currently loaded media to a percentage of the maximum time
+     * @member module:Core/MusicPlayer.MusicPlayer#seek
+     * @method
+     * @param {number} percent  a percentage(0.0 to 1.0) of the maximum time we want to seek to
+     * @param {...Object} [params] list of parameters that are passed to [onSeekCB]{@link module:Core/MusicPlayer.MusicPlayer#onSeekCB}
+     */
+    seek(percent: number, ...params: mixed[]) {
+        this.setCurrentTime(this.getDuration() * percent);
+        this.onSeekCB(percent, ...params);
+    }
+
+    /**
+     * Sets the onSeekCB callback
+     * @see module:Core/MusicPlayer.MusicPlayer#onSeekCB
+     * @member module:Core/MusicPlayer.MusicPlayer#onSeek
+     * @method
+     * @param {function} fn
+     * @throws {TypeError} arguments must not be null
+     */
+    onSeek(fn: Function) {
+        if (typeof fn !== `function`) throw new TypeError(`fn is not a function`);
+        this.onSeekCB = fn;
+    }
+
+    /**
+     * Gets an optional of the currently playing media
+     * @member module:Core/MusicPlayer.MusicPlayer#getMedia
+     * @method
+     * @returns {Optional}
+     */
+    getMedia(): Optional {
+        return Optional.ofNullable(this.media || null);
+    }
+
+    /**
+     * Gets the current playlist being played
+     * @member module:Core/MusicPlayer.MusicPlayer#getPlaylist
+     * @method
+     * @returns {Playlist}
+     */
+    getPlaylist(): Playlist {
+        return PlaylistController.get(this.getPlaylistName());
+    }
+
+    /**
+     * Changes the current playlist
+     * @member module:Core/MusicPlayer.MusicPlayer#getPlaylist
+     * @method
+     * @param {string} playlistName     new playlists name
+     * @throws {TypeError} arguments must not be null
+     */
+    setPlaylist(playlistName: string) {
+        if (!playlistName) throw new TypeError(`playlistName is null`);
+
+        this.setPlaylistName(playlistName);
+        this.getPlaylist().setIdToPlayingElement();
+    }
+
+    /**
+     * Sets the amount of the media buffered
+     * @member module:Core/MusicPlayer.MusicPlayer#setBufferPercent
+     * @method
+     * @param {number} bufferPercent
+     */
+    setBufferPercent(bufferPercent: number) {
+        store.commit(`setBufferPercent`, bufferPercent);
+    }
+
+    /**
+     * Gets the amount of the media buffered
+     * @member module:Core/MusicPlayer.MusicPlayer#getBufferPercent
+     * @method
+     * @returns {number}
+     */
+    getBufferPercent(): number {
+        return store.getters.bufferPercent;
+    }
+
+    /**
+     * Sets the current time
+     * @member module:Core/MusicPlayer.MusicPlayer#setCurrentTime
+     * @method
+     * @param {number} currentTime
+     */
+    setCurrentTime(currentTime: number) {
+        store.commit(`setCurrentTime`, currentTime);
+    }
+
+    /**
+     * Gets the current time
+     * @member module:Core/MusicPlayer.MusicPlayer#getCurrentTime
+     * @method
+     * @returns {number}
+     */
+    getCurrentTime(): number {
+        return store.getters.currentTime;
+    }
+
+    /**
+     * Sets the duration
+     * @member module:Core/MusicPlayer.MusicPlayer#setDuration
+     * @method
+     * @param {number} duration
+     */
+    setDuration(duration: number) {
+        store.commit(`setDuration`, duration);
+    }
+
+    /**
+     * Gets the duration
+     * @member module:Core/MusicPlayer.MusicPlayer#getDuration
+     * @method
+     * @returns {number}
+     */
+    getDuration(): number {
+        return store.getters.duration;
+    }
+
+    /**
+     * Sets the volume
+     * @member module:Core/MusicPlayer.MusicPlayer#setVolume
+     * @method
+     * @param {number} volume
+     */
+    setVolume(volume: number) {
+        store.commit(`setVolume`, volume);
+    }
+
+    /**
+     * Gets the volume
+     * @member module:Core/MusicPlayer.MusicPlayer#getVolume
+     * @method
+     * @returns {number}
+     */
+    getVolume(): number {
+        return store.getters.volume;
+    }
+
+    /**
+     * Sets the paused status
+     * @member module:Core/MusicPlayer.MusicPlayer#setPaused
+     * @method
+     * @param {boolean} paused
+     */
+    setPaused(paused: boolean) {
+        store.commit(`setPaused`, paused);
+    }
+
+    /**
+     * Gets the paused status
+     * @member module:Core/MusicPlayer.MusicPlayer#isPaused
+     * @method
+     * @returns {boolean}
+     */
+    isPaused(): boolean {
+        return store.getters.paused;
+    }
+
+    /**
+     * Sets the currently loaded songs name
+     * @member module:Core/MusicPlayer.MusicPlayer#setSongName
+     * @method
+     * @param {string} songName
+     */
+    setSongName(songName: string) {
+        store.commit(`setSongName`, songName);
+    }
+
+    /**
+     * Gets the currently loaded songs name
+     * @member module:Core/MusicPlayer.MusicPlayer#getSongName
+     * @method
+     * @returns {string}
+     */
+    getSongName(): string {
+        return store.getters.songName;
+    }
+
+    /**
+     * Sets the artists name
+     * @member module:Core/MusicPlayer.MusicPlayer#setArtistName
+     * @method
+     * @returns {string}
+     */
+    setArtistName(artistName: string) {
+        store.commit(`setArtistName`, artistName);
+    }
+
+    /**
+     * Gets the artists name
+     * @member module:Core/MusicPlayer.MusicPlayer#getArtistName
+     * @method
+     * @returns {string}
+     */
+    getArtistName(): string {
+        return store.getters.artistName;
+    }
+
+    /**
+     * Sets the playable status
+     * @member module:Core/MusicPlayer.MusicPlayer#setPlayable
+     * @method
+     * @param {boolean} playable
+     */
+    setPlayable(playable: boolean) {
+        store.commit(`setPlayable`, playable);
+    }
+
+    /**
+     * Gets the playable status
+     * @member module:Core/MusicPlayer.MusicPlayer#isPlayable
+     * @method
+     * @returns {boolean}
+     */
+    isPlayable(): boolean {
+        return store.getters.playable;
+    }
+
+    /**
+     * Sets the current playlist name
+     * @member module:Core/MusicPlayer.MusicPlayer#setPlaylistName
+     * @method
+     * @param {string} playlistName
+     */
+    setPlaylistName(playlistName: string) {
+        store.commit(`setPlaylistName`, playlistName);
+    }
+
+    /**
+     * Gets the current playlist name
+     * @member module:Core/MusicPlayer.MusicPlayer#getPlaylistName
+     * @method
+     * @returns {string}
+     */
+    getPlaylistName(): string {
+        return store.getters.playlistName;
+    }
+
+    /**
+     * Sets the current media type
+     * @member module:Core/MusicPlayer.MusicPlayer#setType
+     * @method
+     * @param {MediaType} type
+     */
+    setType(type: number) {
+        store.commit(`setType`, type);
+    }
+
+    /**
+     * Gets the current media type
+     * @member module:Core/MusicPlayer.MusicPlayer#getType
+     * @method
+     * @returns {MediaType}
+     */
+    getType(): number {
+        return store.getters.type;
+    }
+}
+
+module.exports = new MusicPlayer();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="Ajax.html">Core/Ajax</a></li><li><a href="GlobalJS.html">Core/GlobalJS</a></li><li><a href="InfiniteController.html">Core/InfiniteController</a></li><li><a href="KeyController.html">Core/KeyController</a></li><li><a href="MusicPlayer.html">Core/MusicPlayer</a></li><li><a href="Router.html">Core/Router</a></li><li><a href="SchemaReader.html">Core/SchemaReader</a></li><li><a href="Util.html">Core/Util</a></li><li><a href="module-Types.html">Types</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="KeyController.Ajax.html">Ajax</a></li><li><a href="KeyController.KEY.html">KEY</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Mar 05 2017 16:07:47 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
