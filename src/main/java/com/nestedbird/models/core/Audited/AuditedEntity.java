@@ -68,7 +68,7 @@ public abstract class AuditedEntity extends BaseEntity {
      */
     @CreatedBy
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @Fetch(FetchMode.SELECT)
     @JoinColumn(name = "created_by")
     private User createdBy;
@@ -78,7 +78,7 @@ public abstract class AuditedEntity extends BaseEntity {
      */
     @LastModifiedBy
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @Fetch(FetchMode.SELECT)
     @JoinColumn(name = "last_modified_by")
     private User lastModifiedBy;

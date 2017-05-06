@@ -146,4 +146,9 @@ public class Occurrence extends BaseEntity implements Serializable {
     public String getDefiningName() {
         return getIdBase64();
     }
+
+    @Override
+    public String getId() {
+        return event.getId() + "-" + this.startTime.getMillis() + "-" + this.getDuration().getMillis();
+    }
 }

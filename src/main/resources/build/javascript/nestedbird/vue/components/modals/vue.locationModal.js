@@ -53,14 +53,29 @@ export const LocationModal = {
              * @member module:Vue/Components.LocationModal#id
              * @type string
              */
-            id:   store.getters.pathIdDecoded,
+            id:                store.getters.pathIdDecoded,
             /**
              * The artist name passed in the url
              * @member module:Vue/Components.LocationModal#name
              * @type string
              */
-            name: store.getters.pathName
+            name:              store.getters.pathName,
+            /**
+             * The current page when scrolling through the locations upcoming events
+             * @member module:Vue/Components.LocationModal#eventsCurrentPage
+             * @type number
+             */
+            eventsCurrentPage: 0,
+            /**
+             * The amount of event elements per page that we will load
+             * @member module:Vue/Components.LocationModal#eventsLimit
+             * @type number
+             */
+            eventsLimit:       15
         };
+    },
+    created() {
+        this.retrieveInitialEvents();
     },
     mounted() {
         this.updateTags();
@@ -139,9 +154,59 @@ export const LocationModal = {
          */
         fbUrl(): string {
             return `https://www.facebook.com/${this.Location.facebookId}`;
+        },
+        /**
+         * All the upcoming events the location has
+         * @member module:Vue/Components.LocationModal#upcomingEvents
+         * @type NBEvent[]
+         */
+        upcomingEvents(): NBEvent[] {
+            return store.getters.occurrences
+                .sort((a, b) => Math.sign(a.startTime - b.startTime))
+                .map((e: Occurrence): NBEvent => {
+                    const event = e.event;
+                    event.startTime = Util.parseDateTime(e.startTime);
+
+                    event.displayName = Util.processEventName(event)
+                        .orElse(`loading...`);
+
+                    event.times = null;
+                    return event;
+                })
+                .filter((e: NBEvent) => e.location.id === this.id);
         }
     },
     methods:  {
+        /**
+         * Downloads more location events elements
+         * @member module:Vue/Components.LocationModal#getEvents
+         * @method
+         * @param {number} page         the page we have currently loaded up to
+         * @param {number} limit        the amount of elements per page we will load
+         * @returns {Promise<number>}
+         */
+        getEvents({ page = this.eventsCurrentPage, limit = this.eventsLimit }): Promise<number> {
+            return store.dispatch(`getLocationEvents`, {
+                page,
+                limit,
+                id: this.id
+            }).then((): number => {
+                this.eventsCurrentPage = page;
+                return this.eventsCurrentPage;
+            });
+        },
+        /**
+         * retrieves the initial load of events elements
+         * @member module:Vue/Components.LocationModal#retrieveInitialEvents
+         * @method
+         */
+        retrieveInitialEvents() {
+            this.$nextTick(() => {
+                this.getEvents(this.eventsCurrentPage, this.eventsLimit).then(() => {
+                    this.$forceUpdate();
+                });
+            });
+        },
         /**
          * checks to see if a page is the current page
          * @member module:Vue/Components.LocationModal#isPage
@@ -167,32 +232,6 @@ export const LocationModal = {
             Optional.ofNullable(this.Location.name || null)
                 .ifPresent((name: string) => {
                     Ajax.setMetaTag(`og:title`, name.substr(0, 100));
-                });
-        },
-        /**
-         * Retrieves all events associated with this location
-         * @member module:Vue/Components.LocationModal#getEventList
-         * @method
-         * @returns NBEvent[]
-         */
-        getEventList(): NBEvent[] {
-            return store.getters.events
-                .slice()
-                .sort((a, b) => Math.sign(b.startTime - a.startTime))
-                .filter(e => e.location.id === this.Location.id)
-                .flatMap((e) => {
-                    const names = Util.stripArray(e.name.split(`;`)
-                        .concat(e.artists.map((a: NBEvent) => a.name)));
-                    return names.map((name) => Util.mergeDeep(e, { name }));
-                })
-                .map((e: NBEvent): EventParsed => {
-                    const parsedEvent: EventParsed = (e: Object);
-                    if (parsedEvent.times && parsedEvent.times.length > 0) {
-                        Util.getNextEventTime(parsedEvent.times).ifPresent((time: number) => {
-                            parsedEvent.nextOccurrence = Util.parseDateTime(time);
-                        });
-                    }
-                    return parsedEvent;
                 });
         }
     }

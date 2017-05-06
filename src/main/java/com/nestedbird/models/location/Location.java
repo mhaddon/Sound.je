@@ -53,7 +53,7 @@ public class Location extends TaggedEntity implements Serializable {
     /**
      * all events associated to the location
      */
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "location")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "location")
     //    @JsonManagedReference(value = "locationParent")
     @JsonBackReference(value = "locationParent")
     @Field(bridge = @FieldBridge(impl = EventBridge.class),

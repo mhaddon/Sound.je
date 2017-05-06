@@ -106,7 +106,7 @@
                     <i class='fa fa-spinner fa-spin'></i>
                 </h2>
             </recordspage-component>
-            <searchpage-component v-show="isPage('SEARCH')">
+            <searchpage-component v-if="isPage('SEARCH')">
                 <h2 style='text-align:center;'>
                     Loading...<br/>
                     <i class='fa fa-spinner fa-spin'></i>

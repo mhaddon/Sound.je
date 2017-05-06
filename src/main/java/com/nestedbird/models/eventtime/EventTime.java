@@ -69,7 +69,7 @@ public class EventTime extends AuditedEntity implements Serializable {
     /**
      * the start time of the event
      */
-    @Column(name = "start_time", nullable = true, length = 200)
+    @Column(name = "start_time", length = 200)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Field(store = Store.YES, bridge = @FieldBridge(impl = JodaDateTimeSplitBridge.class))
     @SchemaView(Schema.DATETIME)
@@ -78,7 +78,7 @@ public class EventTime extends AuditedEntity implements Serializable {
     /**
      * the duration of the event
      */
-    @Column(name = "duration", nullable = true, length = 200)
+    @Column(name = "duration", length = 200)
     @Field(store = Store.YES, bridge = @FieldBridge(impl = JodaPeriodSplitBridge.class))
     @SchemaView(Schema.PERIOD)
     private Period duration;
@@ -87,7 +87,7 @@ public class EventTime extends AuditedEntity implements Serializable {
      * the repeat time of the event,
      * ie how much time passes between each occurrence
      */
-    @Column(name = "repeat_time", nullable = true, length = 200)
+    @Column(name = "repeat_time", length = 200)
     @Field(store = Store.YES, bridge = @FieldBridge(impl = JodaPeriodSplitBridge.class))
     @SchemaView(Schema.PERIOD)
     private Period repeatTime;
@@ -95,7 +95,7 @@ public class EventTime extends AuditedEntity implements Serializable {
     /**
      * the final repeat time of the event
      */
-    @Column(name = "repeat_end", nullable = true, length = 200)
+    @Column(name = "repeat_end", length = 200)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Field(store = Store.YES, bridge = @FieldBridge(impl = JodaDateTimeSplitBridge.class))
     @SchemaView(Schema.DATETIME)
@@ -254,6 +254,7 @@ public class EventTime extends AuditedEntity implements Serializable {
      *
      * @return list of occurrences
      */
+    @JsonIgnore
     public List<ParsedEventData> getFutureOccurrences() {
         DateTime thisMorning = DateTime.now().withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0);
         return getOccurrences(thisMorning.getMillis());
@@ -265,6 +266,7 @@ public class EventTime extends AuditedEntity implements Serializable {
      * @param fromTime the from time
      * @return list of occurrences
      */
+    @JsonIgnore
     public List<ParsedEventData> getOccurrences(final long fromTime) {
         List<ParsedEventData> parsedResults = new ArrayList<>();
 
@@ -324,6 +326,7 @@ public class EventTime extends AuditedEntity implements Serializable {
      *
      * @return list of occurrences
      */
+    @JsonIgnore
     public List<ParsedEventData> getOccurrences() {
         return getOccurrences(1L);
     }

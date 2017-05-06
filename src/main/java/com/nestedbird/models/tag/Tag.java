@@ -16,10 +16,8 @@
 
 package com.nestedbird.models.tag;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nestedbird.components.bridges.TagBridge;
 import com.nestedbird.models.core.Base.BaseEntity;
-import com.nestedbird.models.core.Tagged.TaggedEntity;
 import com.nestedbird.modules.entitysearch.SearchAnalysers;
 import com.nestedbird.modules.schema.annotations.SchemaRepository;
 import com.nestedbird.modules.schema.annotations.SchemaView;
@@ -32,8 +30,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "tags")
@@ -46,10 +42,6 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor(force = true)
 public class Tag extends BaseEntity implements Serializable {
-    @ManyToMany(mappedBy = "tags")
-    @JsonIgnore
-    private Set<TaggedEntity> entities = new HashSet<>();
-
     @Column(name = "name", nullable = false, length = 50)
     @Field(boost = @Boost(2f), analyzer = @Analyzer(definition = SearchAnalysers.ENGLISH_WORD_ANALYSER))
     @NotNull

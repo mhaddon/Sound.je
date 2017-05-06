@@ -15,8 +15,9 @@
  */
 // @flow
 // Node Modules
-
 // Site Modules
+import TriggerManager from "nestedbird/core/TriggerManager";
+
 
 /**
  * This class handles an individual playlist, it is managed by PlaylistController
@@ -94,7 +95,12 @@ export default class Playlist {
      * @method
      */
     setIdToPlayingElement() {
+        const currentId = this.getId();
         this.id = (this.elements.findIndex(e => e.loaded) || 0).min(0);
+
+        if (currentId !== this.getId()) {
+            TriggerManager.trigger(`onSongChange`);
+        }
     }
 
     /**
@@ -118,7 +124,7 @@ export default class Playlist {
      */
     getPlayingElement(): Object {
         this.setIdToPlayingElement();
-        return this.get(this.id);
+        return this.get(this.getId());
     }
 
     /**
@@ -128,7 +134,7 @@ export default class Playlist {
      * @returns {number}
      */
     getNextId(): number {
-        let id = this.id + 1;
+        let id = this.getId() + 1;
         if (id >= this.elements.length) {
             id = 0;
         }
@@ -142,11 +148,21 @@ export default class Playlist {
      * @returns {number}
      */
     getPreviousId(): number {
-        let id = this.id - 1;
+        let id = this.getId() - 1;
         if (id < 0) {
             id = this.elements.length - 1;
         }
         return id.max(this.elements.length - 1).min(0);
+    }
+
+    /**
+     * Gets the current playing elements index
+     * @member module:Core/MusicPlayer.Playlist#getId
+     * @method
+     * @returns {number}
+     */
+    getId(): number {
+        return this.id || 0;
     }
 
     /**

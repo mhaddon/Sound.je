@@ -38,7 +38,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true, exclude = {"tags"})
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class TaggedEntity extends AuditedEntity implements Serializable {
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @Field(bridge = @FieldBridge(impl = TagBridge.class),
             analyzer = @Analyzer(definition = SearchAnalysers.ENGLISH_WORD_ANALYSER))
     @JoinTable(name = "tags_entities",

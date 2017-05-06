@@ -16,12 +16,16 @@
 
 package com.nestedbird.models.artist;
 
+import com.nestedbird.models.core.Audited.AuditedEntity;
 import com.nestedbird.models.core.Base.BaseController;
 import com.nestedbird.models.core.Base.BaseRepository;
 import com.nestedbird.models.core.Base.BaseService;
+import com.nestedbird.models.event.EventService;
 import com.nestedbird.models.medium.Medium;
+import com.nestedbird.models.occurrence.Occurrence;
 import com.nestedbird.models.song.Song;
 import com.nestedbird.modules.formparser.ParameterMapParser;
+import com.nestedbird.modules.paginator.Paginator;
 import com.nestedbird.modules.resourceparser.PageParser;
 import com.nestedbird.util.Mutable;
 import com.nestedbird.util.QueryBlock;
@@ -33,6 +37,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The type Artist controller.
@@ -43,20 +49,26 @@ public class ArtistController extends BaseController<Artist> {
     private final ArtistRepository artistRepository;
     private final ArtistService artistService;
     private final PageParser pageParser;
+    private final EventService eventService;
+
 
     /**
      * Instantiates a new Artist controller.
      *
      * @param artistService    the artist service
      * @param artistRepository the artist repository
+     * @param eventRepository
+     * @param redissonClient
      */
     @Autowired
     ArtistController(final ArtistService artistService,
                      final ArtistRepository artistRepository,
-                     final PageParser pageParser) {
+                     final PageParser pageParser,
+                     final EventService eventService) {
         this.artistService = artistService;
         this.artistRepository = artistRepository;
         this.pageParser = pageParser;
+        this.eventService = eventService;
     }
 
     @Override
@@ -72,6 +84,19 @@ public class ArtistController extends BaseController<Artist> {
     @Override
     public BaseService<Artist> getService() {
         return this.artistService;
+    }
+
+    @RequestMapping(value = "{id}/Events", method = RequestMethod.GET)
+    @SuppressWarnings("unchecked")
+    public Page<Occurrence> listEvents(final Pageable pageable, @PathVariable final String id) {
+        final List<Occurrence> occurrences = artistService.findOne(id)
+                .filter(AuditedEntity::getActive)
+                .map(eventService::retrieveUpcomingByArtist)
+                .map(ArrayList::new)
+                .orElse(new ArrayList());
+
+        return Paginator.<Occurrence>of(pageable)
+                .paginate(occurrences);
     }
 
     /**

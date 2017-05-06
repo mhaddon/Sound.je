@@ -65,7 +65,7 @@ public class Song extends AuditedEntity implements Serializable {
     /**
      * what media this song has
      */
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "song")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "song")
     @JsonBackReference(value = "mediaToSong")
     private Set<Medium> media = new HashSet<>(0);
 

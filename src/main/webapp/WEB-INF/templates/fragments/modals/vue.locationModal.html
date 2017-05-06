@@ -57,10 +57,12 @@
                     </a>
                 </nav>
 
-                <div v-show="isPage('events')" class="artistmodal__modalitem">
+                <div v-show="isPage('events')"
+                     v-infinite="{ page: eventsCurrentPage, limit: eventsLimit, fn: getEvents, parent: '.modal__body' }"
+                     class="artistmodal__modalitem">
                     <h3 class="artistmodal__subtitle">Events</h3>
                     <div class="modal__text artistmodal__content">
-                        <table v-if="getEventList().length">
+                        <table v-if="upcomingEvents.length">
                             <thead>
                             <tr>
                                 <th>Band Playing</th>
@@ -68,15 +70,15 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="Event in getEventList()">
+                            <tr v-for="Event in upcomingEvents">
                                 <td><a style="display:block;"
-                                       v-href="{ page: 'Events', name: Event.name, id: Event.id }"
-                                       v-text="Event.name"></a></td>
-                                <td v-text="Event.nextOccurrence" style="white-space:nowrap; text-align:center;"></td>
+                                       v-href="{ page: 'Events', name: Event.displayName, id: Event.id }"
+                                       v-text="Event.displayName"></a></td>
+                                <td v-text="Event.startTime" style="white-space:nowrap; text-align:center;"></td>
                             </tr>
                             </tbody>
                         </table>
-                        <p v-if="!getEventList().length">
+                        <p v-if="!upcomingEvents.length">
                             Nothing seems to be on at the moment, know of anything? Send us a message!
                         </p>
                     </div>

@@ -16,8 +16,11 @@
 
 package com.nestedbird.models.event;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.fasterxml.jackson.datatype.joda.deser.PeriodDeserializer;
+import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
+import com.fasterxml.jackson.datatype.joda.ser.PeriodSerializer;
 import com.nestedbird.models.core.DataObject;
 import lombok.*;
 import org.joda.time.DateTime;
@@ -35,10 +38,12 @@ import java.util.Optional;
 public class ParsedEventData extends DataObject implements Serializable {
     private String eventId;
 
-    @JsonSerialize(using = ToStringSerializer.class)
+    @JsonSerialize(using = DateTimeSerializer.class)
+    //    @JsonDeserialize(using= DateTimeDeserializer.class)
     private DateTime startTime;
 
-    @JsonSerialize(using = ToStringSerializer.class)
+    @JsonSerialize(using = PeriodSerializer.class)
+    @JsonDeserialize(using = PeriodDeserializer.class)
     private Period duration;
 
     @Builder

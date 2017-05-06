@@ -236,6 +236,17 @@ export default {
             schema: schemaMediaArray
         });
     },
+    getArtistEvents({ dispatch }: VuexActionOperations<ServerDataState>, { page = 0, limit = 15, id, sort = `` }: ServerDataPaginatedRequestObjectOfSpecific): Promise<
+        string
+        | RESTObject<Occurrence>> {
+        return dispatch(`getPagedDataContent`, {
+            apiurl: `/api/v1/Artists/${id}/Events`,
+            page,
+            limit,
+            sort,
+            schema: schemaOccurrenceArray
+        });
+    },
     getArtist({ dispatch }: VuexActionOperations<ServerDataState>, id: string): Promise<string | Artist> {
         return dispatch(`getData`, {
             apiurl: `/api/v1/Artists/${id}`,
@@ -278,6 +289,17 @@ export default {
         return dispatch(`getData`, {
             apiurl: `/api/v1/Locations/${id}`,
             schema: schemaLocationArray
+        });
+    },
+    getLocationEvents({ dispatch }: VuexActionOperations<ServerDataState>, { page = 0, limit = 15, id, sort = `` }: ServerDataPaginatedRequestObjectOfSpecific): Promise<
+        string
+        | RESTObject<Occurrence>> {
+        return dispatch(`getPagedDataContent`, {
+            apiurl: `/api/v1/Locations/${id}/Events`,
+            page,
+            limit,
+            sort,
+            schema: schemaOccurrenceArray
         });
     },
     saveLocation({ commit }: VuexActionOperations<ServerDataState>, location: Location): Location {

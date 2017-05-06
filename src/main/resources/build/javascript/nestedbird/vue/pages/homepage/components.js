@@ -18,6 +18,7 @@
 import Vue from "vue/dist/vue";
 import VueTouch from "vue-touch";
 import VueMultiSelect from "vue-multiselect";
+import VueObserveVisibility from "vue-observe-visibility";
 // Site Modules
 import {
     VueDateTimePicker,
@@ -45,6 +46,7 @@ import "nestedbird/vue/directives/form";
 delete Hammer.defaults.cssProps.userSelect;
 
 Vue.use(VueTouch);
+Vue.use(VueObserveVisibility);
 // Vue.use(VueMultiSelect);
 // Vue.use(VueFlatpickr);
 

@@ -100,7 +100,14 @@ export const MediaBox = {
              * @member module:Vue/Components.MediaBox#loaded
              * @type boolean
              */
-            loaded: false
+            loaded:  false,
+            /**
+             * Is the mediabox currently visible on the page
+             * If its not we hide most of the element
+             * @member module:Vue/Components.MediaBox#visible
+             * @type boolean
+             */
+            visible: true
         };
     },
     created() {
@@ -117,9 +124,25 @@ export const MediaBox = {
          */
         type(): number | boolean {
             return (this.loaded === true) ? this.Medium.type : false;
+        },
+        /**
+         * Is the header information visible
+         * @member module:Vue/Components.MediaBox#isHeaderVisible
+         * @type boolean
+         */
+        isHeaderVisible(): boolean {
+            return this.visible &amp;&amp; !this.loaded;
         }
     },
     methods:    {
+        /**
+         * On visibility change we update the visible flag
+         * @member module:Vue/Components.MarkdownTextarea#visibilityChanged
+         * @method
+         */
+        visibilityChanged(isVisible: boolean) {
+            this.visible = isVisible;
+        },
         /**
          * Record this media element in its playlist
          * @member module:Vue/Components.MarkdownTextarea#addToPlaylist
@@ -167,13 +190,13 @@ export const VueMediaBox = Vue.extend(MediaBox);</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-Types.html">Types</a></li><li><a href="Directives.html">Vue/Directives</a></li><li><a href="Pages.html">Vue/Pages</a></li><li><a href="Store.html">Vue/Store</a></li></ul><h3>Classes</h3><ul><li><a href="Ajax.Ajax.html">Ajax</a></li><li><a href="InfiniteController.Listener.html">Listener</a></li><li><a href="InfiniteController.ScrollContainer.html">ScrollContainer</a></li><li><a href="KeyController.exports.default.html">exports.default</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Notification.html">Notification</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul><h3>Namespaces</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="Components.AboutPage.html">AboutPage</a></li><li><a href="Components.AdminPage.html">AdminPage</a></li><li><a href="Components.ArtistModal.html">ArtistModal</a></li><li><a href="Components.CreateRecordModal.html">CreateRecordModal</a></li><li><a href="Components.DateTimePicker.html">DateTimePicker</a></li><li><a href="Components.EditableFormData.html">EditableFormData</a></li><li><a href="Components.EditRecordModal.html">EditRecordModal</a></li><li><a href="Components.EntityField.html">EntityField</a></li><li><a href="Components.EventList.html">EventList</a></li><li><a href="Components.EventModal.html">EventModal</a></li><li><a href="Components.FacebookBox.html">FacebookBox</a></li><li><a href="Components.LocationModal.html">LocationModal</a></li><li><a href="Components.LoginModal.html">LoginModal</a></li><li><a href="Components.LoginPasswordModal.html">LoginPasswordModal</a></li><li><a href="Components.MarkdownTextarea.html">MarkdownTextarea</a></li><li><a href="Components.MediaBox.html">MediaBox</a></li><li><a href="Components.MediumModal.html">MediumModal</a></li><li><a href="Components.MultiEntityField.html">MultiEntityField</a></li><li><a href="Components.NewsPage.html">NewsPage</a></li><li><a href="Components.NotFoundModal.html">NotFoundModal</a></li><li><a href="Components.PasswordResetModal.html">PasswordResetModal</a></li><li><a href="Components.RecordModal.html">RecordModal</a></li><li><a href="Components.RecordsPage.html">RecordsPage</a></li><li><a href="Components.RegisterModal.html">RegisterModal</a></li><li><a href="Components.SearchPage.html">SearchPage</a></li><li><a href="Components.SongModal.html">SongModal</a></li><li><a href="Components.SubmitModal.html">SubmitModal</a></li><li><a href="Directives.form.html">form</a></li><li><a href="Directives.FormDirectiveHelper.html">FormDirectiveHelper</a></li><li><a href="Directives.href.html">href</a></li><li><a href="Directives.infinite.html">infinite</a></li><li><a href="Directives.src.html">src</a></li><li><a href="Directives.SrcDirectiveHelper.html">SrcDirectiveHelper</a></li><li><a href="Mixins.Auth.html">Auth</a></li><li><a href="Mixins.IeVersion.html">IeVersion</a></li><li><a href="Mixins.Mobile.html">Mobile</a></li><li><a href="Mixins.Modal.html">Modal</a></li><li><a href="Mixins.Tag.html">Tag</a></li><li><a href="Pages.ViewModel.html">ViewModel</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-Types.html">Types</a></li><li><a href="Directives.html">Vue/Directives</a></li><li><a href="Pages.html">Vue/Pages</a></li><li><a href="Store.html">Vue/Store</a></li></ul><h3>Classes</h3><ul><li><a href="Ajax.Ajax.html">Ajax</a></li><li><a href="InfiniteController.Listener.html">Listener</a></li><li><a href="InfiniteController.ScrollContainer.html">ScrollContainer</a></li><li><a href="KeyController.exports.default.html">exports.default</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Notification.html">Notification</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul><h3>Namespaces</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="Components.AboutPage.html">AboutPage</a></li><li><a href="Components.AdminPage.html">AdminPage</a></li><li><a href="Components.ArtistModal.html">ArtistModal</a></li><li><a href="Components.CreateRecordModal.html">CreateRecordModal</a></li><li><a href="Components.DateTimePicker.html">DateTimePicker</a></li><li><a href="Components.EditableFormData.html">EditableFormData</a></li><li><a href="Components.EditRecordModal.html">EditRecordModal</a></li><li><a href="Components.EntityField.html">EntityField</a></li><li><a href="Components.EventList.html">EventList</a></li><li><a href="Components.EventModal.html">EventModal</a></li><li><a href="Components.FacebookBox.html">FacebookBox</a></li><li><a href="Components.LocationModal.html">LocationModal</a></li><li><a href="Components.LoginModal.html">LoginModal</a></li><li><a href="Components.LoginPasswordModal.html">LoginPasswordModal</a></li><li><a href="Components.MarkdownTextarea.html">MarkdownTextarea</a></li><li><a href="Components.MediaBox.html">MediaBox</a></li><li><a href="Components.MediaList.html">MediaList</a></li><li><a href="Components.MediumModal.html">MediumModal</a></li><li><a href="Components.MultiEntityField.html">MultiEntityField</a></li><li><a href="Components.NewsPage.html">NewsPage</a></li><li><a href="Components.NotFoundModal.html">NotFoundModal</a></li><li><a href="Components.PasswordResetModal.html">PasswordResetModal</a></li><li><a href="Components.RecordModal.html">RecordModal</a></li><li><a href="Components.RecordsPage.html">RecordsPage</a></li><li><a href="Components.RegisterModal.html">RegisterModal</a></li><li><a href="Components.SearchPage.html">SearchPage</a></li><li><a href="Components.SongModal.html">SongModal</a></li><li><a href="Components.SubmitModal.html">SubmitModal</a></li><li><a href="Directives.form.html">form</a></li><li><a href="Directives.FormDirectiveHelper.html">FormDirectiveHelper</a></li><li><a href="Directives.href.html">href</a></li><li><a href="Directives.infinite.html">infinite</a></li><li><a href="Directives.src.html">src</a></li><li><a href="Directives.SrcDirectiveHelper.html">SrcDirectiveHelper</a></li><li><a href="Mixins.Auth.html">Auth</a></li><li><a href="Mixins.IeVersion.html">IeVersion</a></li><li><a href="Mixins.Mobile.html">Mobile</a></li><li><a href="Mixins.Modal.html">Modal</a></li><li><a href="Mixins.Tag.html">Tag</a></li><li><a href="Pages.ViewModel.html">ViewModel</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Wed May 03 2017 12:29:53 GMT+0100 (BST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sat May 06 2017 19:16:05 GMT+0100 (BST)
 </footer>
 
 <script> prettyPrint(); </script>

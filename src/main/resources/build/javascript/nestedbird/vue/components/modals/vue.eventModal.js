@@ -192,16 +192,8 @@ export const EventModal = {
          * @type string
          */
         artistNames(): string {
-            let returnVar = this.Event.name || ``;
-            if (this.Event.hasOwnProperty(`name`)) {
-                const strippedArr = Util.stripArray(returnVar.split(`;`).concat(this.Event.artists.map((a) => a.name)));
-                if (strippedArr.length > 1) {
-                    returnVar = `${strippedArr.slice(0, -1).join(`, `)} and ${strippedArr.slice(-1)}`;
-                } else {
-                    returnVar = strippedArr[0];
-                }
-            }
-            return returnVar;
+            return Util.processEventName(this.Event)
+                .orElse(`loading...`);
         }
     },
     methods:  {

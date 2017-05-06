@@ -24,22 +24,24 @@
 </head>
 <body>
 <script type='text/x-template' id='mediaBox-template' th:fragment="mediaBox">
-    <div class='medium' v-bind:class="{ 'medium--loaded': loaded}" v-bind:data-ID='Medium.sourceId'>
-        <p class="medium__titlebox">
+    <div class='medium'
+         v-observe-visibility="visibilityChanged"
+         v-bind:class="{ 'medium--loaded': loaded, 'medium--hidden': !visible}" v-bind:data-ID='Medium.sourceId'>
+        <p v-if="visible" class="medium__titlebox">
             <a class='medium__songname' v-href="{ page: 'Medium', name: Medium.song.name, id: Medium.id }"
                v-text='Medium.song.name'></a>
             <a class='medium__artistname'
                v-href="{ page: 'Artists', name: Medium.song.artist.name, id: Medium.song.artist.id }"
                v-text='Medium.song.artist.name'></a>
         </p>
-        <div class="medium__playcontainer" v-if="loaded === false" v-on:click="play()">
+        <div v-if="isHeaderVisible" class="medium__playcontainer" v-on:click="play()">
             <img class='medium__art' v-src="Medium.artUrl"/>
             <span class="fa-stack fa-lg medium__playbutton">
               <i class="fa fa-circle-thin fa-stack-2x"></i>
               <i class="fa fa-play fa-stack-1x"></i>
             </span>
         </div>
-        <div class='medium__video videobox' v-if="loaded === true">
+        <div v-if="loaded" class='medium__video videobox'>
             <youtubebox-component v-if="type === 'YOUTUBE'" v-bind:id="Medium.sourceId"
                                   v-bind:Medium="Medium"></youtubebox-component>
             <soundcloudbox-component v-if="type === 'SOUNDCLOUD'" v-bind:id="Medium.sourceId"

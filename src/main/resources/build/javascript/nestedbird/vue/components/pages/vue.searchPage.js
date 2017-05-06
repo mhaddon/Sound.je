@@ -145,7 +145,7 @@ export const SearchPage = {
         processEventResponse(response: string) {
             Util.tryParseJSON(response).ifPresent((data: Object) => {
                 this.eventData = this.eventData.concat(data.content
-                    .filter(e => e.entity.inFuture)
+                    .filter(e => this.isInFuture(e.entity.times))
                     .map(e => Util.clean(e))
                     .map(e => {
                         store.dispatch(`saveEvent`, e.entity);
@@ -197,12 +197,24 @@ export const SearchPage = {
          * Concatenates all the artist names fluently
          * @member module:Vue/Components.SearchPage#processArtistNames
          * @method
+         * @param {NBEvent} eventData       data of the event
          * @returns {string}
          */
-        processArtistNames(allArtistNames: string[]): string {
-            const artistNames = Util.parse(allArtistNames.filter(n => n) || []);
-            const lastName = artistNames.pop();
-            return artistNames.length > 0 ? artistNames.join(`, `).concat(` and ${lastName}`) : lastName;
+        processArtistNames(eventData: NBEvent): string {
+            return Util.processEventName(eventData)
+                .orElse(`loading...`);
+        },
+        /**
+         * Calculates if this event is in the future
+         * @member module:Vue/Components.SearchPage#isInFuture
+         * @method
+         * @param {EventTime[]} eventTimes       array of occurrences
+         * @returns {boolean}
+         */
+        isInFuture(eventTimes: EventTime[]): boolean {
+            return Util.getNextEventTime(eventTimes)
+                .map(time => (new Date()).getTime() < time)
+                .orElse(false);
         }
     }
 };

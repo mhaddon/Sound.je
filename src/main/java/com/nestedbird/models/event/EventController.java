@@ -16,15 +16,10 @@
 
 package com.nestedbird.models.event;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.nestedbird.config.SocialConfigSettings;
-import com.nestedbird.models.core.Audited.AuditedEntity;
 import com.nestedbird.models.core.Base.BaseController;
 import com.nestedbird.models.core.Base.BaseRepository;
 import com.nestedbird.models.core.Base.BaseService;
-import com.nestedbird.models.eventtime.EventTime;
 import com.nestedbird.models.occurrence.Occurrence;
 import com.nestedbird.models.occurrence.OccurrenceRepository;
 import com.nestedbird.modules.facebookreader.FacebookPoster;
@@ -34,30 +29,19 @@ import com.nestedbird.util.Mutable;
 import com.nestedbird.util.QueryBlock;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.joda.time.Period;
-import org.redisson.api.RScoredSortedSet;
-import org.redisson.api.RedissonClient;
-import org.redisson.client.protocol.ScoredEntry;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The type Event controller.
@@ -70,12 +54,9 @@ public class EventController extends BaseController<Event> {
     private final EventRepository eventRepository;
     private final OccurrenceRepository occurrenceRepository;
     private final EventService eventService;
-    private final RedissonClient redissonClient;
     private final SocialConfigSettings socialConfigSettings;
     private final FacebookPoster facebookPoster;
     private final EventParser eventParser;
-    @PersistenceContext
-    private EntityManager entityManager;
 
     /**
      * Instantiates a new Event controller.
@@ -92,14 +73,12 @@ public class EventController extends BaseController<Event> {
     EventController(final EventService eventService,
                     final EventRepository eventRepository,
                     final OccurrenceRepository occurrenceRepository,
-                    final RedissonClient redissonClient,
                     final SocialConfigSettings socialConfigSettings,
                     final FacebookPoster facebookPoster,
                     final EventParser eventParser) {
         this.eventService = eventService;
         this.eventRepository = eventRepository;
         this.occurrenceRepository = occurrenceRepository;
-        this.redissonClient = redissonClient;
         this.socialConfigSettings = socialConfigSettings;
         this.facebookPoster = facebookPoster;
         this.eventParser = eventParser;
@@ -152,20 +131,8 @@ public class EventController extends BaseController<Event> {
      * @return page of events
      */
     @RequestMapping(value = "/Upcoming", method = RequestMethod.GET)
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<Occurrence> listUpcoming(final Pageable pageable) {
-        final int page = pageable.getPageNumber();
-        final int count = pageable.getPageSize();
-
-        // if cache is not set, retrieve new set of data
-        final RScoredSortedSet<String> set = redissonClient.getScoredSortedSet("UpcomingEvents");
-        if (set.size() == 0) {
-            retrieveUpcomingToCache();
-        }
-
-        final Collection<ScoredEntry<String>> eventCollection = set.entryRange(page * count, ((page + 1) * count) - 1);
-        final List<Occurrence> eventList = convertEventCollectionToListOfOccurrences(eventCollection);
-        return new PageImpl<>(eventList, pageable, set.size());
+        return eventService.getUpcomingOccurrences(pageable);
     }
 
     /**
@@ -174,65 +141,7 @@ public class EventController extends BaseController<Event> {
     @Scheduled(cron = "0 */10 * * * *")
     @Transactional
     public void retrieveUpcomingToCache() {
-        final RScoredSortedSet<String> set = redissonClient.getScoredSortedSet("UpcomingEvents");
-
-        final Query query = entityManager.createNativeQuery(
-                "CALL getUpcomingEvents()",
-                Event.class
-        );
-
-        @SuppressWarnings("unchecked") final List<Event> results = ((List<Event>) query.getResultList()).stream()
-                .filter(AuditedEntity::getActive).collect(Collectors.toList());
-
-        final List<ParsedEventData> parsedResults = new ArrayList<>();
-
-        // calculate all future occurrences
-        results.forEach((Event event) ->
-                event.getTimes()
-                        .forEach((EventTime eventTime) ->
-                                parsedResults.addAll(eventTime.getFutureOccurrences())));
-
-        // save to cache
-        set.clear();
-        for (ParsedEventData parsedEventData : parsedResults) {
-            set.add(parsedEventData.getStartTime().getMillis() / 1000.0, parsedEventData.toJSON());
-        }
-    }
-
-    /**
-     * Processes the collection we store in the cache, retrieves information we need from the database, and mutates
-     * some of the data, in preparation before sending it to the user.
-     *
-     * @param eventCollection collection from cache
-     * @return list of occurrences
-     */
-    private List<Occurrence> convertEventCollectionToListOfOccurrences(final Collection<ScoredEntry<String>> eventCollection) {
-        final List<Occurrence> eventList = new ArrayList<>();
-        for (ScoredEntry<String> entry : eventCollection) {
-            final ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new Hibernate5Module());
-
-            try {
-                final JsonNode parsedEventData = objectMapper.readTree(entry.getValue());
-
-                eventService.findOne(parsedEventData.get("eventId").textValue())
-                        .ifPresent(event -> {
-                            final Occurrence parsedEvent = new Occurrence();
-                            parsedEvent.setEvent(event);
-
-                            if (parsedEventData.get("duration").textValue() != null) {
-                                parsedEvent.setDuration(Period.parse(parsedEventData.get("duration").textValue()));
-                            }
-
-                            parsedEvent.setStartTime(DateTime.parse(parsedEventData.get("startTime").textValue()));
-                            //                    parsedEvent.setId(event.getId() + "-" + parsedEvent.getStartTime().getMillis());
-                            eventList.add(parsedEvent);
-                        });
-            } catch (IOException e) {
-                logger.info("[EventController] [convertEventCollectionToListOfOccurrences] Failure To Read JSON From Cache", e);
-            }
-        }
-        return eventList;
+        eventService.updateUpcomingStore();
     }
 
     /**

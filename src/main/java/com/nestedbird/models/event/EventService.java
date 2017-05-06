@@ -16,9 +16,15 @@
 
 package com.nestedbird.models.event;
 
+import com.nestedbird.models.artist.Artist;
 import com.nestedbird.models.core.Audited.AuditedService;
+import com.nestedbird.models.location.Location;
+import com.nestedbird.models.occurrence.Occurrence;
+import org.redisson.api.RScoredSortedSet;
+import org.springframework.data.domain.Page;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * The interface Event service.
@@ -31,4 +37,16 @@ public interface EventService extends AuditedService<Event> {
      * @return the optional
      */
     Optional<Event> findFirstByFacebookId(final Long facebookId);
+
+    RScoredSortedSet<String> getUpcomingEventsFromStore();
+
+    Set<ParsedEventData> retrieveUpcoming();
+
+    void updateUpcomingStore();
+
+    Page<Occurrence> getUpcomingOccurrences(final org.springframework.data.domain.Pageable pageable);
+
+    Set<Occurrence> retrieveUpcomingByArtist(final Artist artist);
+
+    Set<Occurrence> retrieveUpcomingByLocation(final Location location);
 }

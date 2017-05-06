@@ -73,7 +73,14 @@ export const MediaBox = {
              * @member module:Vue/Components.MediaBox#loaded
              * @type boolean
              */
-            loaded: false
+            loaded:  false,
+            /**
+             * Is the mediabox currently visible on the page
+             * If its not we hide most of the element
+             * @member module:Vue/Components.MediaBox#visible
+             * @type boolean
+             */
+            visible: true
         };
     },
     created() {
@@ -90,9 +97,25 @@ export const MediaBox = {
          */
         type(): number | boolean {
             return (this.loaded === true) ? this.Medium.type : false;
+        },
+        /**
+         * Is the header information visible
+         * @member module:Vue/Components.MediaBox#isHeaderVisible
+         * @type boolean
+         */
+        isHeaderVisible(): boolean {
+            return this.visible && !this.loaded;
         }
     },
     methods:    {
+        /**
+         * On visibility change we update the visible flag
+         * @member module:Vue/Components.MarkdownTextarea#visibilityChanged
+         * @method
+         */
+        visibilityChanged(isVisible: boolean) {
+            this.visible = isVisible;
+        },
         /**
          * Record this media element in its playlist
          * @member module:Vue/Components.MarkdownTextarea#addToPlaylist

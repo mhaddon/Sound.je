@@ -30,7 +30,9 @@
             <p class="article__text"></p>
         </div>
         <ul class='contentlist'>
-            <li class="contentlist__item contentlist__item--responsive" v-for="Medium in getMediaList()">
+            <li class="contentlist__item contentlist__item--responsive"
+                v-for="(Medium, index) in hotMedia"
+                v-show="isMediumVisible(index)">
                 <mediabox-component :Medium='Medium' v-bind:name="Medium.id" group="Media-HPTicker"
                                     v-bind:ref="'Media-HPTicker-' + Medium.id"></mediabox-component>
             </li>

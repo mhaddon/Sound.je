@@ -47,7 +47,7 @@ import java.util.stream.Stream;
  */
 @Entity
 @Table(name = "events")
-@Cacheable
+@Cacheable(true)
 @Indexed
 //@Cache(region="common", usage = CacheConcurrencyStrategy.READ_WRITE)
 @SchemaRepository(EventRepository.class)
@@ -68,7 +68,7 @@ public class Event extends AuditedEntity implements Serializable {
     /**
      * What artists are at this event
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "events_artists",
             joinColumns = @JoinColumn(name = "event_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "artist_id", referencedColumnName = "id"))
@@ -76,7 +76,6 @@ public class Event extends AuditedEntity implements Serializable {
     @SchemaView(value = Schema.BaseEntityArray, type = Artist.class)
     @Field(bridge = @FieldBridge(impl = ArtistBridge.class),
             analyzer = @Analyzer(definition = SearchAnalysers.ENGLISH_WORD_ANALYSER))
-    //    @AnalyzerDiscriminator(impl = ArtistBridge.class)
     private Set<Artist> artists = new HashSet<>(0);
 
     /**
@@ -152,7 +151,7 @@ public class Event extends AuditedEntity implements Serializable {
     @JsonProperty("location")
     private Location location;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "event")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     @JsonBackReference(value = "occurrencetoevent")
     @SchemaView(visible = false)
     private Set<Occurrence> recordedOccurrences = new HashSet<>(0);
@@ -160,7 +159,7 @@ public class Event extends AuditedEntity implements Serializable {
     /**
      * The amount of eventtimes that are associated to this event
      */
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "event")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "event")
     @JsonManagedReference(value = "eventParent")
     @SchemaView(value = "Array", type = EventTime.class, mappings = {"event:id"})
     @Field(bridge = @FieldBridge(impl = EventTimeBridge.class),
@@ -247,6 +246,7 @@ public class Event extends AuditedEntity implements Serializable {
      *
      * @return does this occur in the future
      */
+    @JsonIgnore
     public boolean isInFuture() {
         return getAllOccurrences().stream()
                 .anyMatch(e -> e.getStartTime().isAfterNow());
@@ -257,6 +257,7 @@ public class Event extends AuditedEntity implements Serializable {
      *
      * @return list of occurrences
      */
+    @JsonIgnore
     public List<ParsedEventData> getAllOccurrences() {
         return times.stream()
                 .map(EventTime::getOccurrences)
@@ -270,6 +271,7 @@ public class Event extends AuditedEntity implements Serializable {
      *
      * @return the all artist names
      */
+    @JsonIgnore
     public List<String> getAllArtistNames() {
         final Stream<String> artistNames = getArtists().stream()
                 .map(Artist::getName);

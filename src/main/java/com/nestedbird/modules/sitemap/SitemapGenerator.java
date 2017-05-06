@@ -24,13 +24,13 @@ import com.nestedbird.models.event.EventRepository;
 import com.nestedbird.models.location.LocationRepository;
 import com.nestedbird.models.medium.MediumRepository;
 import com.nestedbird.models.song.SongRepository;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -97,9 +97,11 @@ public class SitemapGenerator {
 
     private String retrieveEntityXML() {
         final Stream<String> songStream = songRepository.findAll().stream()
+                .filter(AuditedEntity::getActive)
                 .map(this::generateEntity);
 
         final Stream<String> mediumStream = mediumRepository.findAll().stream()
+                .filter(AuditedEntity::getActive)
                 .map(this::generateEntity);
 
         final Stream<String> eventStream = eventRepository.findAll().stream()
@@ -108,12 +110,14 @@ public class SitemapGenerator {
                 .map(this::generateEntity);
 
         final Stream<String> locationStream = locationRepository.findAll().stream()
+                .filter(AuditedEntity::getActive)
                 .map(this::generateEntity);
 
         final Stream<String> artistStream = artistRepository.findAll().stream()
+                .filter(AuditedEntity::getActive)
                 .map(this::generateEntity);
 
-        return concatStreams(songStream, mediumStream, eventStream, locationStream, artistStream)
+        return concatStreams(extraEntities(), songStream, mediumStream, eventStream, locationStream, artistStream)
                 .collect(Collectors.joining());
     }
 
@@ -129,19 +133,52 @@ public class SitemapGenerator {
         return currentStream;
     }
 
-    private String generateEntity(final AuditedEntity e) {
-        final DateTime lastModified = Optional.ofNullable(e.getLastModifiedDate())
-                .orElse(new DateTime());
+    private Stream<String> extraEntities() {
+        final List<SitemapEntity> extraEntities = new ArrayList<>();
 
-        // @formatter:off
-        return StringUtils.join(new String[]{
-                "<url>",
-                    "<loc>" + serverConfigSettings.getExternalUrl() + StringEscapeUtils.escapeXml11(e.getUrl()) + "</loc>",
-                    "<lastmod>" + StringEscapeUtils.escapeXml11(lastModified.toString()) + "</lastmod>",
-                    "<changefreq>monthly</changefreq>",
-                    "<priority>0.8</priority>",
-                "</url>"
-        }, "");
-        // @formatter:on
+        extraEntities.add(SitemapEntity.builder()
+                .externalUrl(serverConfigSettings.getExternalUrl())
+                .relativeUrl("/")
+                .lastModified(DateTime.now().withHourOfDay(1).withMinuteOfHour(1).withSecondOfMinute(1))
+                .changeFrequency("daily")
+                .priority(1.0)
+                .build());
+
+        extraEntities.add(SitemapEntity.builder()
+                .externalUrl(serverConfigSettings.getExternalUrl())
+                .relativeUrl("/Media")
+                .lastModified(DateTime.now().withDayOfMonth(1).withHourOfDay(1).withMinuteOfHour(1).withSecondOfMinute(1))
+                .changeFrequency("weekly")
+                .priority(0.8)
+                .build());
+
+        extraEntities.add(SitemapEntity.builder()
+                .externalUrl(serverConfigSettings.getExternalUrl())
+                .relativeUrl("/News")
+                .lastModified(DateTime.now().withDayOfMonth(1).withHourOfDay(1).withMinuteOfHour(1).withSecondOfMinute(1))
+                .changeFrequency("weekly")
+                .priority(0.8)
+                .build());
+
+        extraEntities.add(SitemapEntity.builder()
+                .externalUrl(serverConfigSettings.getExternalUrl())
+                .relativeUrl("/About")
+                .lastModified(DateTime.now().withDayOfMonth(1).withHourOfDay(1).withMinuteOfHour(1).withSecondOfMinute(1))
+                .changeFrequency("monthly")
+                .priority(0.8)
+                .build());
+
+        return extraEntities.stream().map(SitemapEntity::generate);
+    }
+
+    private String generateEntity(final AuditedEntity e) {
+        return SitemapEntity.builder()
+                .externalUrl(serverConfigSettings.getExternalUrl())
+                .relativeUrl(e.getUrl())
+                .lastModified(e.getLastModifiedDate())
+                .changeFrequency("monthly")
+                .priority(0.8)
+                .build()
+                .generate();
     }
 }

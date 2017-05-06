@@ -19,28 +19,40 @@ import Vue from "vue/dist/vue";
 // Site Modules
 import store from "nestedbird/vue/store";
 import { Page } from "nestedbird/core/Router";
-import { Util } from "nestedbird/core/Util";
-import { MusicPlayer } from "nestedbird/core/musicplayer";
+import { PlaylistController } from "nestedbird/core/musicplayer";
+import TriggerManager from "nestedbird/core/TriggerManager";
 
+/**
+ * Controller for listing media items
+ * @copyright Copyright (C) 2017  Michael Haddon
+ * @author Michael Haddon
+ * @since 23 Feb 2017
+ * @namespace
+ * @readonly
+ * @memberOf module:Vue/Components
+ */
 export const MediaList = {
     /**
-     * The components design template, see the "text/x-template" tags in
-     * index.html
+     * The module template
+     * @member module:Vue/Components.MediaList#template
+     * @default #mediaList-template
+     * @type string
      */
     template: `#mediaList-template`,
-    /**
-     * The components variables that it inherits from its parent
-     */
     props:    [],
-    /**
-     * Every component requires a data feild, but i do not need it as
-     * i inherit all the relevent data. So it is filled with nonsense.
-     */
     data(): Object {
         return {
-            mediaOffset: 0,
-            mediaCount:  3,
+            /**
+             * Current page for infinite scroll
+             * @member module:Vue/Components.MediaList#currentPage
+             * @type string
+             */
             currentPage: 0,
+            /**
+             * Amount of elements per page for infinite scroll
+             * @member module:Vue/Components.MediaList#limit
+             * @type string
+             */
             limit:       15
         };
     },
@@ -53,20 +65,14 @@ export const MediaList = {
                 limit: this.limit
             }).then(() => {
                 setTimeout(() => {
-                    this.getMediaList({});
                     this.$el.style.opacity = ``;
                     this.$el.style.height = ``;
-                    MusicPlayer.onNext(() => {
-                        setTimeout(() => {
-                            this.getMediaList();
-                        }, 15);
-                    });
-                    MusicPlayer.onPrevious(() => {
-                        setTimeout(() => {
-                            this.getMediaList();
-                        }, 15);
-                    });
                 }, 15);
+            });
+
+            TriggerManager.addTrigger({
+                events: [`onSongChange`],
+                action: () => this.$forceUpdate()
             });
         });
     },
@@ -77,10 +83,61 @@ export const MediaList = {
          */
         smallBoxes(): boolean {
             return store.getters.currentPage !== Page.MUSIC;
+        },
+        /**
+         * If this is the small version, how many media elements will be shown
+         * @member module:Vue/Components.MediaList#mediaCount
+         * @type number
+         */
+        mediaCount(): number {
+            return Math.floor(this.$el.offsetWidth / 350).min(1);
+        },
+        /**
+         * Retrieve all the hot media
+         * @member module:Vue/Components.MediaList#hotMedia
+         * @type Medium[]
+         */
+        hotMedia(): Medium[] {
+            return store.getters.hotMedia
+                .slice()
+                .sort((a, b) => Math.sign(a.scoreFinal - b.scoreFinal))
+                .map(e => store.getters.getMedium(e.id))
+                .filter(e => store.getters.supportedMediaTypes.includes(e.type));
         }
     },
     methods:  {
-        getMedia({ page = this.currentPage, limit = this.limit }) {
+        /**
+         * Is the medium element visible by its index
+         * @member module:Vue/Components.MarkdownTextarea#isMediumVisible
+         * @method
+         * @param {number} index    the index of this medium element as it occurs on the page
+         * @returns boolean
+         */
+        isMediumVisible(index: number): boolean {
+            const isPlaying = PlaylistController.get(`Media-HPTicker`).getId() === index;
+            const isMusicPage = store.getters.currentPage === Page.MUSIC;
+            const isAroundCurrentElement = index >= this.getMediaOffset() && index < this.getMediaOffset() + this.mediaCount;
+
+            return isMusicPage || isPlaying || isAroundCurrentElement;
+        },
+        /**
+         * If this is the small version, we calculate where the media offset begins
+         * @member module:Vue/Components.MarkdownTextarea#getMediaOffset
+         * @method
+         * @returns number
+         */
+        getMediaOffset(): number {
+            return (PlaylistController.get(`Media-HPTicker`).getId() - Math.floor(this.mediaCount / 2))
+                .max(this.$el.querySelectorAll(`.medium`).length - this.mediaCount)
+                .min(0);
+        },
+        /**
+         * Retrieves additional medium elements
+         * @member module:Vue/Components.MarkdownTextarea#getMedia
+         * @method
+         * @returns Promise<number>
+         */
+        getMedia({ page = this.currentPage, limit = this.limit }): Promise<number> {
             return store.dispatch(`getMediaHot`, {
                 page,
                 limit
@@ -88,54 +145,6 @@ export const MediaList = {
                 this.currentPage = page;
                 return this.currentPage;
             });
-        },
-        getMediaList(): Medium[] {
-            const sortedList = store.getters.hotMedia
-                .slice()
-                .sort((a, b) => Math.sign(a.scoreFinal - b.scoreFinal))
-                .map(e => store.getters.getMedium(e.id))
-                .filter(e => store.getters.supportedMediaTypes.includes(e.type));
-
-            this.$nextTick(() => {
-                this.updateMediaVisibility();
-            });
-
-            return sortedList;
-        },
-        updateMediaVisibility() {
-            if (store.getters.currentPage === Page.MUSIC) {
-                if (this.$el && Util.isElement(this.$el)) {
-                    const elements = this.$el.querySelectorAll(`.medium`);
-                    if (elements.length) {
-                        for (let i = elements.length - 1; i >= 0; i--) {
-                            const element = elements[i];
-                            element.parentElement.style.display = ``;
-                        }
-                    }
-                }
-            } else if (this.$el && Util.isElement(this.$el)) {
-                this.mediaCount = Math.floor(this.$el.offsetWidth / 350).min(1);
-
-                const elements = this.$el.querySelectorAll(`.medium`);
-                if (elements.length) {
-                    let loadedId = 0;
-                    for (let i = 0; i < elements.length; i++) {
-                        const element = elements[i];
-                        element.parentElement.style.display = `none`;
-                        if (element && Util.isElement(element) && /medium--loaded/g.exec(element.className)) {
-                            loadedId = i - 1;
-                        }
-                    }
-                    this.mediaOffset = loadedId.max(elements.length - this.mediaCount).min(0);
-
-                    for (let i = this.mediaOffset; i < this.mediaOffset + this.mediaCount; i++) {
-                        const element = elements[i];
-                        if (element && Util.isElement(element)) {
-                            element.parentElement.style.display = ``;
-                        }
-                    }
-                }
-            }
         }
     }
 };

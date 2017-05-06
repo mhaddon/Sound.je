@@ -461,4 +461,32 @@ export default class Util {
         converter.setOption(`ghMentions`, false);
         return converter.makeHtml(htmlentities.encode(value));
     }
+
+    /**
+     * Concatenates all the artist names fluently
+     * @member module:Core/Util.Util#processArtistNames
+     * @method
+     * @returns {string}
+     */
+    static processArtistNames(allArtistNames: string[]): string {
+        const artistNames = Util.parse(allArtistNames.filter(n => n && n.trim()) || []);
+        const lastName = artistNames.pop();
+        return artistNames.length > 0 ? artistNames.join(`, `).concat(` and ${lastName}`) : lastName;
+    }
+
+    /**
+     * Generates an events display name
+     * @member module:Core/Util.Util#processEventName
+     * @method
+     * @returns {Optional<string>}
+     */
+    static processEventName(event: NBEvent): Optional<string> {
+        return Optional.ofNullable(event)
+            .map((eventObj: NBEvent) => {
+                const taggedArtists = (eventObj.artists || []).map(e => e.name);
+                const artists = (eventObj.name || ``).split(`;`);
+                return Util.processArtistNames(artists.concat(taggedArtists));
+            })
+            .filter(name => name);
+    }
 };

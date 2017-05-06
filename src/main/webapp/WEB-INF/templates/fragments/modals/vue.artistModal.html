@@ -66,7 +66,9 @@
                     <div class="modal__text artistmodal__content" v-html="description"></div>
                 </div>
 
-                <div v-show="isPage('events')" class="artistmodal__modalitem">
+                <div v-show="isPage('events')"
+                     v-infinite="{ page: eventsCurrentPage, limit: eventsLimit, fn: getEvents, parent: '.modal__body' }"
+                     class="artistmodal__modalitem">
                     <h3 class="artistmodal__subtitle">Events</h3>
                     <div class="modal__text artistmodal__content">
                         <table v-if="hasEvents">
@@ -92,12 +94,12 @@
                 </div>
 
                 <div v-show="isPage('music')"
-                     v-infinite="{ page: currentPage, limit: limit, fn: getMedia, parent: '.modal__body' }"
+                     v-infinite="{ page: mediaCurrentPage, limit: mediaLimit, fn: getMedia, parent: '.modal__body' }"
                      class="artistmodal__modalitem" style="height:100%;">
                     <h3 class="artistmodal__subtitle">Media</h3>
                     <div class="modal__text artistmodal__content">
                         <ul class='contentlist article'>
-                            <li class="contentlist__item contentlist__item" v-for="Medium in getMediaList()"
+                            <li class="contentlist__item contentlist__item" v-for="Medium in mediaList"
                                 style="margin-bottom:5px;">
                                 <mediabox-component :Medium='Medium' v-bind:name="Medium.id"
                                                     group="Media-ArtistList"></mediabox-component>

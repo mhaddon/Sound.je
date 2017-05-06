@@ -46,28 +46,40 @@ import Vue from "vue/dist/vue";
 // Site Modules
 import store from "nestedbird/vue/store";
 import { Page } from "nestedbird/core/Router";
-import { Util } from "nestedbird/core/Util";
-import { MusicPlayer } from "nestedbird/core/musicplayer";
+import { PlaylistController } from "nestedbird/core/musicplayer";
+import TriggerManager from "nestedbird/core/TriggerManager";
 
+/**
+ * Controller for listing media items
+ * @copyright Copyright (C) 2017  Michael Haddon
+ * @author Michael Haddon
+ * @since 23 Feb 2017
+ * @namespace
+ * @readonly
+ * @memberOf module:Vue/Components
+ */
 export const MediaList = {
     /**
-     * The components design template, see the "text/x-template" tags in
-     * index.html
+     * The module template
+     * @member module:Vue/Components.MediaList#template
+     * @default #mediaList-template
+     * @type string
      */
     template: `#mediaList-template`,
-    /**
-     * The components variables that it inherits from its parent
-     */
     props:    [],
-    /**
-     * Every component requires a data feild, but i do not need it as
-     * i inherit all the relevent data. So it is filled with nonsense.
-     */
     data(): Object {
         return {
-            mediaOffset: 0,
-            mediaCount:  3,
+            /**
+             * Current page for infinite scroll
+             * @member module:Vue/Components.MediaList#currentPage
+             * @type string
+             */
             currentPage: 0,
+            /**
+             * Amount of elements per page for infinite scroll
+             * @member module:Vue/Components.MediaList#limit
+             * @type string
+             */
             limit:       15
         };
     },
@@ -80,20 +92,14 @@ export const MediaList = {
                 limit: this.limit
             }).then(() => {
                 setTimeout(() => {
-                    this.getMediaList({});
                     this.$el.style.opacity = ``;
                     this.$el.style.height = ``;
-                    MusicPlayer.onNext(() => {
-                        setTimeout(() => {
-                            this.getMediaList();
-                        }, 15);
-                    });
-                    MusicPlayer.onPrevious(() => {
-                        setTimeout(() => {
-                            this.getMediaList();
-                        }, 15);
-                    });
                 }, 15);
+            });
+
+            TriggerManager.addTrigger({
+                events: [`onSongChange`],
+                action: () => this.$forceUpdate()
             });
         });
     },
@@ -104,10 +110,61 @@ export const MediaList = {
          */
         smallBoxes(): boolean {
             return store.getters.currentPage !== Page.MUSIC;
+        },
+        /**
+         * If this is the small version, how many media elements will be shown
+         * @member module:Vue/Components.MediaList#mediaCount
+         * @type number
+         */
+        mediaCount(): number {
+            return Math.floor(this.$el.offsetWidth / 350).min(1);
+        },
+        /**
+         * Retrieve all the hot media
+         * @member module:Vue/Components.MediaList#hotMedia
+         * @type Medium[]
+         */
+        hotMedia(): Medium[] {
+            return store.getters.hotMedia
+                .slice()
+                .sort((a, b) => Math.sign(a.scoreFinal - b.scoreFinal))
+                .map(e => store.getters.getMedium(e.id))
+                .filter(e => store.getters.supportedMediaTypes.includes(e.type));
         }
     },
     methods:  {
-        getMedia({ page = this.currentPage, limit = this.limit }) {
+        /**
+         * Is the medium element visible by its index
+         * @member module:Vue/Components.MarkdownTextarea#isMediumVisible
+         * @method
+         * @param {number} index    the index of this medium element as it occurs on the page
+         * @returns boolean
+         */
+        isMediumVisible(index: number): boolean {
+            const isPlaying = PlaylistController.get(`Media-HPTicker`).getId() === index;
+            const isMusicPage = store.getters.currentPage === Page.MUSIC;
+            const isAroundCurrentElement = index >= this.getMediaOffset() &amp;&amp; index &lt; this.getMediaOffset() + this.mediaCount;
+
+            return isMusicPage || isPlaying || isAroundCurrentElement;
+        },
+        /**
+         * If this is the small version, we calculate where the media offset begins
+         * @member module:Vue/Components.MarkdownTextarea#getMediaOffset
+         * @method
+         * @returns number
+         */
+        getMediaOffset(): number {
+            return (PlaylistController.get(`Media-HPTicker`).getId() - Math.floor(this.mediaCount / 2))
+                .max(this.$el.querySelectorAll(`.medium`).length - this.mediaCount)
+                .min(0);
+        },
+        /**
+         * Retrieves additional medium elements
+         * @member module:Vue/Components.MarkdownTextarea#getMedia
+         * @method
+         * @returns Promise&lt;number>
+         */
+        getMedia({ page = this.currentPage, limit = this.limit }): Promise&lt;number> {
             return store.dispatch(`getMediaHot`, {
                 page,
                 limit
@@ -115,54 +172,6 @@ export const MediaList = {
                 this.currentPage = page;
                 return this.currentPage;
             });
-        },
-        getMediaList(): Medium[] {
-            const sortedList = store.getters.hotMedia
-                .slice()
-                .sort((a, b) => Math.sign(a.scoreFinal - b.scoreFinal))
-                .map(e => store.getters.getMedium(e.id))
-                .filter(e => store.getters.supportedMediaTypes.includes(e.type));
-
-            this.$nextTick(() => {
-                this.updateMediaVisibility();
-            });
-
-            return sortedList;
-        },
-        updateMediaVisibility() {
-            if (store.getters.currentPage === Page.MUSIC) {
-                if (this.$el &amp;&amp; Util.isElement(this.$el)) {
-                    const elements = this.$el.querySelectorAll(`.medium`);
-                    if (elements.length) {
-                        for (let i = elements.length - 1; i >= 0; i--) {
-                            const element = elements[i];
-                            element.parentElement.style.display = ``;
-                        }
-                    }
-                }
-            } else if (this.$el &amp;&amp; Util.isElement(this.$el)) {
-                this.mediaCount = Math.floor(this.$el.offsetWidth / 350).min(1);
-
-                const elements = this.$el.querySelectorAll(`.medium`);
-                if (elements.length) {
-                    let loadedId = 0;
-                    for (let i = 0; i &lt; elements.length; i++) {
-                        const element = elements[i];
-                        element.parentElement.style.display = `none`;
-                        if (element &amp;&amp; Util.isElement(element) &amp;&amp; /medium--loaded/g.exec(element.className)) {
-                            loadedId = i - 1;
-                        }
-                    }
-                    this.mediaOffset = loadedId.max(elements.length - this.mediaCount).min(0);
-
-                    for (let i = this.mediaOffset; i &lt; this.mediaOffset + this.mediaCount; i++) {
-                        const element = elements[i];
-                        if (element &amp;&amp; Util.isElement(element)) {
-                            element.parentElement.style.display = ``;
-                        }
-                    }
-                }
-            }
         }
     }
 };
@@ -177,13 +186,13 @@ export const VueMediaList = Vue.extend(MediaList);</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-Types.html">Types</a></li><li><a href="Directives.html">Vue/Directives</a></li><li><a href="Pages.html">Vue/Pages</a></li><li><a href="Store.html">Vue/Store</a></li></ul><h3>Classes</h3><ul><li><a href="Ajax.Ajax.html">Ajax</a></li><li><a href="InfiniteController.Listener.html">Listener</a></li><li><a href="InfiniteController.ScrollContainer.html">ScrollContainer</a></li><li><a href="KeyController.exports.default.html">exports.default</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Notification.html">Notification</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul><h3>Namespaces</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="Components.AboutPage.html">AboutPage</a></li><li><a href="Components.AdminPage.html">AdminPage</a></li><li><a href="Components.ArtistModal.html">ArtistModal</a></li><li><a href="Components.CreateRecordModal.html">CreateRecordModal</a></li><li><a href="Components.DateTimePicker.html">DateTimePicker</a></li><li><a href="Components.EditableFormData.html">EditableFormData</a></li><li><a href="Components.EditRecordModal.html">EditRecordModal</a></li><li><a href="Components.EntityField.html">EntityField</a></li><li><a href="Components.EventList.html">EventList</a></li><li><a href="Components.EventModal.html">EventModal</a></li><li><a href="Components.FacebookBox.html">FacebookBox</a></li><li><a href="Components.LocationModal.html">LocationModal</a></li><li><a href="Components.LoginModal.html">LoginModal</a></li><li><a href="Components.LoginPasswordModal.html">LoginPasswordModal</a></li><li><a href="Components.MarkdownTextarea.html">MarkdownTextarea</a></li><li><a href="Components.MediaBox.html">MediaBox</a></li><li><a href="Components.MediumModal.html">MediumModal</a></li><li><a href="Components.MultiEntityField.html">MultiEntityField</a></li><li><a href="Components.NewsPage.html">NewsPage</a></li><li><a href="Components.NotFoundModal.html">NotFoundModal</a></li><li><a href="Components.PasswordResetModal.html">PasswordResetModal</a></li><li><a href="Components.RecordModal.html">RecordModal</a></li><li><a href="Components.RecordsPage.html">RecordsPage</a></li><li><a href="Components.RegisterModal.html">RegisterModal</a></li><li><a href="Components.SearchPage.html">SearchPage</a></li><li><a href="Components.SongModal.html">SongModal</a></li><li><a href="Components.SubmitModal.html">SubmitModal</a></li><li><a href="Directives.form.html">form</a></li><li><a href="Directives.FormDirectiveHelper.html">FormDirectiveHelper</a></li><li><a href="Directives.href.html">href</a></li><li><a href="Directives.infinite.html">infinite</a></li><li><a href="Directives.src.html">src</a></li><li><a href="Directives.SrcDirectiveHelper.html">SrcDirectiveHelper</a></li><li><a href="Mixins.Auth.html">Auth</a></li><li><a href="Mixins.IeVersion.html">IeVersion</a></li><li><a href="Mixins.Mobile.html">Mobile</a></li><li><a href="Mixins.Modal.html">Modal</a></li><li><a href="Mixins.Tag.html">Tag</a></li><li><a href="Pages.ViewModel.html">ViewModel</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-Types.html">Types</a></li><li><a href="Directives.html">Vue/Directives</a></li><li><a href="Pages.html">Vue/Pages</a></li><li><a href="Store.html">Vue/Store</a></li></ul><h3>Classes</h3><ul><li><a href="Ajax.Ajax.html">Ajax</a></li><li><a href="InfiniteController.Listener.html">Listener</a></li><li><a href="InfiniteController.ScrollContainer.html">ScrollContainer</a></li><li><a href="KeyController.exports.default.html">exports.default</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Notification.html">Notification</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul><h3>Namespaces</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="Components.AboutPage.html">AboutPage</a></li><li><a href="Components.AdminPage.html">AdminPage</a></li><li><a href="Components.ArtistModal.html">ArtistModal</a></li><li><a href="Components.CreateRecordModal.html">CreateRecordModal</a></li><li><a href="Components.DateTimePicker.html">DateTimePicker</a></li><li><a href="Components.EditableFormData.html">EditableFormData</a></li><li><a href="Components.EditRecordModal.html">EditRecordModal</a></li><li><a href="Components.EntityField.html">EntityField</a></li><li><a href="Components.EventList.html">EventList</a></li><li><a href="Components.EventModal.html">EventModal</a></li><li><a href="Components.FacebookBox.html">FacebookBox</a></li><li><a href="Components.LocationModal.html">LocationModal</a></li><li><a href="Components.LoginModal.html">LoginModal</a></li><li><a href="Components.LoginPasswordModal.html">LoginPasswordModal</a></li><li><a href="Components.MarkdownTextarea.html">MarkdownTextarea</a></li><li><a href="Components.MediaBox.html">MediaBox</a></li><li><a href="Components.MediaList.html">MediaList</a></li><li><a href="Components.MediumModal.html">MediumModal</a></li><li><a href="Components.MultiEntityField.html">MultiEntityField</a></li><li><a href="Components.NewsPage.html">NewsPage</a></li><li><a href="Components.NotFoundModal.html">NotFoundModal</a></li><li><a href="Components.PasswordResetModal.html">PasswordResetModal</a></li><li><a href="Components.RecordModal.html">RecordModal</a></li><li><a href="Components.RecordsPage.html">RecordsPage</a></li><li><a href="Components.RegisterModal.html">RegisterModal</a></li><li><a href="Components.SearchPage.html">SearchPage</a></li><li><a href="Components.SongModal.html">SongModal</a></li><li><a href="Components.SubmitModal.html">SubmitModal</a></li><li><a href="Directives.form.html">form</a></li><li><a href="Directives.FormDirectiveHelper.html">FormDirectiveHelper</a></li><li><a href="Directives.href.html">href</a></li><li><a href="Directives.infinite.html">infinite</a></li><li><a href="Directives.src.html">src</a></li><li><a href="Directives.SrcDirectiveHelper.html">SrcDirectiveHelper</a></li><li><a href="Mixins.Auth.html">Auth</a></li><li><a href="Mixins.IeVersion.html">IeVersion</a></li><li><a href="Mixins.Mobile.html">Mobile</a></li><li><a href="Mixins.Modal.html">Modal</a></li><li><a href="Mixins.Tag.html">Tag</a></li><li><a href="Pages.ViewModel.html">ViewModel</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Wed May 03 2017 12:29:53 GMT+0100 (BST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sat May 06 2017 19:16:05 GMT+0100 (BST)
 </footer>
 
 <script> prettyPrint(); </script>

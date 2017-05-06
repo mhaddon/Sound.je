@@ -36,8 +36,8 @@
                 <p class="searchpage__title article__title">Events</p>
                 <a v-for="(data, index) in eventData" class="article__textbox eventbox"
                    v-if="getNextOccurrence(data.entity.times).isPresent()" v-href="data.url"
-                   :class="{ 'eventbox--infuture': data.entity.inFuture }">
-                    <p class="eventbox__title" v-text="processArtistNames(data.entity.allArtistNames)"></p>
+                   :class="{ 'eventbox--infuture': isInFuture(data.entity.times) }">
+                    <p class="eventbox__title" v-text="processArtistNames(data.entity)"></p>
                     <div class="eventbox__infobox">
                         <p class="eventbox__location" v-text="data.entity.location.name"></p>
                         <p class="eventbox__time" v-text="getNextOccurrence(data.entity.times).get()"></p>

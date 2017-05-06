@@ -54,29 +54,42 @@ export const ArtistModal = {
              * @member module:Vue/Components.ArtistModal#id
              * @type string
              */
-            id:          store.getters.pathIdDecoded,
+            id:                store.getters.pathIdDecoded,
             /**
              * The artist name passed in the url
              * @member module:Vue/Components.ArtistModal#name
              * @type string
              */
-            name:        store.getters.pathName,
+            name:              store.getters.pathName,
             /**
              * The current page when scrolling through the artists music collection
-             * @member module:Vue/Components.ArtistModal#currentPage
+             * @member module:Vue/Components.ArtistModal#mediaCurrentPage
              * @type number
              */
-            currentPage: 0,
+            mediaCurrentPage:  0,
             /**
              * The amount of media elements per page that we will load
-             * @member module:Vue/Components.ArtistModal#limit
+             * @member module:Vue/Components.ArtistModal#mediaLimit
              * @type number
              */
-            limit:       8
+            mediaLimit:        8,
+            /**
+             * The current page when scrolling through the artists upcoming events
+             * @member module:Vue/Components.ArtistModal#eventsCurrentPage
+             * @type number
+             */
+            eventsCurrentPage: 0,
+            /**
+             * The amount of event elements per page that we will load
+             * @member module:Vue/Components.ArtistModal#eventsLimit
+             * @type number
+             */
+            eventsLimit:       15
         };
     },
     created() {
         this.retrieveInitialMedia();
+        this.retrieveInitialEvents();
     },
     mounted() {
         this.updateTags();
@@ -154,17 +167,20 @@ export const ArtistModal = {
          */
         fbUrl(): string {
             return `https://www.facebook.com/${this.Artist.facebookId}`;
+        },
+        /**
+         * retrieves the currently downloaded artists media
+         * @member module:Vue/Components.ArtistModal#mediaList
+         * @type Medium[]
+         */
+        mediaList(): Medium[] {
+            return store.getters.media.slice()
+                .sort((a, b) => Math.sign(b.creationDateTime - a.creationDateTime))
+                .filter(e => e.song.artist.id === this.Artist.id)
+                .filter(e => store.getters.supportedMediaTypes.includes(e.type));
         }
     },
     methods:  {
-        /**
-         * Gets an artists upcoming events
-         * @member module:Vue/Components.ArtistModal#getUpcomingEvents
-         * @method
-         */
-        getUpcomingEvents() {
-            // todo get upcoming events on load
-        },
         /**
          * Update meta tags
          * @member module:Vue/Components.ArtistModal#getMedia
@@ -186,39 +202,57 @@ export const ArtistModal = {
          * @method
          * @param {number} page         the page we have currently loaded up to
          * @param {number} limit        the amount of elements per page we will load
-         * @returns {Promise<string | RESTObject<Medium>>}
+         * @returns {Promise<number>}
          */
-        getMedia({ page = this.currentPage, limit = this.limit }): Promise<string | RESTObject<Medium>> {
+        getMedia({ page = this.mediaCurrentPage, limit = this.mediaLimit }): Promise<number> {
             return store.dispatch(`getArtistMedia`, {
                 page,
                 limit,
                 sort: `creationDateTime,desc`,
                 id:   this.id
             }).then((): number => {
-                this.currentPage = page;
-                return this.currentPage;
+                this.mediaCurrentPage = page;
+                return this.mediaCurrentPage;
             });
         },
         /**
-         * retrieves the currently downloaded artists media and sorts it appropriately
-         * @member module:Vue/Components.ArtistModal#getMediaList
+         * Downloads more artist events elements
+         * @member module:Vue/Components.ArtistModal#getEvents
          * @method
-         * @returns {Medium[]}
+         * @param {number} page         the page we have currently loaded up to
+         * @param {number} limit        the amount of elements per page we will load
+         * @returns {Promise<number>}
          */
-        getMediaList(): Medium[] {
-            return store.getters.media.slice()
-                .sort((a, b) => Math.sign(b.creationDateTime - a.creationDateTime))
-                .filter(e => e.song.artist.id === this.Artist.id)
-                .filter(e => store.getters.supportedMediaTypes.includes(e.type));
+        getEvents({ page = this.eventsCurrentPage, limit = this.eventsLimit }): Promise<number> {
+            return store.dispatch(`getArtistEvents`, {
+                page,
+                limit,
+                id: this.id
+            }).then((): number => {
+                this.eventsCurrentPage = page;
+                return this.eventsCurrentPage;
+            });
         },
         /**
          * retrieves the initial load of media elements
-         * @member module:Vue/Components.ArtistModal#getMediaList
+         * @member module:Vue/Components.ArtistModal#retrieveInitialMedia
          * @method
          */
         retrieveInitialMedia() {
             this.$nextTick(() => {
-                this.getMedia(this.currentPage, this.limit).then(() => {
+                this.getMedia(this.mediaCurrentPage, this.mediaLimit).then(() => {
+                    this.$forceUpdate();
+                });
+            });
+        },
+        /**
+         * retrieves the initial load of events elements
+         * @member module:Vue/Components.ArtistModal#retrieveInitialEvents
+         * @method
+         */
+        retrieveInitialEvents() {
+            this.$nextTick(() => {
+                this.getEvents(this.eventsCurrentPage, this.eventsLimit).then(() => {
                     this.$forceUpdate();
                 });
             });

@@ -34,7 +34,7 @@ import java.util.Optional;
 @EqualsAndHashCode(callSuper = true, exclude = {"user"})
 @NoArgsConstructor(force = true)
 public class VerificationToken extends BaseEntity {
-    @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @OneToOne(targetEntity = User.class, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
 

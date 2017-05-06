@@ -105,7 +105,21 @@ export const EventList = {
          * @member module:Vue/Components.EventList#isMobile
          * @type boolean
          */
-        isMobile: () => store.getters.isMobile
+        isMobile: () => store.getters.isMobile,
+        /**
+         * Gets the upcoming events
+         * @member module:Vue/Components.EventList#currentEvents
+         * @type EventBlock[]
+         */
+        currentEvents(): EventBlock[] {
+            let currentEvents = this.parsedEvents.slice()
+                .sort((a, b) => Math.sign(a.dateTime - b.dateTime));
+            if (!this.isMobile) {
+                currentEvents = currentEvents
+                    .slice(this.eventOffset, this.eventOffset + this.eventCount);
+            }
+            return currentEvents;
+        }
     },
     methods:  {
         /**
@@ -181,21 +195,6 @@ export const EventList = {
                 this.getEvents({ page: this.eventsRequestPage + 1 })
                     .then(() => this.checkNextEvents());
             }
-        },
-        /**
-         * Gets the
-         * @member module:Vue/Components.EventList#getCurrentEvents
-         * @method
-         * @returns EventBlock[]
-         */
-        getCurrentEvents(): EventBlock[] {
-            let currentEvents = this.parsedEvents.slice()
-                .sort((a, b) => Math.sign(a.dateTime - b.dateTime));
-            if (!this.isMobile) {
-                currentEvents = currentEvents
-                    .slice(this.eventOffset, this.eventOffset + this.eventCount);
-            }
-            return currentEvents;
         },
         /**
          * Gets the upcoming events

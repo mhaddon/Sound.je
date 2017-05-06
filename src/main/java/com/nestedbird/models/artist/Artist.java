@@ -67,7 +67,7 @@ public class Artist extends TaggedEntity implements Serializable {
     /**
      * All the songs the artist owns
      */
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "artist")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artist")
     @JsonBackReference(value = "songToArtist")
     @ContainedIn
     @Field(bridge = @FieldBridge(impl = SongBridge.class),

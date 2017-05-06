@@ -16,21 +16,27 @@
 
 package com.nestedbird.models.location;
 
+import com.nestedbird.models.core.Audited.AuditedEntity;
 import com.nestedbird.models.core.Base.BaseController;
 import com.nestedbird.models.core.Base.BaseRepository;
 import com.nestedbird.models.core.Base.BaseService;
+import com.nestedbird.models.event.EventService;
+import com.nestedbird.models.occurrence.Occurrence;
 import com.nestedbird.modules.formparser.ParameterMapParser;
+import com.nestedbird.modules.paginator.Paginator;
 import com.nestedbird.modules.resourceparser.LocationParser;
 import com.nestedbird.util.Mutable;
 import com.nestedbird.util.QueryBlock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The type Location controller.
@@ -42,6 +48,7 @@ public class LocationController extends BaseController<Location> {
     private final LocationRepository locationRepository;
     private final LocationService locationService;
     private final LocationParser locationParser;
+    private final EventService eventService;
 
     /**
      * Instantiates a new Location controller.
@@ -53,10 +60,12 @@ public class LocationController extends BaseController<Location> {
     @Autowired
     LocationController(final LocationRepository locationRepository,
                        final LocationService locationService,
-                       final LocationParser locationParser) {
+                       final LocationParser locationParser,
+                       final EventService eventService) {
         this.locationService = locationService;
         this.locationRepository = locationRepository;
         this.locationParser = locationParser;
+        this.eventService = eventService;
     }
 
     @Override
@@ -72,6 +81,19 @@ public class LocationController extends BaseController<Location> {
     @Override
     public BaseService<Location> getService() {
         return this.locationService;
+    }
+
+    @RequestMapping(value = "{id}/Events", method = RequestMethod.GET)
+    @SuppressWarnings("unchecked")
+    public Page<Occurrence> listEvents(final Pageable pageable, @PathVariable final String id) {
+        final List<Occurrence> occurrences = locationService.findOne(id)
+                .filter(AuditedEntity::getActive)
+                .map(eventService::retrieveUpcomingByLocation)
+                .map(ArrayList::new)
+                .orElse(new ArrayList());
+
+        return Paginator.<Occurrence>of(pageable)
+                .paginate(occurrences);
     }
 
     /**
