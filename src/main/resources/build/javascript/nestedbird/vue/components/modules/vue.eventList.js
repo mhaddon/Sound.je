@@ -16,6 +16,7 @@
 // @flow
 // Node Modules
 import Vue from "vue/dist/vue";
+import Optional from "optional-js";
 // Site Modules
 import { Util } from "nestedbird/core/Util";
 import store from "nestedbird/vue/store";
@@ -54,24 +55,17 @@ export const EventList = {
              */
             eventOffset:       0,
             /**
-             * The amount of event blocks shown at once
-             * @member module:Vue/Components.EventList#eventCount
-             * @type number
-             */
-            eventCount:        2,
-            /**
              * Amount of events loaded per query
              * @member module:Vue/Components.EventList#eventsPerRequest
              * @type number
              */
-            eventsPerRequest:  25,
+            eventsPerRequest:  50,
             /**
              * The current amount of pages we have downloaded
              * @member module:Vue/Components.EventList#eventsRequestPage
              * @type number
              */
             eventsRequestPage: 0
-
         };
     },
     created() {
@@ -81,6 +75,11 @@ export const EventList = {
         TriggerManager.addTrigger({
             events: [`onPerspectiveSwap`],
             action: () => this.checkNextEvents()
+        });
+
+        TriggerManager.addTrigger({
+            events: [`onResize`],
+            action: () => this.$forceUpdate()
         });
     },
     computed: {
@@ -98,7 +97,7 @@ export const EventList = {
          * @type boolean
          */
         isNextEvents(): boolean {
-            return !this.isMobile && (this.parsedEvents.length - this.eventOffset - this.eventCount > 0);
+            return !this.isMobile && (this.parsedEvents.length - this.eventOffset - this.getEventBlockCount() > 0);
         },
         /**
          * Is the window mobile sized
@@ -112,16 +111,36 @@ export const EventList = {
          * @type EventBlock[]
          */
         currentEvents(): EventBlock[] {
-            let currentEvents = this.parsedEvents.slice()
+            return this.parsedEvents.slice()
                 .sort((a, b) => Math.sign(a.dateTime - b.dateTime));
-            if (!this.isMobile) {
-                currentEvents = currentEvents
-                    .slice(this.eventOffset, this.eventOffset + this.eventCount);
-            }
-            return currentEvents;
         }
     },
     methods:  {
+        /**
+         * Is the medium element visible by its index
+         * @member module:Vue/Components.EventList#isEventBlockVisible
+         * @method
+         * @param {number} index    the index of this medium element as it occurs on the page
+         * @returns boolean
+         */
+        isEventBlockVisible(index: number): boolean {
+            const isMobile = this.isMobile;
+            const isAroundCurrentElement = index >= this.eventOffset && index < this.eventOffset + this.getEventBlockCount();
+
+            return isMobile || isAroundCurrentElement;
+        },
+        /**
+         * How many event blocks elements will be shown
+         * @member module:Vue/Components.EventList#getEventBlockCount
+         * @method
+         * @returns number
+         */
+        getEventBlockCount(): number {
+            return Optional.ofNullable(this.$el)
+                .map(element => element.querySelector(`.eventlist__events`).offsetWidth / 450)
+                .map(amount => Math.floor(amount).min(2))
+                .orElse(2);
+        },
         /**
          * Retrieves new events
          * @member module:Vue/Components.EventList#getEvents
@@ -169,7 +188,7 @@ export const EventList = {
          * @method
          */
         previousEvents() {
-            this.eventOffset -= this.eventCount;
+            this.eventOffset -= this.getEventBlockCount();
 
             this.eventOffset = this.eventOffset.min(0);
         },
@@ -179,7 +198,7 @@ export const EventList = {
          * @method
          */
         nextEvents() {
-            this.eventOffset += this.eventCount;
+            this.eventOffset += this.getEventBlockCount();
 
             this.eventOffset = this.eventOffset.max(this.parsedEvents.length - this.eventsCount).min(0);
 

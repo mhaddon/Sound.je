@@ -140,14 +140,6 @@ class EventServiceImpl extends AuditedServiceImpl<Event> implements EventService
                 .collect(Collectors.toSet());
     }
 
-    @SuppressWarnings("unchecked")
-    private List<Event> getAllPossibleUpcoming() {
-        return entityManager.createNativeQuery(
-                "CALL getUpcomingEvents()",
-                Event.class
-        ).getResultList();
-    }
-
     @Override
     public Set<Occurrence> retrieveUpcomingByLocation(final Location location) {
         return getAllPossibleUpcoming().stream()
@@ -159,6 +151,14 @@ class EventServiceImpl extends AuditedServiceImpl<Event> implements EventService
                 .flatMap(List::stream)
                 .map(occurrenceService::parseParsedEventData)
                 .collect(Collectors.toSet());
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Event> getAllPossibleUpcoming() {
+        return entityManager.createNativeQuery(
+                "CALL getUpcomingEvents()",
+                Event.class
+        ).getResultList();
     }
 
     private Occurrence convertParsedEventToOccurrence(final ScoredEntry<String> parsedEvent) {

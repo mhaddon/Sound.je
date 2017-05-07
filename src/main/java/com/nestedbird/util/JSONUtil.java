@@ -17,16 +17,19 @@
 package com.nestedbird.util;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
+import java.util.function.BiConsumer;
 
 /**
  * This utility class provides additional JSONObject/JSONArray functionality
  */
 @UtilityClass
+@Slf4j
 public class JSONUtil {
     /**
      * Merge "source" into "target". If fields have equal name, merge them recursively.
@@ -116,5 +119,39 @@ public class JSONUtil {
         }
 
         return newArray;
+    }
+
+    /**
+     * Loops over all JSONObject data
+     *
+     * @param data
+     * @param consumer
+     */
+    public void loopObjectData(final JSONObject data, final BiConsumer<String, Object> consumer) {
+        final Iterator keys = data.keys();
+        while (keys.hasNext()) {
+            final String key = keys.next().toString();
+            try {
+                consumer.accept(key, data.get(key));
+            } catch (JSONException e) {
+                logger.info("[JSONUtil] [loopData] Failure To Retrieve JSONObject Key", e);
+            }
+        }
+    }
+
+    /**
+     * Loops over all JSONArray data
+     *
+     * @param data
+     * @param consumer
+     */
+    public void loopArrayData(final JSONArray data, final BiConsumer<Integer, Object> consumer) {
+        for (int i = 0; i < data.length(); i++) {
+            try {
+                consumer.accept(i, data.getJSONObject(i));
+            } catch (JSONException e) {
+                logger.info("[JSONUtil] [loopData] Failure To Retrieve JSONArray Key", e);
+            }
+        }
     }
 }

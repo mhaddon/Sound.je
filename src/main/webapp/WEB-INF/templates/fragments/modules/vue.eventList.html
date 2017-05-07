@@ -30,7 +30,9 @@
                v-show="isPreviousEvents"></i>
         </div>
         <ul class="contentcontroller__content contentlist eventlist__events">
-            <li class="contentlist__item contentlist__item--wide" v-for="Date in currentEvents">
+            <li class="contentlist__item contentlist__item--wide"
+                v-for="(Date, index) in currentEvents"
+                v-show="isEventBlockVisible(index)">
                 <p class="date__title" v-text='Date.displayDateTime'></p>
                 <ul class="date__locations">
                     <li class="location" v-for="Place in Date.Places">

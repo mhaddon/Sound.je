@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * The interface Artist service.
  */
-interface ArtistService extends AuditedService<Artist> {
+public interface ArtistService extends AuditedService<Artist> {
     /**
      * List all medium by page page.
      *

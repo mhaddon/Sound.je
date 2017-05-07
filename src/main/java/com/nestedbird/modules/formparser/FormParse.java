@@ -19,9 +19,11 @@ package com.nestedbird.modules.formparser;
 import com.nestedbird.models.core.Base.BaseEntity;
 import com.nestedbird.modules.schema.annotations.SchemaRepository;
 import com.nestedbird.modules.schema.annotations.SchemaView;
+import com.nestedbird.util.JSONUtil;
 import com.nestedbird.util.Mutable;
 import com.nestedbird.util.UUIDConverter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
@@ -94,7 +96,11 @@ public class FormParse {
 
         if (accessor.getPropertyType(key) != null) {
             try {
-                if (value.getClass().equals(JSONObject.class)) {
+                if (value.getClass().equals(JSONObject.class) &&
+                        ((JSONObject) value).has("_isMap") &&
+                        ((JSONObject) value).get("_isMap").equals(true)) {
+                    writeArrayMapToEntity(accessor, key, (JSONObject) value);
+                } else if (value.getClass().equals(JSONObject.class)) {
                     writeObjectToEntity(accessor, key, (JSONObject) value);
                 } else if (value.getClass().equals(JSONArray.class)) {
                     writeArrayToEntity(accessor, key, (JSONArray) value);
@@ -121,6 +127,23 @@ public class FormParse {
         final ResolvableType type = accessor.getPropertyTypeDescriptor(key).getResolvableType();
 
         accessor.setPropertyValue(key, parseObject(value, type));
+    }
+
+    /**
+     * Write an array map to an entity
+     * an array map is an object, but is meant to represent an array
+     *
+     * @param accessor The accessor for the existing entity
+     * @param key      The fields name we are overwriting
+     * @param value    The new value
+     * @throws JSONException the json exception
+     */
+    private void writeArrayMapToEntity(final PropertyAccessor accessor,
+                                       final String key,
+                                       final JSONObject value) throws JSONException {
+        final ResolvableType type = accessor.getPropertyTypeDescriptor(key).getResolvableType();
+
+        accessor.setPropertyValue(key, parseArrayMap(value, type));
     }
 
     /**
@@ -320,6 +343,7 @@ public class FormParse {
      */
     private List<Object> parseArrayOfDatabaseEntities(final JSONArray value, final Class type) throws JSONException {
         final List<Object> elements = new ArrayList<>();
+
         for (Integer i = 0; i < value.length(); i++) {
             if (!value.isNull(i)) {
                 final JSONObject data = (JSONObject) value.get(i);
@@ -327,6 +351,26 @@ public class FormParse {
             }
         }
         return elements;
+    }
+
+    /**
+     * processes an array map
+     *
+     * @param value value to process
+     * @param type  type of this array
+     * @return new list
+     * @throws JSONException the exception
+     */
+    private Object parseArrayMap(final JSONObject value, final ResolvableType type) throws JSONException {
+        final JSONArray newArray = new JSONArray();
+
+        JSONUtil.loopObjectData(value, (key, data) -> {
+            if (NumberUtils.isCreatable(key)) {
+                newArray.put(data);
+            }
+        });
+
+        return parseArray(newArray, type);
     }
 
     /**

@@ -21,3 +21,4 @@ import "intersection-observer";
 // Site Modules
 import "nestedbird/core/GlobalJS";
 import "nestedbird/vue/pages/homepage";
+import "nestedbird/showdown/EntityLinkExtension";

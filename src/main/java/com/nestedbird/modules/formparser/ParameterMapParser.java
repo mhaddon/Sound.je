@@ -22,7 +22,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
@@ -53,6 +52,16 @@ public class ParameterMapParser {
                         ParameterMapParser::parseCombiner
                 );
 
+        return ParameterMapParser.of(data);
+    }
+
+    /**
+     * Create new ParameterMapParser
+     *
+     * @param data
+     * @return
+     */
+    public static ParameterMapParser of(final JSONObject data) {
         return new ParameterMapParser(data);
     }
 
@@ -163,13 +172,14 @@ public class ParameterMapParser {
      * @return the json array
      * @throws JSONException the json exception
      */
-    private static JSONArray convertValueToArrayOfObject(final String value,
-                                                         final FormField formField) throws JSONException {
+    private static JSONObject convertValueToArrayOfObject(final String value,
+                                                          final FormField formField) throws JSONException {
         final JSONObject childObject = new JSONObject();
         childObject.put(formField.getChildName(), value);
 
-        final JSONArray childArray = new JSONArray();
-        childArray.put(childObject);
+        final JSONObject childArray = new JSONObject();
+        childArray.put("_isMap", true);
+        childArray.put(formField.getIndex().toString(), childObject);
 
         return childArray;
     }
@@ -249,15 +259,7 @@ public class ParameterMapParser {
      * @param consumer the consumer
      */
     public void loopData(final BiConsumer<String, Object> consumer) {
-        final Iterator keys = data.keys();
-        while (keys.hasNext()) {
-            final String key = keys.next().toString();
-            try {
-                consumer.accept(key, data.get(key));
-            } catch (JSONException e) {
-                logger.info("[ParameterMapParser] [createObjectWithKey] Failure To Retrieve JSONObject Key", e);
-            }
-        }
+        JSONUtil.loopObjectData(data, consumer);
     }
 
     /**

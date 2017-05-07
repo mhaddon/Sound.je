@@ -71,7 +71,7 @@ export const MediaList = {
             });
 
             TriggerManager.addTrigger({
-                events: [`onSongChange`],
+                events: [`onSongChange`, `onResize`],
                 action: () => this.$forceUpdate()
             });
         });
@@ -83,14 +83,6 @@ export const MediaList = {
          */
         smallBoxes(): boolean {
             return store.getters.currentPage !== Page.MUSIC;
-        },
-        /**
-         * If this is the small version, how many media elements will be shown
-         * @member module:Vue/Components.MediaList#mediaCount
-         * @type number
-         */
-        mediaCount(): number {
-            return Math.floor(this.$el.offsetWidth / 350).min(1);
         },
         /**
          * Retrieve all the hot media
@@ -107,8 +99,17 @@ export const MediaList = {
     },
     methods:  {
         /**
+         * If this is the small version, how many media elements will be shown
+         * @member module:Vue/Components.MediaList#getMediaCount
+         * @method
+         * @returns number
+         */
+        getMediaCount(): number {
+            return Math.floor(this.$el.offsetWidth / 350).min(1);
+        },
+        /**
          * Is the medium element visible by its index
-         * @member module:Vue/Components.MarkdownTextarea#isMediumVisible
+         * @member module:Vue/Components.MediaList#isMediumVisible
          * @method
          * @param {number} index    the index of this medium element as it occurs on the page
          * @returns boolean
@@ -116,24 +117,24 @@ export const MediaList = {
         isMediumVisible(index: number): boolean {
             const isPlaying = PlaylistController.get(`Media-HPTicker`).getId() === index;
             const isMusicPage = store.getters.currentPage === Page.MUSIC;
-            const isAroundCurrentElement = index >= this.getMediaOffset() && index < this.getMediaOffset() + this.mediaCount;
+            const isAroundCurrentElement = index >= this.getMediaOffset() && index < this.getMediaOffset() + this.getMediaCount();
 
             return isMusicPage || isPlaying || isAroundCurrentElement;
         },
         /**
          * If this is the small version, we calculate where the media offset begins
-         * @member module:Vue/Components.MarkdownTextarea#getMediaOffset
+         * @member module:Vue/Components.MediaList#getMediaOffset
          * @method
          * @returns number
          */
         getMediaOffset(): number {
-            return (PlaylistController.get(`Media-HPTicker`).getId() - Math.floor(this.mediaCount / 2))
-                .max(this.$el.querySelectorAll(`.medium`).length - this.mediaCount)
+            return (PlaylistController.get(`Media-HPTicker`).getId() - Math.floor(this.getMediaCount() / 2))
+                .max(this.$el.querySelectorAll(`.medium`).length - this.getMediaCount())
                 .min(0);
         },
         /**
          * Retrieves additional medium elements
-         * @member module:Vue/Components.MarkdownTextarea#getMedia
+         * @member module:Vue/Components.MediaList#getMedia
          * @method
          * @returns Promise<number>
          */

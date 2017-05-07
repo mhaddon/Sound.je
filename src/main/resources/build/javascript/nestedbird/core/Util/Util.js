@@ -19,8 +19,8 @@ import Optional from "optional-js";
 import showdown from "showdown";
 import htmlentities from "he";
 import { parse, toSeconds } from "iso8601-duration";
-
 // Site Modules
+
 /**
  * This class is used in so many modules that it is unwise for it to require modules globally
  * as it may get circular requires
@@ -450,7 +450,7 @@ export default class Util {
      * @returns {*}
      */
     static parseMarkdown(value: string): string {
-        const converter = new showdown.Converter();
+        const converter = new showdown.Converter({ extensions: [`showdown-extension-entitylink`] });
         converter.setFlavor(`github`);
         converter.setOption(`simpleLineBreaks`, true);
         converter.setOption(`simplifiedAutoLink`, true);
