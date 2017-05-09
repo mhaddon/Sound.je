@@ -30,7 +30,8 @@ import static org.junit.Assert.assertEquals;
 public class JSONUtilTest {
     public static class deepMerge {
         @Before
-        public void setUp() throws Exception {}
+        public void setUp() throws Exception {
+        }
 
         @Test
         public void Can_Concatenate_Fields() throws JSONException {

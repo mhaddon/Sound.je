@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(Enclosed.class)
@@ -34,12 +33,13 @@ public class PatternMatcherTest {
 
     public static class matches {
         @Before
-        public void setUp() throws Exception {}
+        public void setUp() throws Exception {
+        }
 
         @Test
         public void Null_Query_Equals_False() {
             Boolean expected = false;
-            Boolean compared =  PatternMatcher.of(uuidPattern, null).doesMatch();
+            Boolean compared = PatternMatcher.of(uuidPattern, null).doesMatch();
 
             assertEquals("values must match", expected, compared);
         }
@@ -47,7 +47,7 @@ public class PatternMatcherTest {
         @Test
         public void Invalid_Match_Equals_False() {
             Boolean expected = false;
-            Boolean compared =  PatternMatcher.of(uuidPattern, "asd").doesMatch();
+            Boolean compared = PatternMatcher.of(uuidPattern, "asd").doesMatch();
 
             assertEquals("values must match", expected, compared);
         }
@@ -55,12 +55,12 @@ public class PatternMatcherTest {
         @Test
         public void Valid_Match_Equals_True() {
             Boolean expected = true;
-            Boolean compared =  PatternMatcher.of(uuidPattern, validPattern).doesMatch();
+            Boolean compared = PatternMatcher.of(uuidPattern, validPattern).doesMatch();
 
             assertEquals("values must match", expected, compared);
         }
 
-        @Test(expected=NullPointerException.class)
+        @Test(expected = NullPointerException.class)
         public void Null_Pattern_Throws_Exception() {
             PatternMatcher.of(null, "test");
         }
@@ -68,7 +68,8 @@ public class PatternMatcherTest {
 
     public static class then {
         @Before
-        public void setUp() throws Exception {}
+        public void setUp() throws Exception {
+        }
 
         @Test
         public void Properly_Runs_Then_Callback() {
@@ -96,7 +97,8 @@ public class PatternMatcherTest {
 
     public static class otherwise {
         @Before
-        public void setUp() throws Exception {}
+        public void setUp() throws Exception {
+        }
 
         @Test
         public void Properly_Runs_Then_Callback() {

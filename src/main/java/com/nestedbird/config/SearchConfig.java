@@ -53,7 +53,7 @@ public class SearchConfig {
      */
     @Bean
     public FullTextEntityManager fullTextEntityManager() {
-        return org.hibernate.search.jpa.Search.
-                getFullTextEntityManager(entityManager);
+        return org.hibernate.search.jpa.Search
+                .getFullTextEntityManager(entityManager);
     }
 }

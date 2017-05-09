@@ -186,6 +186,17 @@ export const EntityField = {
                             this.updateSelected();
                         })
                 );
+        },
+        /**
+         * Is this element taggable
+         * todo this is hardcoded for just tags, this needs to work for any element... somehow
+         * @member module:Vue/Components.EntityField#isTaggable
+         * @method
+         * @param {string} name name of tag
+         * @returns boolean
+         */
+        isTaggable(name: string): boolean {
+            return name === `tags` || name === `hiddenTags`;
         }
     }
 };

@@ -119,13 +119,13 @@ export default class Listener {
             if (!node) {
                 node = document.createElement(`DIV`);
                 node.className = `loadmore`;
+                this.el.appendChild(node);
             }
             while (node.firstChild) node.removeChild(node.firstChild);
             node.style.display = ``;
 
             node.appendChild(nodeText);
             node.appendChild(nodeLoading);
-            this.el.appendChild(node);
 
             /**
              * Request the data from the request function which is a promise

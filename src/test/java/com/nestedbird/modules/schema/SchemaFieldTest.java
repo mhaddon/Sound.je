@@ -30,20 +30,6 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Enclosed.class)
 public class SchemaFieldTest {
 
-    public class testClass {
-        @SchemaView(value = "Array", type = String.class)
-        public Set<String> testSet = new HashSet<>(0);
-
-        @SchemaView(name = "overridden")
-        public String testOverridenName;
-
-        @SchemaView(name = "")
-        public String testOverridenNameByEmptyString;
-
-        @SchemaView(type = String.class)
-        public Integer testOverriddenType;
-    }
-
     public static class isArray {
         private SchemaField testClass_testSet;
 
@@ -121,5 +107,19 @@ public class SchemaFieldTest {
             Class<?> compared = testClass_testOverridenName.getTypeOverride();
             assertEquals("field names must match", expected, compared);
         }
+    }
+
+    public class testClass {
+        @SchemaView(value = "Array", type = String.class)
+        public Set<String> testSet = new HashSet<>(0);
+
+        @SchemaView(name = "overridden")
+        public String testOverridenName;
+
+        @SchemaView(name = "")
+        public String testOverridenNameByEmptyString;
+
+        @SchemaView(type = String.class)
+        public Integer testOverriddenType;
     }
 }

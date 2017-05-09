@@ -34,7 +34,7 @@
                      v-model="selectedData"
                      :multiple="multi"
                      :options="elements"
-                     :taggable="data.name === 'tags'"
+                     :taggable="isTaggable(data.name)"
                      v-on:tag="addTag"></multiselect>
     </div>
 </script>

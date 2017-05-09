@@ -21,8 +21,6 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
-import javax.validation.constraints.Null;
-
 import static org.junit.Assert.assertEquals;
 
 @RunWith(Enclosed.class)
@@ -30,7 +28,8 @@ public class UUIDConverterTest {
 
     public static class toBase64 {
         @Before
-        public void setUp() throws Exception {}
+        public void setUp() throws Exception {
+        }
 
         @Test
         public void Should_Match_When_Encoded() {
@@ -39,12 +38,12 @@ public class UUIDConverterTest {
             assertEquals("string must match", expected, compared);
         }
 
-        @Test(expected=IllegalArgumentException.class)
+        @Test(expected = IllegalArgumentException.class)
         public void Should_ThrowExeption_When_UUIDIsInvalid() {
             UUIDConverter.toBase64("sausages");
         }
 
-        @Test(expected=NullPointerException.class)
+        @Test(expected = NullPointerException.class)
         public void Should_ThrowExeption_When_UUIDIsNull() {
             UUIDConverter.toBase64(null);
         }
@@ -53,7 +52,8 @@ public class UUIDConverterTest {
 
     public static class fromBase64 {
         @Before
-        public void setUp() throws Exception {}
+        public void setUp() throws Exception {
+        }
 
         @Test
         public void Should_Match_When_Decoded() {
@@ -62,12 +62,12 @@ public class UUIDConverterTest {
             assertEquals("string must match", expected, compared);
         }
 
-        @Test(expected=NullPointerException.class)
+        @Test(expected = NullPointerException.class)
         public void Should_ThrowExeption_When_StringIsNull() {
             UUIDConverter.fromBase64(null);
         }
 
-        @Test(expected=IllegalArgumentException.class)
+        @Test(expected = IllegalArgumentException.class)
         public void Should_ThrowExeption_When_StringIsWrongLength() {
             UUIDConverter.fromBase64("sausages");
         }
@@ -75,7 +75,8 @@ public class UUIDConverterTest {
 
     public static class isUUID {
         @Before
-        public void setUp() throws Exception {}
+        public void setUp() throws Exception {
+        }
 
         @Test
         public void Should_Detect_Valid_UUID() {

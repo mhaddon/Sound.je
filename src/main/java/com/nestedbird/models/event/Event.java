@@ -47,7 +47,7 @@ import java.util.stream.Stream;
  */
 @Entity
 @Table(name = "events")
-@Cacheable(true)
+@Cacheable
 @Indexed
 //@Cache(region="common", usage = CacheConcurrencyStrategy.READ_WRITE)
 @SchemaRepository(EventRepository.class)

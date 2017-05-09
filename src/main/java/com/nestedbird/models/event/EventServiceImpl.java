@@ -16,6 +16,7 @@
 
 package com.nestedbird.models.event;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.nestedbird.models.artist.Artist;
@@ -164,6 +165,7 @@ class EventServiceImpl extends AuditedServiceImpl<Event> implements EventService
     private Occurrence convertParsedEventToOccurrence(final ScoredEntry<String> parsedEvent) {
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
+        objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
 
         try {
             final ParsedEventData parsedEventData = objectMapper.readValue(parsedEvent.getValue(), ParsedEventData.class);

@@ -87,7 +87,15 @@
                 <div v-show="isPage('about') || isPage()" class="artistmodal__modalitem">
                     <h3 class="artistmodal__subtitle">About</h3>
                     <div class="artistmodal__splitview">
-                        <div class="modal__text artistmodal__content artistmodal__viewleft" v-html="description"></div>
+                        <div class="artistmodal__viewleft">
+                            <div class="modal__text artistmodal__content" v-html="description"></div>
+                            <div class="tagbox">
+                                <a v-for="tag in Location.tags"
+                                   v-href="{ page: 'search', id: tag.name, unencode: true }"
+                                   v-text="tag.name"
+                                   class="tagbox__tag"></a>
+                            </div>
+                        </div>
                         <div class="modal__text artistmodal__content artistmodal__viewright">
                             <a v-bind:href="mapLinkUrl" target="_blank">
                                 <img class="modal__mapimg" v-src="mapUrl"/>

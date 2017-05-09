@@ -18,6 +18,7 @@
 import "babel-polyfill";
 import "element-closest";
 import "intersection-observer";
+import "flatpickr";
 // Site Modules
 import "nestedbird/core/GlobalJS";
 import "nestedbird/vue/pages/homepage";

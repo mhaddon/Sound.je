@@ -17,6 +17,7 @@
 package com.nestedbird.models.core;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,7 @@ public abstract class DataObject implements Serializable {
         String returnVar = "";
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Hibernate5Module());
+        objectMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, true);
 
         try {
             returnVar = objectMapper.writeValueAsString(this);

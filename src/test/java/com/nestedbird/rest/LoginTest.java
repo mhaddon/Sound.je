@@ -30,7 +30,8 @@ import static junit.framework.TestCase.assertEquals;
 public class LoginTest {
     public static class check {
         @Before
-        public void setUp() throws Exception {}
+        public void setUp() throws Exception {
+        }
 
         @Test
         public void Request_Fails_With_No_Data() {

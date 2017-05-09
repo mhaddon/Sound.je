@@ -1,0 +1,57 @@
+/*!
+ *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License version 3
+ *  as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@keyframes shine {
+  0% {
+    opacity: 0.5;
+    top: -30%;
+    left: -80px;
+    transition-property: left, top, opacity;
+    transition-duration: 0.7s, 0.7s, 0.15s;
+    transition-timing-function: linear;
+  }
+  100% {
+    opacity: 0;
+    top: -30%;
+    left: 100%;
+    transition-property: left, top, opacity;
+  }
+}
+
+.shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine:after {
+  animation: shine 5s ease-in-out infinite;
+  animation-fill-mode: forwards;
+  content: "";
+  position: absolute;
+  width: 50px;
+  height: 160%;
+  opacity: 0;
+  transform: rotate(30deg);
+
+  background: rgba(200, 200, 200, 0.13);
+  background: linear-gradient(
+                  to right,
+                  rgba(200, 200, 200, 0.13) 0%,
+                  rgba(200, 200, 200, 0.13) 77%,
+                  rgba(200, 200, 200, 0.5) 92%,
+                  rgba(200, 200, 200, 0.0) 100%
+  );
+}

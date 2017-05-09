@@ -22,6 +22,7 @@ import com.nestedbird.models.location.Location;
 import com.nestedbird.models.occurrence.Occurrence;
 import org.redisson.api.RScoredSortedSet;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 import java.util.Set;
@@ -44,7 +45,7 @@ public interface EventService extends AuditedService<Event> {
 
     void updateUpcomingStore();
 
-    Page<Occurrence> getUpcomingOccurrences(final org.springframework.data.domain.Pageable pageable);
+    Page<Occurrence> getUpcomingOccurrences(final Pageable pageable);
 
     Set<Occurrence> retrieveUpcomingByArtist(final Artist artist);
 

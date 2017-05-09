@@ -31,6 +31,23 @@
         </div>
         <ul class="contentcontroller__content contentlist eventlist__events">
             <li class="contentlist__item contentlist__item--wide"
+                v-if="!currentEvents.length"
+                v-for="n in getEventBlockCount()">
+                <p class="date__title">░░░░░░░░░░░░░░░░</p>
+                <ul class="date__locations">
+                    <li class="location shine"
+                        v-for="m in 3">
+                        <a class="location__title">▒▒▒▒▒▒▒▒▒▒▒</a>
+                        <ul class="location__events">
+                            <li class="event" v-for="o in 2">
+                                <a class="event__title">▒▒▒▒▒▒▒▒▒</a>
+                                <p class="event__starttime">░░░░░░░</p>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li class="contentlist__item contentlist__item--wide"
                 v-for="(Date, index) in currentEvents"
                 v-show="isEventBlockVisible(index)">
                 <p class="date__title" v-text='Date.displayDateTime'></p>

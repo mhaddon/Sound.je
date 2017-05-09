@@ -283,8 +283,7 @@ public class Medium extends AuditedEntity implements Serializable {
      * @return the submission date time
      */
     public Medium setSubmissionDateTime(final String submissionDateTime) {
-        setSubmissionDateTime(submissionDateTime, "dd/MM/yyyy HH:mm:ss");
-        return this;
+        return setSubmissionDateTime(submissionDateTime, "dd/MM/yyyy HH:mm:ss");
     }
 
     /**

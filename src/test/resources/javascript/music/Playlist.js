@@ -76,7 +76,7 @@ describe(`PlaylistController`, function () {
 
 
 const exampleItem = {
-    name: `test`,
+    name:   `test`,
     loaded: false
 };
 
@@ -124,23 +124,23 @@ describe(`Playlist`, function () {
     describe(`#setIdToPlayingElement`, function () {
         it(`should be able to find out which element is playing`, function () {
             playlist.get(1).add({
-                name: `test1`,
+                name:   `test1`,
                 loaded: false
             });
             playlist.get(1).add({
-                name: `test2`,
+                name:   `test2`,
                 loaded: false
             });
             playlist.get(1).add({
-                name: `test3`,
+                name:   `test3`,
                 loaded: true
             });
             playlist.get(1).add({
-                name: `test4`,
+                name:   `test4`,
                 loaded: false
             });
             playlist.get(1).add({
-                name: `test5`,
+                name:   `test5`,
                 loaded: false
             });
 

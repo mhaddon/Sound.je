@@ -63,7 +63,14 @@
 
                 <div v-show="isPage('about') || isPage()" class="artistmodal__modalitem">
                     <h3 class="artistmodal__subtitle">About</h3>
+
                     <div class="modal__text artistmodal__content" v-html="description"></div>
+                    <div class="tagbox">
+                        <a v-for="tag in Artist.tags"
+                           v-href="{ page: 'search', id: tag.name, unencode: true }"
+                           v-text="tag.name"
+                           class="tagbox__tag"></a>
+                    </div>
                 </div>
 
                 <div v-show="isPage('events')"

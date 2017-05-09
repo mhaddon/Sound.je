@@ -47,32 +47,44 @@ export const SearchPage = {
              * @member module:Vue/Components.SearchPage#searchData
              * @type Object[]
              */
-            searchData: [],
+            searchData:   [],
             /**
              * The result of the event search query
              * @member module:Vue/Components.SearchPage#eventData
              * @type Object[]
              */
-            eventData:  [],
+            eventData:    [],
             /**
              * Current page we are on for infinite scrolling
              * @member module:Vue/Components.SearchPage#page
              * @type number
              */
-            page:       0,
+            page:         0,
             /**
              * Amount of elements per page
              * @member module:Vue/Components.SearchPage#limit
              * @type number
              */
-            limit:      15,
+            limit:        15,
+            /**
+             * Have events attempted to have been loaded yet
+             * @member module:Vue/Components.SearchPage#loadedEvents
+             * @type boolean
+             */
+            loadedEvents: false,
+            /**
+             * Has the search attempted to have been loaded yet
+             * @member module:Vue/Components.SearchPage#loadedSearch
+             * @type boolean
+             */
+            loadedSearch: false,
             /**
              * We want to cache the url query incase they open up a modal that also has a query
              * todo find a way that doesnt require a cache
              * @member module:Vue/Components.SearchPage#queryCache
              * @type string
              */
-            queryCache: store.getters.path.query
+            queryCache:   store.getters.path.query
         };
     },
     computed: {
@@ -85,6 +97,15 @@ export const SearchPage = {
          */
         query() {
             return ((store.getters.path.url.includes(`/search`)) ? store.getters.path.query : this.queryCache) || ``;
+        },
+        eventsVisible() {
+            return !this.loadedEvents || this.eventData.length;
+        },
+        searchVisible() {
+            return !this.loadedSearch || this.searchData.length;
+        },
+        anyResultsVisible() {
+            return this.eventsVisible || this.searchVisible;
         }
     },
     watch:    {
@@ -96,6 +117,8 @@ export const SearchPage = {
             this.queryCache = this.query;
             this.searchData = [];
             this.eventData = [];
+            this.loadedEvents = false;
+            this.loadedSearch = false;
             this.firstLoad();
         }
     },
@@ -110,8 +133,9 @@ export const SearchPage = {
          */
         firstLoad() {
             this.getSearchResults({})
-                .then(this.resetInfinite);
-            this.getEventResults();
+                .then(this.resetInfinite)
+                .then(this.getEventResults)
+                .catch(this.getEventResults);
         },
         /**
          * Reset any initialisers which may think the infinite scrolling has ended, back to their
@@ -143,6 +167,8 @@ export const SearchPage = {
          * @method
          */
         processEventResponse(response: string) {
+            this.loadedEvents = true;
+
             Util.tryParseJSON(response).ifPresent((data: Object) => {
                 this.eventData = this.eventData.concat(data.content
                     .filter(e => this.isInFuture(e.entity.times))
@@ -161,6 +187,8 @@ export const SearchPage = {
         getSearchResults({ page = this.page, limit = this.limit }): Promise<number> {
             return Ajax.createPromise(`/api/v1/search/?query=${this.query}&page=${page}&limit=${limit}`)
                 .then((response: string) => {
+                    this.loadedSearch = true;
+
                     Util.tryParseJSON(response)
                         .filter(e => e.hasOwnProperty(`content`))
                         .filter(e => e.content.length > 0)

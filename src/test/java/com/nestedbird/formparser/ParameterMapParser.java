@@ -16,15 +16,11 @@
 
 package com.nestedbird.formparser;
 
-import com.nestedbird.util.JSONUtil;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
-
-import static junit.framework.TestCase.assertEquals;
 
 @RunWith(Enclosed.class)
 public class ParameterMapParser {

@@ -16,8 +16,10 @@
 
 package com.nestedbird.models.core.Tagged;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.nestedbird.components.bridges.TagBridge;
 import com.nestedbird.models.core.Audited.AuditedEntity;
+import com.nestedbird.models.core.View;
 import com.nestedbird.models.tag.Tag;
 import com.nestedbird.modules.entitysearch.SearchAnalysers;
 import com.nestedbird.modules.schema.Schema;
@@ -46,6 +48,16 @@ public abstract class TaggedEntity extends AuditedEntity implements Serializable
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
     @SchemaView(value = Schema.BaseEntityArray, type = Tag.class)
     private Set<Tag> tags = new HashSet<>(0);
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Field(bridge = @FieldBridge(impl = TagBridge.class),
+            analyzer = @Analyzer(definition = SearchAnalysers.ENGLISH_WORD_ANALYSER))
+    @JoinTable(name = "hiddentags_entities",
+            joinColumns = @JoinColumn(name = "entity_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
+    @SchemaView(value = Schema.BaseEntityArray, type = Tag.class)
+    @JsonView(View.Moderator.class)
+    private Set<Tag> hiddenTags = new HashSet<>(0);
 
     protected TaggedEntity() {
         super();

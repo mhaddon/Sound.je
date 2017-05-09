@@ -27,13 +27,33 @@
         <div class="searchpage">
             <div class="searchpage__results searchpage__results--search">
                 <p class="searchpage__title article__title">Search</p>
-                <a v-for="(data, index) in searchData" class="searchpage__container article__textbox" v-href="data.url">
-                    <p v-text="data.category" class="searchpage__category"></p>
-                    <p v-text="data.name" class="searchpage__name"></p>
-                </a>
+                <div v-if="searchVisible">
+                    <a class="searchpage__container article__textbox shine"
+                       v-if="!searchData.length"
+                       v-for="n in 10">
+                        <p class="searchpage__category">▒▒▒▒▒▒▒</p>
+                        <p class="searchpage__name">░░░░░░░░░░░░░░░░</p>
+                    </a>
+                    <div>
+                        <a v-for="(data, index) in searchData" class="searchpage__container article__textbox"
+                           v-href="data.url">
+                            <p v-text="data.category" class="searchpage__category"></p>
+                            <p v-text="data.name" class="searchpage__name"></p>
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div class="searchpage__results searchpage__results--events" v-if="eventData.length">
+            <div class="searchpage__results searchpage__results--events" v-if="eventsVisible">
                 <p class="searchpage__title article__title">Events</p>
+                <a class="article__textbox eventbox shine"
+                   v-if="!eventData.length"
+                   v-for="n in 5">
+                    <p class="eventbox__title">▒▒▒▒▒▒▒</p>
+                    <div class="eventbox__infobox">
+                        <p class="eventbox__location">░░░░░░░</p>
+                        <p class="eventbox__time">░░░░░░░</p>
+                    </div>
+                </a>
                 <a v-for="(data, index) in eventData" class="article__textbox eventbox"
                    v-if="getNextOccurrence(data.entity.times).isPresent()" v-href="data.url"
                    :class="{ 'eventbox--infuture': isInFuture(data.entity.times) }">
@@ -44,6 +64,31 @@
                     </div>
                 </a>
             </div>
+        </div>
+        <div v-if="!anyResultsVisible" style="padding: 12px 15px;text-align: center;margin: auto;border: 1px solid rgba(0,0,0,.1);font-size: 1.25em;width: 100%;font-weight: 300;">
+            <p>Sorry, we had a good search but were unable to find anything!</p>
+            <br/>
+            <p>For a list of upcoming events, please go to <a v-href="{ page: '' }">the homepage</a></p>
+            <p>For a list of the best local music, please go <a v-href="{ page: 'Media' }">here</a></p>
+            <br/>
+            <p>We are constantly trying to improve our search</p>
+            <p>If something is missing that should be here, please contact us</p>
+
+
+            <div class="socialbox">
+                <a class="socialbox__link" href="https://www.facebook.com/SoundofJerseyCI/" target="_blank">
+                    <i class="fa fa-facebook-square" aria-hidden="true"></i>
+                </a>
+                <a class="socialbox__link" href="https://twitter.com/SoundJersey" target="_blank">
+                    <i class="fa fa-twitter-square" aria-hidden="true"></i>
+                </a>
+                <a class="socialbox__link" href="https://github.com/mhaddon/Sound.je" target="_blank">
+                    <i class="fa fa-github-square" aria-hidden="true"></i>
+                </a>
+            </div>
+        </div>
+        <div v-show="anyResultsVisible">
+            <div class="loadmore"></div>
         </div>
     </article>
 </script>

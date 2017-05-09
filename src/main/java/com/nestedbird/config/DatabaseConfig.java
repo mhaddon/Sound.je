@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.SharedCacheMode;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -142,6 +143,7 @@ public class DatabaseConfig {
         em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         em.setJpaProperties(hibernateProperties);
         em.setPersistenceUnitName("nestedbird");
+        em.setSharedCacheMode(SharedCacheMode.ENABLE_SELECTIVE);
         em.setPersistenceProviderClass(HibernatePersistenceProvider.class);
         em.afterPropertiesSet();
 
@@ -179,6 +181,18 @@ public class DatabaseConfig {
         properties.put("hibernate.format_sql", hibernateFormatSql);
         properties.put("hibernate.hbm2ddl.auto", hibernateHbm2DdlAuto);
         properties.put("hibernate.connection.driver_class", dbDriver);
+
+        //        properties.put("hibernate.generate_statistics", "true");
+        properties.put("hibernate.cache.use_second_level_cache", "true");
+        properties.put("hibernate.cache.use_query_cache", "true");
+        properties.put("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory");
+        properties.put("hibernate.cache.region_prefix", "hibernate");
+
+        // todo phase out in favour of EhCacheConfig
+        properties.put("net.sf.ehcache.configurationResourceName", "classpath:ehcache.xml");
+
+        properties.put("hibernate.cache.use_structured_entries", "true");
+
         properties.put("hibernate.connection.charSet", "utf8mb4");
         properties.put("hibernate.connection.characterEncoding", "utf8");
         properties.put("hibernate.connection.useUnicode", "true");

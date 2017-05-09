@@ -29,7 +29,8 @@ public class MutableTest {
 
     public static class mutate {
         @Before
-        public void setUp() throws Exception {}
+        public void setUp() throws Exception {
+        }
 
         @Test
         public void Can_Mutate_String_From_Null() {

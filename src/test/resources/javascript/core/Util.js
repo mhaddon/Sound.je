@@ -36,11 +36,11 @@ describe(`Util`, function () {
     describe(`#cleanObject`, function () {
         it(`shallow object cleans`, function () {
             const obj = {
-                test: `&amp;`,
+                test:  `&amp;`,
                 test2: `&#8364;test&#8364;`
             };
             const expectedresponse = {
-                test: `&`,
+                test:  `&`,
                 test2: `€test€`
             };
             const response = Util.clean(obj);
@@ -130,11 +130,11 @@ describe(`Util`, function () {
         });
         it(`deep clean`, function () {
             const obj = {
-                test: `&amp;`,
+                test:  `&amp;`,
                 test2: 1,
                 test3: null,
                 test4: {
-                    test: `&amp;`,
+                    test:  `&amp;`,
                     test2: [
                         `&amp;`,
                         `&amp;`
@@ -142,11 +142,11 @@ describe(`Util`, function () {
                 }
             };
             const expectedresponse = {
-                test: `&`,
+                test:  `&`,
                 test2: 1,
                 test3: null,
                 test4: {
-                    test: `&`,
+                    test:  `&`,
                     test2: [
                         `&`,
                         `&`
@@ -175,8 +175,8 @@ describe(`Util`, function () {
             expect(response).to.be.false;
         });
         it(`arrays match`, function () {
-            const array1 = [ `1`, 2, `3` ];
-            const array2 = [ `1`, 2, `3` ];
+            const array1 = [`1`, 2, `3`];
+            const array2 = [`1`, 2, `3`];
             const response = Util.is(array1, array2);
             expect(response).to.be.true;
         });

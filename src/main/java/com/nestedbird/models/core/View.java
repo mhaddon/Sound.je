@@ -16,31 +16,16 @@
 
 package com.nestedbird.models.core;
 
-/**
- * The type View.
- */
 public class View {
-    /**
-     * The interface Summary.
-     */
-    interface Summary {
+    public interface Anonymous {
     }
 
-    /**
-     * The interface Summary with details.
-     */
-    interface SummaryWithDetails extends Summary {
+    public interface User extends Anonymous {
     }
 
-    /**
-     * The interface Summary with classes.
-     */
-    interface SummaryWithClasses extends SummaryWithDetails {
+    public interface Moderator extends User {
     }
 
-    /**
-     * The interface Summary with protected details.
-     */
-    interface SummaryWithProtectedDetails extends SummaryWithDetails {
+    public interface Admin extends Moderator {
     }
 }
