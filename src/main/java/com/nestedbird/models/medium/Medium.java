@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nestedbird.components.bridges.JodaDateTimeSplitBridge;
+import com.nestedbird.components.bridges.SongBridge;
 import com.nestedbird.models.core.Audited.AuditedEntity;
 import com.nestedbird.models.song.Song;
 import com.nestedbird.modules.entitysearch.SearchAnalysers;
@@ -46,7 +47,6 @@ import java.util.Optional;
 @Cacheable
 @Indexed
 @SchemaRepository(MediumRepository.class)
-@Boost(0.5f)
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = {"song"})
 @NoArgsConstructor(force = true)

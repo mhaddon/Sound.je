@@ -227,19 +227,47 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         static private String[] publicGET() {
             return new String[]{
-                    "/",
                     "/session",
                     "/login/register",
                     "/login/reset",
                     "/login/check",
                     "/login/reset/request",
                     "/api/*/*/",
+                    "/api/*/search/",
+                    "/api/*/search/*/",
                     "/api/*/Artists/*/Media",
                     "/api/*/Artists/*/Songs",
                     "/api/*/EventTimes/Upcoming",
                     "/api/*/Events/Upcoming",
                     "/api/*/Media/Hot",
-                    "/api/*/*/*-*-*-*-*"
+                    "/api/*/*/*-*-*-*-*",
+
+
+                    "/",
+                    "/News",
+                    "/About",
+                    "/Events",
+                    "/Events/*",
+                    "/Events/*/*",
+                    "/Locations",
+                    "/Locations/*",
+                    "/Locations/*/*",
+                    "/Media",
+                    "/Medium/*",
+                    "/Medium/*/*",
+                    "/Artists",
+                    "/Artists/*",
+                    "/Artists/*/*",
+                    "/Songs",
+                    "/Songs/*",
+                    "/Songs/*/*",
+                    "/Admin",
+                    "/login",
+                    "/logout",
+                    "/Records",
+                    "/Records/*",
+                    "/search",
+                    "/search/*"
                     //                "/api/*/Events/updateFB",
                     //                "/api/*/ScannedPages/manualrequest"
             };

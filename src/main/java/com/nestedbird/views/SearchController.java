@@ -140,6 +140,10 @@ public class SearchController {
             newScore.mutateIf(0F, !((AuditedEntity) entity).getActive());
         }
 
+        if (Medium.class.isAssignableFrom(entity.getClass())) {
+            newScore.mutate(newScore.get() * 0.65F);
+        }
+
         return newScore.get();
     }
 
