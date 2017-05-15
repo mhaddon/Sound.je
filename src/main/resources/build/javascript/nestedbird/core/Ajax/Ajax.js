@@ -24,8 +24,7 @@ import { Notification, Util } from "nestedbird/core/Util";
  * @param {string} response
  * @memberOf module:Core/Util
  */
-const AjaxCallback = (response: string) => {
-};
+type AjaxCallback = (response: string) => void;
 
 /**
  * A simple AJAX class that creates an AJAX request and has jquery-like methods for handling the response.
@@ -232,7 +231,7 @@ export default class Ajax {
      * @private
      */
     _createUrlString(url: string, method: string, data: ?Object) {
-        if ((method.toUpperCase() === `GET`) && (data !== null) && (Object.keys(data).length)) {
+        if ((method.toUpperCase() === `GET`) && data && (Object.keys(data).length)) {
             return `${url}?${Ajax.convertDataToString(data)}`;
         }
 

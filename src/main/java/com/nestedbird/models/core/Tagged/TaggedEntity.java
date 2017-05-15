@@ -35,11 +35,18 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * This abstract class adds tagable fields
+ * @author Michael Haddon
+ */
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = {"tags"})
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class TaggedEntity extends AuditedEntity implements Serializable {
+    /**
+     * A collection of tags
+     */
     @ManyToMany(fetch = FetchType.LAZY)
     @Field(bridge = @FieldBridge(impl = TagBridge.class),
             analyzer = @Analyzer(definition = SearchAnalysers.ENGLISH_WORD_ANALYSER))

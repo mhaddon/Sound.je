@@ -45,7 +45,7 @@ class SheetEditor {
      */
     addRule(selector: string, styles: string = ``): Optional<CSSRule> {
         const sheet: CSSStyleSheet = this.getSheet();
-        let id: number = null;
+        let id: ?number = null;
         if (sheet.insertRule) {
             id = sheet.insertRule(`${selector}{${styles}}`, sheet.cssRules.length);
         } else if (sheet.addRule) {
@@ -55,7 +55,7 @@ class SheetEditor {
         return this.getRule(id);
     }
 
-    getRule(id: number | null): Optional<CSSRule> {
+    getRule(id: ?number): Optional<CSSRule> {
         return Optional.ofNullable(document.styleSheets[this.index].cssRules[id] || null);
     }
 }

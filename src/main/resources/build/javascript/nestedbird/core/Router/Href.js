@@ -215,7 +215,7 @@ class Href {
      * @returns {string}
      */
     _calculateQuery(query: Object): string {
-        return Object.entries(query).map(e => `${[e[0]]}=${encodeURIComponent(e[1])}`).join(`&`);
+        return Object.entries(query).map((e: string[]) => `${e[0]}=${encodeURIComponent(e[1])}`).join(`&`);
     }
 }
 

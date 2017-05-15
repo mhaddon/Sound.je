@@ -46,6 +46,7 @@ import java.util.Optional;
 @Cacheable
 @Indexed
 @SchemaRepository(MediumRepository.class)
+@Boost(0.5f)
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = {"song"})
 @NoArgsConstructor(force = true)
@@ -151,7 +152,6 @@ public class Medium extends AuditedEntity implements Serializable {
      */
     @Column(name = "url", length = 100)
     @Size(max = 100)
-    @Field(analyzer = @Analyzer(definition = SearchAnalysers.ENGLISH_WORD_ANALYSER))
     @SchemaView
     private String sourceUrl;
 
@@ -160,7 +160,6 @@ public class Medium extends AuditedEntity implements Serializable {
      */
     @Column(name = "art_url", length = 200)
     @Size(max = 200)
-    @Field
     @SchemaView
     private String artUrl;
 

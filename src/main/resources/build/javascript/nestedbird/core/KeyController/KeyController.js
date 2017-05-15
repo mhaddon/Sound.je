@@ -57,7 +57,7 @@ class KeyController {
         this.states = {};
         this.triggers = {};
 
-        if (typeof triggers === `object`) {
+        if ((typeof triggers === `object`) && (triggers)) {
             this.importTriggers(triggers);
         }
     }

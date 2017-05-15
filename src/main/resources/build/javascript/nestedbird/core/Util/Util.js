@@ -127,7 +127,7 @@ export default class Util {
      * @param {Object} e      Object you want to clean
      * @returns Object
      */
-    static _cleanObject(e: Object): Object {
+    static _cleanObject(e: ?Object): ?Object {
         for (const property in e) {
             // eslint-disable-next-line
             if (e.hasOwnProperty(property)) {

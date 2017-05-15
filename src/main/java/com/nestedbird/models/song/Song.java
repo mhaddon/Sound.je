@@ -47,6 +47,7 @@ import java.util.Set;
 @Indexed
 @SchemaRepository(SongRepository.class)
 @Data
+@Boost(0.5f)
 @EqualsAndHashCode(callSuper = true, exclude = {"artist", "media"})
 @NoArgsConstructor(force = true)
 public class Song extends AuditedEntity implements Serializable {

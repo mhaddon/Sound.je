@@ -118,7 +118,7 @@ export const EntityField = {
          * @type string
          */
         queryValue() {
-            return this.getValue(this.selectedData);
+            return this.getSelectedValue(this.selectedData);
         }
     },
     methods:  {
@@ -131,35 +131,15 @@ export const EntityField = {
          * @param {Object} entity the current dropdown value container
          * @returns string
          */
-        getSelectedValue(entity: [] | {}): string {
+        getSelectedValue(entity: Object[] | Object | string): string {
             let returnVar = ``;
 
             if (Array.isArray(entity) && entity.length) {
-                returnVar = entity.reduce((a, b) => `${a}${b.id},`, ``);
-            } else if (Util.isObject(entity) && Object.keys(entity).length) {
-                returnVar = entity.id;
-            } else {
-                returnVar = entity || ``;
-            }
-
-            return returnVar;
-        },
-        /**
-         * Retrieves the initial value of the input
-         * @member module:Vue/Components.EntityField#getValue
-         * @method
-         * @param {Object | string} value the current value
-         * @returns string
-         */
-        getValue(value: Object | string): string {
-            if (!value) {
-                return ``;
-            }
-
-            let returnVar = value.toString();
-
-            if ((typeof value === `object`) && (value)) {
-                returnVar = this.getSelectedValue(value);
+                returnVar = entity.reduce((a, b) => `${a}${b.id.toString()},`, ``);
+            } else if (Util.isObject(entity) && entity && Object.keys(entity).length) {
+                returnVar = entity.id.toString();
+            } else if (entity) {
+                returnVar = entity.toString();
             }
 
             return returnVar;

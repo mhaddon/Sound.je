@@ -42,7 +42,7 @@ import {
     schemaTagArray
 } from "nestedbird/schemas";
 
-declare interface ServerDataGetters {
+type ServerDataGetters = {
     hotMedia: Object[];
     media: Medium[];
     songs: Song[];
@@ -181,4 +181,4 @@ export default ({
 
         return `/Event/${encodeURIComponent(e.name.replace(/ /g, `_`))}-${e.id}`;
     }
-}: ServerDataGetters);
+});
