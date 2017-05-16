@@ -53,7 +53,7 @@ lucene_indexes
 # Ignore Sensitive Files
 #----------------------
 
-*.sql
+#*.sql
 *.sh
 *.override.properties
 
