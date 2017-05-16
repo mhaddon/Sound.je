@@ -14,11 +14,7 @@
 
 -- This function retrieves the score of a media
 
-USE `NestedBird`;
-DROP FUNCTION IF EXISTS `getScore`;
-
 DELIMITER $$
-USE `NestedBird`$$
 CREATE FUNCTION `getScore`(sourcePlayBackCount INTEGER, sourceCommentCount INTEGER, sourceFavouriteCount INTEGER,
                            creationDateTime    DATETIME)
   RETURNS DOUBLE

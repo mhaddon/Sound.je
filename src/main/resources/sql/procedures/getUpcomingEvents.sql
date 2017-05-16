@@ -15,6 +15,7 @@
 -- This procedure gets all events that COULD be in the future.
 -- It may not know exactly when they are, as it does not parse the event times in detail
 
+DELIMITER $$
 CREATE PROCEDURE `getUpcomingEvents` ()
 BEGIN
   SELECT DISTINCT SQL_CACHE
@@ -34,4 +35,5 @@ BEGIN
         t.repeat_end >= CURDATE()
     )
   );
-END
+END$$
+DELIMITER ;

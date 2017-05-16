@@ -15,6 +15,7 @@
 -- This procedure gets all media by how hot they are.
 -- It calculates their score and then sorts them
 
+DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getMediaByHot`()
 BEGIN
 
@@ -93,5 +94,5 @@ BEGIN
 		score_final > 0
 	ORDER BY
 		score_final ASC;
-		
-END
+END$$
+DELIMITER ;

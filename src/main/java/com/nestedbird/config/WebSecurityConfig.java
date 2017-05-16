@@ -301,7 +301,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         static private String[] entityPOST() {
             return new String[]{
                     "/api/*/*/",
-                    "/api/*/Media/parseurl"
+                    "/api/*/Media/parseurl",
+                    "/api/*/Events/parseurl",
+                    "/api/*/ScannedPages/parseurl",
+                    "/api/*/Artists/parseurl",
+                    "/api/*/Locations/parseurl"
             };
         }
 
