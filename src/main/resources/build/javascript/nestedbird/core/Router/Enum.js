@@ -65,5 +65,6 @@ export const Page = {
     ADMIN:        5,
     RECORDS:      6,
     VERIFYEVENTS: 7,
-    SEARCH:       8
+    SEARCH:       8,
+    API:          9
 };

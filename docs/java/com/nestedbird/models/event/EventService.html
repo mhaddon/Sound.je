@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6};
+var methods = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -139,18 +139,26 @@ extends <a href="../../../../com/nestedbird/models/core/Audited/AuditedService.h
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/nestedbird/models/event/EventService.html#getUpcomingOccurrences-Pageable-">getUpcomingOccurrences</a></span>(Pageable&nbsp;pageable)</code>&nbsp;</td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>java.util.Set&lt;<a href="../../../../com/nestedbird/models/event/ParsedEventData.html" title="class in com.nestedbird.models.event">ParsedEventData</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/nestedbird/models/event/EventService.html#retrieveUpcoming--">retrieveUpcoming</a></span>()</code>&nbsp;</td>
+<td class="colFirst"><code>java.util.Set&lt;<a href="../../../../com/nestedbird/models/occurrence/Occurrence.html" title="class in com.nestedbird.models.occurrence">Occurrence</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/nestedbird/models/event/EventService.html#retrieveByArtist-com.nestedbird.models.artist.Artist-">retrieveByArtist</a></span>(<a href="../../../../com/nestedbird/models/artist/Artist.html" title="class in com.nestedbird.models.artist">Artist</a>&nbsp;artist)</code>&nbsp;</td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>java.util.Set&lt;<a href="../../../../com/nestedbird/models/occurrence/Occurrence.html" title="class in com.nestedbird.models.occurrence">Occurrence</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/nestedbird/models/event/EventService.html#retrieveUpcomingByArtist-com.nestedbird.models.artist.Artist-">retrieveUpcomingByArtist</a></span>(<a href="../../../../com/nestedbird/models/artist/Artist.html" title="class in com.nestedbird.models.artist">Artist</a>&nbsp;artist)</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/nestedbird/models/event/EventService.html#retrieveByLocation-com.nestedbird.models.location.Location-">retrieveByLocation</a></span>(<a href="../../../../com/nestedbird/models/location/Location.html" title="class in com.nestedbird.models.location">Location</a>&nbsp;location)</code>&nbsp;</td>
 </tr>
 <tr id="i5" class="rowColor">
+<td class="colFirst"><code>java.util.Set&lt;<a href="../../../../com/nestedbird/models/event/ParsedEventData.html" title="class in com.nestedbird.models.event">ParsedEventData</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/nestedbird/models/event/EventService.html#retrieveUpcoming--">retrieveUpcoming</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i6" class="altColor">
+<td class="colFirst"><code>java.util.Set&lt;<a href="../../../../com/nestedbird/models/occurrence/Occurrence.html" title="class in com.nestedbird.models.occurrence">Occurrence</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/nestedbird/models/event/EventService.html#retrieveUpcomingByArtist-com.nestedbird.models.artist.Artist-">retrieveUpcomingByArtist</a></span>(<a href="../../../../com/nestedbird/models/artist/Artist.html" title="class in com.nestedbird.models.artist">Artist</a>&nbsp;artist)</code>&nbsp;</td>
+</tr>
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>java.util.Set&lt;<a href="../../../../com/nestedbird/models/occurrence/Occurrence.html" title="class in com.nestedbird.models.occurrence">Occurrence</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/nestedbird/models/event/EventService.html#retrieveUpcomingByLocation-com.nestedbird.models.location.Location-">retrieveUpcomingByLocation</a></span>(<a href="../../../../com/nestedbird/models/location/Location.html" title="class in com.nestedbird.models.location">Location</a>&nbsp;location)</code>&nbsp;</td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../com/nestedbird/models/event/EventService.html#updateUpcomingStore--">updateUpcomingStore</a></span>()</code>&nbsp;</td>
 </tr>
@@ -235,6 +243,15 @@ extends <a href="../../../../com/nestedbird/models/core/Audited/AuditedService.h
 <pre>&lt;any&gt;&nbsp;getUpcomingOccurrences(Pageable&nbsp;pageable)</pre>
 </li>
 </ul>
+<a name="retrieveByArtist-com.nestedbird.models.artist.Artist-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>retrieveByArtist</h4>
+<pre>java.util.Set&lt;<a href="../../../../com/nestedbird/models/occurrence/Occurrence.html" title="class in com.nestedbird.models.occurrence">Occurrence</a>&gt;&nbsp;retrieveByArtist(<a href="../../../../com/nestedbird/models/artist/Artist.html" title="class in com.nestedbird.models.artist">Artist</a>&nbsp;artist)</pre>
+</li>
+</ul>
 <a name="retrieveUpcomingByArtist-com.nestedbird.models.artist.Artist-">
 <!--   -->
 </a>
@@ -242,6 +259,15 @@ extends <a href="../../../../com/nestedbird/models/core/Audited/AuditedService.h
 <li class="blockList">
 <h4>retrieveUpcomingByArtist</h4>
 <pre>java.util.Set&lt;<a href="../../../../com/nestedbird/models/occurrence/Occurrence.html" title="class in com.nestedbird.models.occurrence">Occurrence</a>&gt;&nbsp;retrieveUpcomingByArtist(<a href="../../../../com/nestedbird/models/artist/Artist.html" title="class in com.nestedbird.models.artist">Artist</a>&nbsp;artist)</pre>
+</li>
+</ul>
+<a name="retrieveByLocation-com.nestedbird.models.location.Location-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>retrieveByLocation</h4>
+<pre>java.util.Set&lt;<a href="../../../../com/nestedbird/models/occurrence/Occurrence.html" title="class in com.nestedbird.models.occurrence">Occurrence</a>&gt;&nbsp;retrieveByLocation(<a href="../../../../com/nestedbird/models/location/Location.html" title="class in com.nestedbird.models.location">Location</a>&nbsp;location)</pre>
 </li>
 </ul>
 <a name="retrieveUpcomingByLocation-com.nestedbird.models.location.Location-">

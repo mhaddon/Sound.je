@@ -15,10 +15,15 @@ More permissive licensing may be available on request.
 
 > Javascript Documentation:   https://mhaddon.github.io/Sound.je/js/index.html
 
+> API Documentation:          https://www.sound.je/api
+
 #### Versioning
 The live server and this repository may not be completely in sync. The server may have additional patches and changes which will uploaded to the public repository on a regular basis.
 
-#### Getting Started
+#### Getting Started - Prebuilt Virtual Machine
+> Please go here: https://mhaddon.github.io/Sound.je.Vagrant/
+
+#### Getting Started - Manual Install
 This is just a basic introduction on how to run the server yourself. There wont be too much detail as it is expected you understand the basics.
 Please review the gulp modules in ,/gulp to see what tasks there are available.
 #### Prerequisites
@@ -30,6 +35,8 @@ Please review the gulp modules in ,/gulp to see what tasks there are available.
 
 > **Redis**
 
+> **Maven**
+
 #### Installing
 > **Clone the repository** *(git clone https://github.com/mhaddon/Sound.je.git)*
 
@@ -39,8 +46,8 @@ Please review the gulp modules in ,/gulp to see what tasks there are available.
 
 > **Install gulp globally** - run command -  *(sudo npm install gulp -g)*
 ```
-git clone https://github.com/.git
-cd _folder_
+git clone https://github.com/Sound.je.git
+cd Sound.je
 npm install
 sudo npm install gulp -g
 ```
@@ -50,11 +57,11 @@ sudo npm install gulp -g
 
 > **Building SCSS changes:** - run command -  *gulp sass:build*
 
-> **Build Server** -
+> **Build Server** - run command - *mvn clean compile package*
 
-> **Run Server** - java -jar target/NestedBird-1.0.war
+> **Run Server** - run command - *java -jar target/NestedBird-1.0.war*
 
-> **Run Server as live:** - java -envTarget=live -jar target/NestedBird-1.0.war
+> **Run Server as live:** - run command - *java -envTarget=live -jar target/NestedBird-1.0.war*
 
 > **Connect to server:** - http://localhost:8081
 
@@ -67,18 +74,26 @@ There are linting tasks set up as gulp tasks that do this.
 #### File Structure:
 
 ```
-  ├── docs/                                     jsdoc
+  ├── docs/                                     documentation
+  |   ├── js/                                   jsdoc
+  |   └── java/                                 javadoc
+  |
   ├── gulp/                                     gulp modules
   └── src/main/                                 project source
       |
-      ├── webapp/WEB-INF/                       html source
+      ├── webapp/WEB-INF/templates/             html source
+      |   |
       |   ├── fragments                         html modules
+      |   |   ├── modals                        vue modal components
+      |   |   ├── modules                       vue modules
+      |   |   └── pages                         vue page components
+      |   |
       |   ├── homepage                          homepage layout
       |   └── layout                            general page layout
       |
       ├── resources
       |   ├── build
-      |   |   ├── javascript                    javascript source
+      |   |   ├── javascript/nestedbird         javascript source
       |   |   |   ├── core                      core classes
       |   |   |   |   ├── Ajax                  module for making AJAX requests
       |   |   |   |   ├── GlobalJS              Global JS overrides (like google analytics)
@@ -89,17 +104,18 @@ There are linting tasks set up as gulp tasks that do this.
       |   |   |   |   ├── SchemaReader          Schema Reader Module
       |   |   |   |   └── Util                  Util classes
       |   |   |   ├── Schema                    Normalizr Data Schemas
+      |   |   |   ├── showdown                  Showdown modules
       |   |   |   └── Vue                       Custom Vue Code
       |   |   |       ├── components            Vue Components/Modules
       |   |   |       ├── directives            Vue Directives
       |   |   |       ├── mixins                Vue Mixins
+      |   |   |       ├── pages                 Vue Pages
       |   |   |       └── store                 VueX Store
       |   |   |
-      |   |   └── stylesheet                    sass source
+      |   |   └── stylesheet                    sass source using SMACCS folder structure
       |   |
       |   ├── properties                        server properties
-      |   ├── test                              frontend tests
-      |   ├── static                            transpiled js and css
+      |   ├── static                            public files
       |   └── sql
       |       ├── functions                     sql functions
       |       └── procedures                    sql procedures
@@ -107,11 +123,23 @@ There are linting tasks set up as gulp tasks that do this.
       └── java/com.nestedbird                   server source
           ├── components                        server configuration components
           ├── config                            server configuration files
-          ├── formparser                        parses the input sent to the server by the forms
           ├── handlers                          error handlers
           ├── jackson                           jackson parsing objects
           ├── models                            database models
-          ├── schema                            reads the schema of model classes
+          ├── modules                           extra required modules
+          |   |
+          |   ├── entitysearch                  searches BaseEntities
+          |   ├── facebookreader                scans and reads facebook with the GraphAPI
+          |   ├── formparser                    processes BaseEntity form submissions and updates the entities
+          |   ├── paginator                     a wrapper for springs pagination, so we can custom paginate lists
+          |   ├── permissions                   a permission handler for spring security
+          |   ├── ratelimiter                   AOP ratelimiter for the API
+          |   ├── resourceparser                creating elements on our site from the data from third party APIs
+          |   ├── schema                        reads the schema of model classes
+          |   ├── sitemap                       generates a sitemap for a site
+          |   ├── soundcloudreader              reads data from sound clouds API
+          |   └── youtubereader                 reads data from youtubes API
+          |
           ├── util                              utility classes
           └── views                             endpoints to output to the user
 ```
@@ -132,5 +160,3 @@ There are linting tasks set up as gulp tasks that do this.
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
 More permissive licensing may be available on request.
-
-##### Flow Check may not entirely work as i am having a few problems with it (understatement)

@@ -218,7 +218,7 @@ export default class Ajax {
         this._status = 200;
         this._response = ``;
 
-        this._sendRequest(url, method, data);
+        this._sendRequest(url.replace(/\/\//g, `/`), method, data);
     }
 
     /**

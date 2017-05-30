@@ -22,12 +22,14 @@ import com.nestedbird.models.core.Base.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * The type User controller.
  */
 @RestController
-@RequestMapping("api/v1/Users/")
+@RequestMapping("/api/v1/Users")
+@ApiIgnore
 public class UserController extends BaseController<User> {
 
     private final UserRepository userRepository;

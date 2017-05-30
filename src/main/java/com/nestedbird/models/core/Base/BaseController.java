@@ -20,6 +20,8 @@ import com.nestedbird.modules.entitysearch.EntitySearch;
 import com.nestedbird.modules.formparser.FormParse;
 import com.nestedbird.modules.schema.SchemaElement;
 import com.nestedbird.modules.schema.SchemaReader;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -77,8 +79,9 @@ public abstract class BaseController<E extends BaseEntity> {
      * @param id id of base entity
      * @return the base entity
      */
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public E get(@PathVariable final String id) {
+    @ApiOperation("Retrieve this specific element")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public E get(@ApiParam("UUID Id of Element") @PathVariable final String id) {
         return getRepository().findOne(id);
     }
 
@@ -95,7 +98,7 @@ public abstract class BaseController<E extends BaseEntity> {
      *
      * @return baseentity schema
      */
-    @RequestMapping(value = "schema", method = RequestMethod.GET)
+    @RequestMapping(value = "/schema", method = RequestMethod.GET)
     public List<SchemaElement> getSchema() {
         return SchemaReader.read(getEntityClass());
     }
@@ -114,7 +117,8 @@ public abstract class BaseController<E extends BaseEntity> {
      * @param pageable the pagination format
      * @return the base entities paginated
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @ApiOperation("Retrieve all of the elements")
+    @RequestMapping(value = "", method = RequestMethod.GET)
     public Page<E> list(final Pageable pageable) {
         return getService().listAllByPage(pageable);
     }
@@ -136,10 +140,11 @@ public abstract class BaseController<E extends BaseEntity> {
      * @return the searched response paginated
      * @throws ParseException the parse exception
      */
-    @RequestMapping(value = "/", params = {"query"}, method = RequestMethod.GET)
-    public Page<E> search(@RequestParam("query") final String queryText,
-                          final Pageable pageable,
-                          final Sort sort) throws ParseException {
+    @ApiOperation("Retrieve and search all the elements")
+    @RequestMapping(value = "", params = {"query"}, method = RequestMethod.GET)
+    public Page<E> search(final Pageable pageable,
+                          final Sort sort,
+                          @ApiParam(value = "Search Query", required = true) @RequestParam("query") final String queryText) throws ParseException {
         final List<E> results = entitySearch.searchOnlyReturnData(getEntityClass(), queryText);
         return entitySearch.paginate(results, pageable, sort);
     }
@@ -153,7 +158,7 @@ public abstract class BaseController<E extends BaseEntity> {
      * @throws InstantiationException the instantiation exception
      * @throws ClassNotFoundException the class not found exception
      */
-    @RequestMapping(value = "/", method = RequestMethod.POST,
+    @RequestMapping(value = "", method = RequestMethod.POST,
             headers = "content-type=application/x-www-form-urlencoded",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     @ResponseBody
@@ -196,7 +201,7 @@ public abstract class BaseController<E extends BaseEntity> {
      * @param request the request
      * @return updated base entity
      */
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT,
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT,
             headers = "content-type=application/x-www-form-urlencoded",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     @ResponseBody
@@ -215,7 +220,7 @@ public abstract class BaseController<E extends BaseEntity> {
      * @param id id of the base entity
      * @return deleted base entity
      */
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public E delete(@PathVariable final String id) {
         final E existingEntity = getRepository().findOne(id);
         getRepository().delete(existingEntity);

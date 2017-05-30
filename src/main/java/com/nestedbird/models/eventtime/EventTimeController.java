@@ -25,12 +25,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * The type Event time controller.
  */
 @RestController
-@RequestMapping("api/v1/EventTimes/")
+@RequestMapping("/api/v1/EventTimes")
+@ApiIgnore
 public class EventTimeController extends BaseController<EventTime> {
 
     private final EventTimeRepository eventTimeRepository;

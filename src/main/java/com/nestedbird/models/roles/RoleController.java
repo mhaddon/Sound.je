@@ -22,12 +22,14 @@ import com.nestedbird.models.core.Base.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * The type Role controller.
  */
 @RestController
-@RequestMapping("api/v1/Roles/")
+@RequestMapping("/api/v1/Roles")
+@ApiIgnore
 public class RoleController extends BaseController<Role> {
     private final RoleRepository roleRepository;
 

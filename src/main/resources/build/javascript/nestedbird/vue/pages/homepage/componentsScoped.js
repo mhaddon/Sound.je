@@ -19,6 +19,7 @@
 import {
     VueAboutPage,
     VueAdminPage,
+    VueAPIPage,
     VueArtistModal,
     VueCreateRecordModal,
     VueEditRecordModal,
@@ -64,5 +65,6 @@ export default {
     "loginpasswordmodal-component": VueLoginPasswordModal,
     "submitmodal-component":        VueSubmitModal,
     "registermodal-component":      VueRegisterModal,
-    "searchpage-component":         VueSearchPage
+    "searchpage-component":         VueSearchPage,
+    "apipage-component":            VueAPIPage
 };

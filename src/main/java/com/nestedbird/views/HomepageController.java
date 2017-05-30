@@ -90,7 +90,8 @@ public class HomepageController {
             "/Records",
             "/Records/{name}",
             "/search",
-            "/search/{name}"
+            "/search/{name}",
+            "/api"
     })
     public String home(final Model model) {
         model.addAttribute("profile", Optional.ofNullable(env.getProperty("envTarget")).orElse("dev"));

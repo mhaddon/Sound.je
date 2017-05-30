@@ -52,10 +52,15 @@
 <blockquote>
 <p>Java Documentation:         <a href="https://mhaddon.github.io/Sound.je/java/index.html">https://mhaddon.github.io/Sound.je/java/index.html</a></p>
 <p>Javascript Documentation:   <a href="https://mhaddon.github.io/Sound.je/js/index.html">https://mhaddon.github.io/Sound.je/js/index.html</a></p>
+<p>API Documentation:          <a href="https://www.sound.je/api">https://www.sound.je/api</a></p>
 </blockquote>
 <h4 id="versioning">Versioning</h4>
 <p>The live server and this repository may not be completely in sync. The server may have additional patches and changes which will uploaded to the public repository on a regular basis.</p>
-<h4 id="getting-started">Getting Started</h4>
+<h4 id="getting-started-prebuilt-virtual-machine">Getting Started - Prebuilt Virtual Machine</h4>
+<blockquote>
+<p>Please go here: <a href="https://mhaddon.github.io/Sound.je.Vagrant/">https://mhaddon.github.io/Sound.je.Vagrant/</a></p>
+</blockquote>
+<h4 id="getting-started-manual-install">Getting Started - Manual Install</h4>
 <p>This is just a basic introduction on how to run the server yourself. There wont be too much detail as it is expected you understand the basics.
 Please review the gulp modules in ,/gulp to see what tasks there are available.</p>
 <h4 id="prerequisites">Prerequisites</h4>
@@ -64,6 +69,7 @@ Please review the gulp modules in ,/gulp to see what tasks there are available.<
 <p><strong>A Relational Database</strong> (This project uses MySQL/MariaDB, other databases will require additional configuration).</p>
 <p><strong>Node &amp; NPM</strong> (If you want to run any of the gulp or npm tasks)</p>
 <p><strong>Redis</strong></p>
+<p><strong>Maven</strong></p>
 </blockquote>
 <h4 id="installing">Installing</h4>
 <blockquote>
@@ -71,8 +77,8 @@ Please review the gulp modules in ,/gulp to see what tasks there are available.<
 <p><strong>Navigate to Directory</strong></p>
 <p><strong>Install node packages</strong> - run command - <em>(npm install)</em></p>
 <p><strong>Install gulp globally</strong> - run command -  <em>(sudo npm install gulp -g)</em></p>
-<pre><code>git clone https://github.com/.git
-cd _folder_
+<pre><code>git clone https://github.com/Sound.je.git
+cd Sound.je
 npm install
 sudo npm install gulp -g
 </code></pre></blockquote>
@@ -80,9 +86,9 @@ sudo npm install gulp -g
 <blockquote>
 <p><strong>Building Javascript changes:</strong> - run command -  <em>gulp scripts:build</em></p>
 <p><strong>Building SCSS changes:</strong> - run command -  <em>gulp sass:build</em></p>
-<p><strong>Build Server</strong> -</p>
-<p><strong>Run Server</strong> - java -jar target/NestedBird-1.0.war</p>
-<p><strong>Run Server as live:</strong> - java -envTarget=live -jar target/NestedBird-1.0.war</p>
+<p><strong>Build Server</strong> - run command - <em>mvn clean compile package</em></p>
+<p><strong>Run Server</strong> - run command - <em>java -jar target/NestedBird-1.0.war</em></p>
+<p><strong>Run Server as live:</strong> - run command - <em>java -envTarget=live -jar target/NestedBird-1.0.war</em></p>
 <p><strong>Connect to server:</strong> - <a href="http://localhost:8081">http://localhost:8081</a></p>
 </blockquote>
 <h4 id="contributing">Contributing</h4>
@@ -91,18 +97,26 @@ Changes may be pushed to the live site at <a href="https://www.sound.je">https:/
 I would like it immensely if changes you make follow the same style and syntax as the rest of the project.
 There are linting tasks set up as gulp tasks that do this.</p>
 <h4 id="file-structure-">File Structure:</h4>
-<pre><code>  ├── docs/                                     jsdoc
+<pre><code>  ├── docs/                                     documentation
+  |   ├── js/                                   jsdoc
+  |   └── java/                                 javadoc
+  |
   ├── gulp/                                     gulp modules
   └── src/main/                                 project source
       |
-      ├── webapp/WEB-INF/                       html source
+      ├── webapp/WEB-INF/templates/             html source
+      |   |
       |   ├── fragments                         html modules
+      |   |   ├── modals                        vue modal components
+      |   |   ├── modules                       vue modules
+      |   |   └── pages                         vue page components
+      |   |
       |   ├── homepage                          homepage layout
       |   └── layout                            general page layout
       |
       ├── resources
       |   ├── build
-      |   |   ├── javascript                    javascript source
+      |   |   ├── javascript/nestedbird         javascript source
       |   |   |   ├── core                      core classes
       |   |   |   |   ├── Ajax                  module for making AJAX requests
       |   |   |   |   ├── GlobalJS              Global JS overrides (like google analytics)
@@ -113,17 +127,18 @@ There are linting tasks set up as gulp tasks that do this.</p>
       |   |   |   |   ├── SchemaReader          Schema Reader Module
       |   |   |   |   └── Util                  Util classes
       |   |   |   ├── Schema                    Normalizr Data Schemas
+      |   |   |   ├── showdown                  Showdown modules
       |   |   |   └── Vue                       Custom Vue Code
       |   |   |       ├── components            Vue Components/Modules
       |   |   |       ├── directives            Vue Directives
       |   |   |       ├── mixins                Vue Mixins
+      |   |   |       ├── pages                 Vue Pages
       |   |   |       └── store                 VueX Store
       |   |   |
-      |   |   └── stylesheet                    sass source
+      |   |   └── stylesheet                    sass source using SMACCS folder structure
       |   |
       |   ├── properties                        server properties
-      |   ├── test                              frontend tests
-      |   ├── static                            transpiled js and css
+      |   ├── static                            public files
       |   └── sql
       |       ├── functions                     sql functions
       |       └── procedures                    sql procedures
@@ -131,11 +146,23 @@ There are linting tasks set up as gulp tasks that do this.</p>
       └── java/com.nestedbird                   server source
           ├── components                        server configuration components
           ├── config                            server configuration files
-          ├── formparser                        parses the input sent to the server by the forms
           ├── handlers                          error handlers
           ├── jackson                           jackson parsing objects
           ├── models                            database models
-          ├── schema                            reads the schema of model classes
+          ├── modules                           extra required modules
+          |   |
+          |   ├── entitysearch                  searches BaseEntities
+          |   ├── facebookreader                scans and reads facebook with the GraphAPI
+          |   ├── formparser                    processes BaseEntity form submissions and updates the entities
+          |   ├── paginator                     a wrapper for springs pagination, so we can custom paginate lists
+          |   ├── permissions                   a permission handler for spring security
+          |   ├── ratelimiter                   AOP ratelimiter for the API
+          |   ├── resourceparser                creating elements on our site from the data from third party APIs
+          |   ├── schema                        reads the schema of model classes
+          |   ├── sitemap                       generates a sitemap for a site
+          |   ├── soundcloudreader              reads data from sound clouds API
+          |   └── youtubereader                 reads data from youtubes API
+          |
           ├── util                              utility classes
           └── views                             endpoints to output to the user
 </code></pre><h4 id="license">License</h4>
@@ -153,7 +180,6 @@ There are linting tasks set up as gulp tasks that do this.</p>
    You should have received a copy of the GNU Affero General Public License
    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 </code></pre><p>More permissive licensing may be available on request.</p>
-<h5 id="flow-check-may-not-entirely-work-as-i-am-having-a-few-problems-with-it-understatement-">Flow Check may not entirely work as i am having a few problems with it (understatement)</h5>
 </article>
     </section>
 
@@ -165,13 +191,13 @@ There are linting tasks set up as gulp tasks that do this.</p>
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-Types.html">Types</a></li><li><a href="Directives.html">Vue/Directives</a></li><li><a href="Pages.html">Vue/Pages</a></li><li><a href="Store.html">Vue/Store</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.Listener.html">Listener</a></li><li><a href="InfiniteController.ScrollContainer.html">ScrollContainer</a></li><li><a href="KeyController.exports.default.html">exports.default</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Notification.html">Notification</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul><h3>Namespaces</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="Components.AboutPage.html">AboutPage</a></li><li><a href="Components.AdminPage.html">AdminPage</a></li><li><a href="Components.ArtistModal.html">ArtistModal</a></li><li><a href="Components.CreateRecordModal.html">CreateRecordModal</a></li><li><a href="Components.DateTimePicker.html">DateTimePicker</a></li><li><a href="Components.EditableFormData.html">EditableFormData</a></li><li><a href="Components.EditRecordModal.html">EditRecordModal</a></li><li><a href="Components.EntityField.html">EntityField</a></li><li><a href="Components.EventList.html">EventList</a></li><li><a href="Components.EventModal.html">EventModal</a></li><li><a href="Components.FacebookBox.html">FacebookBox</a></li><li><a href="Components.LocationModal.html">LocationModal</a></li><li><a href="Components.LoginModal.html">LoginModal</a></li><li><a href="Components.LoginPasswordModal.html">LoginPasswordModal</a></li><li><a href="Components.MarkdownTextarea.html">MarkdownTextarea</a></li><li><a href="Components.MediaBox.html">MediaBox</a></li><li><a href="Components.MediaList.html">MediaList</a></li><li><a href="Components.MediumModal.html">MediumModal</a></li><li><a href="Components.MultiEntityField.html">MultiEntityField</a></li><li><a href="Components.NewsPage.html">NewsPage</a></li><li><a href="Components.NotFoundModal.html">NotFoundModal</a></li><li><a href="Components.PasswordResetModal.html">PasswordResetModal</a></li><li><a href="Components.RecordModal.html">RecordModal</a></li><li><a href="Components.RecordsPage.html">RecordsPage</a></li><li><a href="Components.RegisterModal.html">RegisterModal</a></li><li><a href="Components.SearchPage.html">SearchPage</a></li><li><a href="Components.SongModal.html">SongModal</a></li><li><a href="Components.SubmitModal.html">SubmitModal</a></li><li><a href="Directives.form.html">form</a></li><li><a href="Directives.FormDirectiveHelper.html">FormDirectiveHelper</a></li><li><a href="Directives.href.html">href</a></li><li><a href="Directives.infinite.html">infinite</a></li><li><a href="Directives.src.html">src</a></li><li><a href="Directives.SrcDirectiveHelper.html">SrcDirectiveHelper</a></li><li><a href="Mixins.Auth.html">Auth</a></li><li><a href="Mixins.IeVersion.html">IeVersion</a></li><li><a href="Mixins.Mobile.html">Mobile</a></li><li><a href="Mixins.Modal.html">Modal</a></li><li><a href="Mixins.Tag.html">Tag</a></li><li><a href="Pages.ViewModel.html">ViewModel</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Modules</h3><ul><li><a href="module-Types.html">Types</a></li><li><a href="Directives.html">Vue/Directives</a></li><li><a href="Pages.html">Vue/Pages</a></li><li><a href="Store.html">Vue/Store</a></li></ul><h3>Classes</h3><ul><li><a href="InfiniteController.Listener.html">Listener</a></li><li><a href="InfiniteController.ScrollContainer.html">ScrollContainer</a></li><li><a href="KeyController.exports.default.html">exports.default</a></li><li><a href="KeyController.KeyController.html">KeyController</a></li><li><a href="KeyController.Trigger.html">Trigger</a></li><li><a href="MusicPlayer.MusicPlayer.html">MusicPlayer</a></li><li><a href="MusicPlayer.Playlist.html">Playlist</a></li><li><a href="MusicPlayer.PlaylistController.html">PlaylistController</a></li><li><a href="Router.Href.html">Href</a></li><li><a href="Router.Modal.html">Modal</a></li><li><a href="Router.Page.html">Page</a></li><li><a href="Router.Route.html">Route</a></li><li><a href="Router.Router.html">Router</a></li><li><a href="SchemaReader.SchemaData.html">SchemaData</a></li><li><a href="SchemaReader.SchemaReader.html">SchemaReader</a></li><li><a href="Util.Notification.html">Notification</a></li><li><a href="module-Types.ParsedSchemaField.html">ParsedSchemaField</a></li><li><a href="module-Types.SchemaField.html">SchemaField</a></li></ul><h3>Namespaces</h3><ul><li><a href="InfiniteController.InfiniteController.html">InfiniteController</a></li><li><a href="Util.Util.html">Util</a></li><li><a href="Components.AboutPage.html">AboutPage</a></li><li><a href="Components.AdminPage.html">AdminPage</a></li><li><a href="Components.APIPage.html">APIPage</a></li><li><a href="Components.ArtistModal.html">ArtistModal</a></li><li><a href="Components.CreateRecordModal.html">CreateRecordModal</a></li><li><a href="Components.DateTimePicker.html">DateTimePicker</a></li><li><a href="Components.EditableFormData.html">EditableFormData</a></li><li><a href="Components.EditRecordModal.html">EditRecordModal</a></li><li><a href="Components.EntityField.html">EntityField</a></li><li><a href="Components.EventList.html">EventList</a></li><li><a href="Components.EventModal.html">EventModal</a></li><li><a href="Components.FacebookBox.html">FacebookBox</a></li><li><a href="Components.LocationModal.html">LocationModal</a></li><li><a href="Components.LoginModal.html">LoginModal</a></li><li><a href="Components.LoginPasswordModal.html">LoginPasswordModal</a></li><li><a href="Components.MarkdownTextarea.html">MarkdownTextarea</a></li><li><a href="Components.MediaBox.html">MediaBox</a></li><li><a href="Components.MediaList.html">MediaList</a></li><li><a href="Components.MediumModal.html">MediumModal</a></li><li><a href="Components.MultiEntityField.html">MultiEntityField</a></li><li><a href="Components.NewsPage.html">NewsPage</a></li><li><a href="Components.NotFoundModal.html">NotFoundModal</a></li><li><a href="Components.PasswordResetModal.html">PasswordResetModal</a></li><li><a href="Components.RecordModal.html">RecordModal</a></li><li><a href="Components.RecordsPage.html">RecordsPage</a></li><li><a href="Components.RegisterModal.html">RegisterModal</a></li><li><a href="Components.SearchPage.html">SearchPage</a></li><li><a href="Components.SongModal.html">SongModal</a></li><li><a href="Components.SubmitModal.html">SubmitModal</a></li><li><a href="Directives.form.html">form</a></li><li><a href="Directives.FormDirectiveHelper.html">FormDirectiveHelper</a></li><li><a href="Directives.href.html">href</a></li><li><a href="Directives.infinite.html">infinite</a></li><li><a href="Directives.src.html">src</a></li><li><a href="Directives.SrcDirectiveHelper.html">SrcDirectiveHelper</a></li><li><a href="Mixins.Auth.html">Auth</a></li><li><a href="Mixins.IeVersion.html">IeVersion</a></li><li><a href="Mixins.Mobile.html">Mobile</a></li><li><a href="Mixins.Modal.html">Modal</a></li><li><a href="Mixins.Tag.html">Tag</a></li><li><a href="Pages.ViewModel.html">ViewModel</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Tue May 16 2017 19:16:25 GMT+0100 (BST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Tue May 30 2017 02:33:36 GMT+0100 (BST)
 </footer>
 
 <script> prettyPrint(); </script>

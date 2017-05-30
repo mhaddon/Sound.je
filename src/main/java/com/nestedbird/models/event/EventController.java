@@ -27,6 +27,8 @@ import com.nestedbird.modules.formparser.ParameterMapParser;
 import com.nestedbird.modules.resourceparser.EventParser;
 import com.nestedbird.util.Mutable;
 import com.nestedbird.util.QueryBlock;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +49,9 @@ import javax.servlet.http.HttpServletRequest;
  * The type Event controller.
  */
 @RestController
-@RequestMapping("api/v1/Events/")
+@RequestMapping("/api/v1/Events")
 @Slf4j
+@Api(tags = "Events")
 public class EventController extends BaseController<Event> {
 
     private final EventRepository eventRepository;
@@ -130,6 +133,7 @@ public class EventController extends BaseController<Event> {
      * @param pageable pagination settings
      * @return page of events
      */
+    @ApiOperation("Lists all upcoming events")
     @RequestMapping(value = "/Upcoming", method = RequestMethod.GET)
     public Page<Occurrence> listUpcoming(final Pageable pageable) {
         return eventService.getUpcomingOccurrences(pageable);
@@ -150,7 +154,7 @@ public class EventController extends BaseController<Event> {
      * @param request the request
      * @return the event
      */
-    @RequestMapping(value = "parseurl", method = RequestMethod.POST,
+    @RequestMapping(value = "/parseurl", method = RequestMethod.POST,
             headers = "content-type=application/x-www-form-urlencoded",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public Event parseUrl(final HttpServletRequest request) {

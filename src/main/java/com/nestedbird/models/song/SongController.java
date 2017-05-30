@@ -19,6 +19,7 @@ package com.nestedbird.models.song;
 import com.nestedbird.models.core.Base.BaseController;
 import com.nestedbird.models.core.Base.BaseRepository;
 import com.nestedbird.models.core.Base.BaseService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
  * The type Song controller.
  */
 @RestController
-@RequestMapping("api/v1/Songs/")
+@RequestMapping("/api/v1/Songs")
+@Api(tags = "Songs")
 public class SongController extends BaseController<Song> {
 
     private final SongRepository songRepository;

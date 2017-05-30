@@ -84,7 +84,7 @@ export const CreateRecordModal = {
          * @type string
          */
         endpointUrl(): string {
-            return `/api/v1/${this.name}/`;
+            return `/api/v1/${this.name}`;
         }
     },
     methods:  {

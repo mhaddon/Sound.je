@@ -33,6 +33,7 @@ com.nestedbird.modules.entitysearch
 com.nestedbird.modules.facebookreader
 com.nestedbird.modules.formparser
 com.nestedbird.modules.paginator
+com.nestedbird.modules.permissions
 com.nestedbird.modules.ratelimiter
 com.nestedbird.modules.resourceparser
 com.nestedbird.modules.schema

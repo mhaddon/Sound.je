@@ -129,6 +129,19 @@ class EventServiceImpl extends AuditedServiceImpl<Event> implements EventService
     }
 
     @Override
+    public Set<Occurrence> retrieveByArtist(final Artist artist) {
+        return getAllPossibleUpcoming().stream()
+                .filter(AuditedEntity::getActive)
+                .filter(event -> event.getArtists().contains(artist))
+                .map(Event::getTimes)
+                .flatMap(Set::stream)
+                .map(EventTime::getOccurrences)
+                .flatMap(List::stream)
+                .map(occurrenceService::parseParsedEventData)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
     public Set<Occurrence> retrieveUpcomingByArtist(final Artist artist) {
         return getAllPossibleUpcoming().stream()
                 .filter(AuditedEntity::getActive)
@@ -136,6 +149,19 @@ class EventServiceImpl extends AuditedServiceImpl<Event> implements EventService
                 .map(Event::getTimes)
                 .flatMap(Set::stream)
                 .map(EventTime::getFutureOccurrences)
+                .flatMap(List::stream)
+                .map(occurrenceService::parseParsedEventData)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<Occurrence> retrieveByLocation(final Location location) {
+        return getAllPossibleUpcoming().stream()
+                .filter(AuditedEntity::getActive)
+                .filter(event -> event.getLocation().orElse(null).equals(location))
+                .map(Event::getTimes)
+                .flatMap(Set::stream)
+                .map(EventTime::getOccurrences)
                 .flatMap(List::stream)
                 .map(occurrenceService::parseParsedEventData)
                 .collect(Collectors.toSet());

@@ -22,12 +22,14 @@ import com.nestedbird.models.core.Base.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * The type Privilege controller.
  */
 @RestController
-@RequestMapping("api/v1/Privileges/")
+@RequestMapping("/api/v1/Privileges")
+@ApiIgnore
 public class PrivilegeController extends BaseController<Privilege> {
     private final PrivilegeRepository privilegeRepository;
 

@@ -24,6 +24,8 @@ import com.nestedbird.modules.formparser.ParameterMapParser;
 import com.nestedbird.modules.resourceparser.MediumParser;
 import com.nestedbird.util.Mutable;
 import com.nestedbird.util.QueryBlock;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.redisson.api.RScoredSortedSet;
 import org.redisson.api.RedissonClient;
 import org.redisson.client.protocol.ScoredEntry;
@@ -55,7 +57,8 @@ import java.util.stream.Collectors;
  */
 @RestController
 @EnableScheduling
-@RequestMapping("api/v1/Media/")
+@RequestMapping("/api/v1/Media")
+@Api(tags = "Media")
 public class MediumController extends BaseController<Medium> {
 
     private final RedissonClient redissonClient;
@@ -105,7 +108,8 @@ public class MediumController extends BaseController<Medium> {
      * @param pageable pagination settings
      * @return list of medium elements
      */
-    @RequestMapping(value = "Hot", method = RequestMethod.GET)
+    @ApiOperation("Retrieves all Media elements by how \"hot\" they are")
+    @RequestMapping(value = "/Hot", method = RequestMethod.GET)
     Page<Medium> listHot(final Pageable pageable) {
         final int page = pageable.getPageNumber();
         final int count = pageable.getPageSize();
@@ -158,7 +162,7 @@ public class MediumController extends BaseController<Medium> {
      * @param request the request
      * @return the medium
      */
-    @RequestMapping(value = "parseurl", method = RequestMethod.POST,
+    @RequestMapping(value = "/parseurl", method = RequestMethod.POST,
             headers = "content-type=application/x-www-form-urlencoded",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public Medium parseUrl(final HttpServletRequest request) {

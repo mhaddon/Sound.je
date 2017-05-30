@@ -94,6 +94,12 @@
                     <i class='fa fa-spinner fa-spin'></i>
                 </h2>
             </aboutpage-component>
+            <apipage-component v-show="isPage('API')">
+                <h2 style='text-align:center;'>
+                    Loading...<br/>
+                    <i class='fa fa-spinner fa-spin'></i>
+                </h2>
+            </apipage-component>
             <adminpage-component v-show="isPage('ADMIN')">
                 <h2 style='text-align:center;'>
                     Loading...<br/>

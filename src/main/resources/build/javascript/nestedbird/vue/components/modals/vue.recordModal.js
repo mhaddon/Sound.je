@@ -60,7 +60,7 @@ export const RecordModal = {
         };
     },
     created() {
-        this.APIUrl = `/api/v1/${this.name}/`;
+        this.APIUrl = `/api/v1/${this.name}`;
     }
 };
 

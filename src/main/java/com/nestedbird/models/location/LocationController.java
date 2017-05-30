@@ -27,6 +27,9 @@ import com.nestedbird.modules.paginator.Paginator;
 import com.nestedbird.modules.resourceparser.LocationParser;
 import com.nestedbird.util.Mutable;
 import com.nestedbird.util.QueryBlock;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,7 +45,8 @@ import java.util.List;
  * The type Location controller.
  */
 @RestController
-@RequestMapping("api/v1/Locations/")
+@RequestMapping("/api/v1/Locations")
+@Api(tags = "Locations")
 public class LocationController extends BaseController<Location> {
 
     private final LocationRepository locationRepository;
@@ -83,12 +87,29 @@ public class LocationController extends BaseController<Location> {
         return this.locationService;
     }
 
-    @RequestMapping(value = "{id}/Events", method = RequestMethod.GET)
+    @ApiOperation("Lists all upcoming events at a location")
+    @RequestMapping(value = "/{id}/Events/Upcoming", method = RequestMethod.GET)
     @SuppressWarnings("unchecked")
-    public Page<Occurrence> listEvents(final Pageable pageable, @PathVariable final String id) {
+    public Page<Occurrence> listUpcomingEvents(final Pageable pageable,
+                                       @ApiParam("UUID Id of Location") @PathVariable final String id) {
         final List<Occurrence> occurrences = locationService.findOne(id)
                 .filter(AuditedEntity::getActive)
                 .map(eventService::retrieveUpcomingByLocation)
+                .map(ArrayList::new)
+                .orElse(new ArrayList());
+
+        return Paginator.<Occurrence>of(pageable)
+                .paginate(occurrences);
+    }
+
+    @ApiOperation("Lists all events at a location")
+    @RequestMapping(value = "/{id}/Events", method = RequestMethod.GET)
+    @SuppressWarnings("unchecked")
+    public Page<Occurrence> listEvents(final Pageable pageable,
+                                       @ApiParam("UUID Id of Location") @PathVariable final String id) {
+        final List<Occurrence> occurrences = locationService.findOne(id)
+                .filter(AuditedEntity::getActive)
+                .map(eventService::retrieveByLocation)
                 .map(ArrayList::new)
                 .orElse(new ArrayList());
 
@@ -102,7 +123,7 @@ public class LocationController extends BaseController<Location> {
      * @param request the request
      * @return the location
      */
-    @RequestMapping(value = "parseurl", method = RequestMethod.POST,
+    @RequestMapping(value = "/parseurl", method = RequestMethod.POST,
             headers = "content-type=application/x-www-form-urlencoded",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public Location parseUrl(final HttpServletRequest request) {

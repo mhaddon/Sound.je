@@ -47,7 +47,11 @@ public interface EventService extends AuditedService<Event> {
 
     Page<Occurrence> getUpcomingOccurrences(final Pageable pageable);
 
+    Set<Occurrence> retrieveByArtist(final Artist artist);
+
     Set<Occurrence> retrieveUpcomingByArtist(final Artist artist);
+
+    Set<Occurrence> retrieveByLocation(final Location location);
 
     Set<Occurrence> retrieveUpcomingByLocation(final Location location);
 }

@@ -168,6 +168,14 @@ public class SitemapGenerator {
                 .priority(0.8)
                 .build());
 
+        extraEntities.add(SitemapEntity.builder()
+                .externalUrl(serverConfigSettings.getExternalUrl())
+                .relativeUrl("/api")
+                .lastModified(DateTime.now().withDayOfMonth(1).withHourOfDay(1).withMinuteOfHour(1).withSecondOfMinute(1))
+                .changeFrequency("monthly")
+                .priority(0.8)
+                .build());
+
         return extraEntities.stream().map(SitemapEntity::generate);
     }
 

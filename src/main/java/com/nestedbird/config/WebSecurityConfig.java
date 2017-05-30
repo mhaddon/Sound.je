@@ -18,6 +18,7 @@ package com.nestedbird.config;
 
 import com.nestedbird.components.userdetails.DetailsService;
 import com.nestedbird.models.user.User;
+import com.nestedbird.modules.permissions.EndpointPermissionsManifest;
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +26,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -42,7 +42,6 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     /**
      * Will we use a secure cookie
@@ -54,6 +53,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final DataSource dataSource;
 
     private final ServerConfigSettings serverConfigSettings;
+
+    private final EndpointPermissionsManifest endpointPermissions;
 
     /**
      * Instantiates a new Web security config.
@@ -67,11 +68,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public WebSecurityConfig(@Value("${security.secure_cookie}") final Boolean secureCookie,
                              final DetailsService userDetailsService,
                              final DataSource dataSource,
-                             ServerConfigSettings serverConfigSettings) {
+                             ServerConfigSettings serverConfigSettings, final EndpointPermissionsManifest endpointPermissionsManifest) {
         this.secureCookie = secureCookie;
         this.userDetailsService = userDetailsService;
         this.dataSource = dataSource;
         this.serverConfigSettings = serverConfigSettings;
+        this.endpointPermissions = endpointPermissionsManifest;
     }
 
     @Override
@@ -89,7 +91,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(final WebSecurity web) {
         web.ignoring().antMatchers(
                 HttpMethod.GET,
-                Permissions.ignore()
+                endpointPermissions.ignore()
         );
     }
 
@@ -101,43 +103,43 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // Public GET resources
                 .antMatchers(
                     HttpMethod.GET,
-                    Permissions.publicGET()
+                    endpointPermissions.publicGET()
                 ).permitAll()
 
                 // Public POST resources
                 .antMatchers(
                     HttpMethod.POST,
-                    Permissions.publicPOST()
+                    endpointPermissions.publicPOST()
                 ).permitAll()
+
+                // MODERATOR level privilege GET resources
+                .antMatchers(
+                    HttpMethod.GET,
+                    endpointPermissions.moderatorGET()
+                ).hasAuthority(Permissions.PRIV_MODERATOR)
 
                 // ADMIN level privilege GET resources
                 .antMatchers(
                     HttpMethod.GET,
-                    Permissions.adminGET()
+                    endpointPermissions.adminGET()
                 ).hasAuthority(Permissions.PRIV_ADMIN)
-
-                // GET SCHEMA level privilege GET resources
-                .antMatchers(
-                    HttpMethod.GET,
-                    Permissions.schemaGET()
-                ).hasAuthority(Permissions.PRIV_GET_ENTITY_SCHEMA)
 
                 // CREATE ENTITY level privilege POST resources
                 .antMatchers(
                     HttpMethod.POST,
-                    Permissions.entityPOST()
+                    endpointPermissions.entityPOST()
                 ).hasAuthority(Permissions.PRIV_CREATE_ENTITY)
 
                 // UPDATE ENTITY level privilege PUT resources
                 .antMatchers(
                     HttpMethod.PUT,
-                    Permissions.entityPUT()
+                    endpointPermissions.entityPUT()
                 ).hasAuthority(Permissions.PRIV_UPDATE_ENTITY)
 
                 // DELETE ENTITY level privilege DELETE resources
                 .antMatchers(
                     HttpMethod.DELETE,
-                    Permissions.entityDELETE()
+                    endpointPermissions.entityDELETE()
                 ).hasAuthority(Permissions.PRIV_DELETE_ENTITY)
 
                 .anyRequest()
@@ -163,8 +165,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
 
             .logout()
-                .permitAll()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
+                    .permitAll()
                 .logoutSuccessUrl("/session")
             .and()
 
@@ -204,121 +206,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @UtilityClass
     static final private class Permissions {
         static private final String PRIV_ADMIN = "PRIV_ADMIN";
-        static private final String PRIV_GET_ENTITY_SCHEMA = "PRIV_GET_ENTITY_SCHEMA";
+        static private final String PRIV_MODERATOR = "PRIV_MODERATOR";
         static private final String PRIV_CREATE_ENTITY = "PRIV_CREATE_ENTITY";
         static private final String PRIV_UPDATE_ENTITY = "PRIV_UPDATE_ENTITY";
         static private final String PRIV_DELETE_ENTITY = "PRIV_DELETE_ENTITY";
-
-        static private String[] ignore() {
-            return new String[]{
-                    "/**/*.css",
-                    "/**/*.js",
-                    "/**/*.png",
-                    "/**/*.jpg",
-                    "/**/*.jpeg",
-                    "/**/*.svg",
-                    "/**/*.gif",
-                    "/**/*.ico",
-                    "/**/*.json",
-                    "/**/*.xml",
-                    "/**/*.txt"
-            };
-        }
-
-        static private String[] publicGET() {
-            return new String[]{
-                    "/session",
-                    "/login/register",
-                    "/login/reset",
-                    "/login/check",
-                    "/login/reset/request",
-                    "/api/*/*/",
-                    "/api/*/search/",
-                    "/api/*/search/*/",
-                    "/api/*/Artists/*/Media",
-                    "/api/*/Artists/*/Songs",
-                    "/api/*/EventTimes/Upcoming",
-                    "/api/*/Events/Upcoming",
-                    "/api/*/Media/Hot",
-                    "/api/*/*/*-*-*-*-*",
-
-
-                    "/",
-                    "/News",
-                    "/About",
-                    "/Events",
-                    "/Events/*",
-                    "/Events/*/*",
-                    "/Locations",
-                    "/Locations/*",
-                    "/Locations/*/*",
-                    "/Media",
-                    "/Medium/*",
-                    "/Medium/*/*",
-                    "/Artists",
-                    "/Artists/*",
-                    "/Artists/*/*",
-                    "/Songs",
-                    "/Songs/*",
-                    "/Songs/*/*",
-                    "/Admin",
-                    "/login",
-                    "/logout",
-                    "/Records",
-                    "/Records/*",
-                    "/search",
-                    "/search/*"
-                    //                "/api/*/Events/updateFB",
-                    //                "/api/*/ScannedPages/manualrequest"
-            };
-        }
-
-        static private String[] adminGET() {
-            return new String[]{
-                    "/api/*/Users/**/*",
-                    "/api/*/Privileges/**/*",
-                    "/api/*/Roles/**/*",
-                    "/api/*/ScannedPages/manualrequest",
-                    "/api/*/ScannedPages/testrequest"
-            };
-        }
-
-        static private String[] publicPOST() {
-            return new String[]{
-                    "/login/check",
-                    "/login/register/create",
-                    "/login/register/confirm",
-                    "/login/reset/confirm"
-            };
-        }
-
-        static private String[] schemaGET() {
-            return new String[]{
-                    "/api/*/*/schema"
-            };
-        }
-
-        static private String[] entityPOST() {
-            return new String[]{
-                    "/api/*/*/",
-                    "/api/*/Media/parseurl",
-                    "/api/*/Events/parseurl",
-                    "/api/*/ScannedPages/parseurl",
-                    "/api/*/Artists/parseurl",
-                    "/api/*/Locations/parseurl"
-            };
-        }
-
-        static private String[] entityPUT() {
-            return new String[]{
-                    "/api/*/*/*-*-*-*-*"
-            };
-        }
-
-        static private String[] entityDELETE() {
-            return new String[]{
-                    "/api/*/*/*-*-*-*-*"
-            };
-        }
     }
 }

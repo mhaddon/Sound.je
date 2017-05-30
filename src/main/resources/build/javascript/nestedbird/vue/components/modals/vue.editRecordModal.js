@@ -89,7 +89,7 @@ export const EditRecordModal = {
          * @type string
          */
         endpointUrl(): string {
-            return `${this.APIUrl}${this.id}`;
+            return `${this.APIUrl}/${this.id}`;
         },
         /**
          * The api endpoint url
@@ -97,7 +97,7 @@ export const EditRecordModal = {
          * @type string
          */
         APIUrl(): string {
-            return `/api/v1/${this.name}/`;
+            return `/api/v1/${this.name}`;
         }
     },
     methods:  {

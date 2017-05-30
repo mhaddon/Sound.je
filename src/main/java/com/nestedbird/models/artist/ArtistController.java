@@ -29,6 +29,9 @@ import com.nestedbird.modules.paginator.Paginator;
 import com.nestedbird.modules.resourceparser.PageParser;
 import com.nestedbird.util.Mutable;
 import com.nestedbird.util.QueryBlock;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,8 +47,11 @@ import java.util.List;
  * The type Artist controller.
  */
 @RestController
-@RequestMapping("api/v1/Artists/")
+@RequestMapping("/api/v1/Artists")
+@Api(tags = "Artists")
 public class ArtistController extends BaseController<Artist> {
+
+
     private final ArtistRepository artistRepository;
     private final ArtistService artistService;
     private final PageParser pageParser;
@@ -86,9 +92,18 @@ public class ArtistController extends BaseController<Artist> {
         return this.artistService;
     }
 
-    @RequestMapping(value = "{id}/Events", method = RequestMethod.GET)
+    /**
+     * Lists all of an artists upcoming events
+     *
+     * @param pageable request pagination settings
+     * @param id       artist Id
+     * @return Page of Occurrences
+     */
+    @ApiOperation("Lists all of an artists upcoming events")
+    @RequestMapping(value = "/{id}/Events/Upcoming", method = RequestMethod.GET)
     @SuppressWarnings("unchecked")
-    public Page<Occurrence> listEvents(final Pageable pageable, @PathVariable final String id) {
+    public Page<Occurrence> listUpcomingEvents(final Pageable pageable,
+                                               @ApiParam("UUID Id of Artist") @PathVariable final String id) {
         final List<Occurrence> occurrences = artistService.findOne(id)
                 .filter(AuditedEntity::getActive)
                 .map(eventService::retrieveUpcomingByArtist)
@@ -99,31 +114,56 @@ public class ArtistController extends BaseController<Artist> {
                 .paginate(occurrences);
     }
 
+    @ApiOperation(
+            value = "Lists all of an artists events"
+    )
+    @RequestMapping(value = "/{id}/Events", method = RequestMethod.GET)
+    @SuppressWarnings("unchecked")
+    public Page<Occurrence> listEvents(final Pageable pageable,
+                                       @ApiParam(value = "UUID Id of Artist", required = true) @PathVariable final String id) {
+        final List<Occurrence> occurrences = artistService.findOne(id)
+                .filter(AuditedEntity::getActive)
+                .map(eventService::retrieveByArtist)
+                .map(ArrayList::new)
+                .orElse(new ArrayList());
+
+        return Paginator.<Occurrence>of(pageable)
+                .paginate(occurrences);
+    }
+
     /**
-     * List media page.
+     * Lists all of an artists medium elements
      *
      * @param pageable the pageable
      * @param id       the id
      * @return the page
      */
-    @RequestMapping(value = "{id}/Media", method = RequestMethod.GET)
-    public Page<Medium> listMedia(final Pageable pageable, @PathVariable final String id) {
+    @ApiOperation(
+            value = "Lists all of an artists medium elements"
+    )
+    @RequestMapping(value = "/{id}/Media", method = RequestMethod.GET)
+    public Page<Medium> listMedia(final Pageable pageable,
+                                  @ApiParam(value = "UUID Id of Artist", required = true) @PathVariable final String id) {
         return artistService.listAllMediumByPage(pageable, id);
     }
 
     /**
-     * List songs page.
+     * Lists all of an artists songs elements
      *
      * @param pageable the pageable
      * @param id       the id
      * @return the page
      */
-    @RequestMapping(value = "{id}/Songs", method = RequestMethod.GET)
-    public Page<Song> listSongs(final Pageable pageable, @PathVariable final String id) {
+    @ApiOperation(
+            value = "Lists all of an artists songs elements"
+    )
+    @RequestMapping(value = "/{id}/Songs", method = RequestMethod.GET)
+    public Page<Song> listSongs(final Pageable pageable,
+                                @ApiParam(value = "UUID Id of Artist", required = true) @PathVariable final String id) {
         return artistService.listAllSongsByPage(pageable, id);
     }
 
-    @RequestMapping(value = "parseurl", method = RequestMethod.POST,
+    @RequestMapping(value = "/parseurl", method = RequestMethod.POST,
             headers = "content-type=application/x-www-form-urlencoded",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public Artist parseUrl(final HttpServletRequest request) {

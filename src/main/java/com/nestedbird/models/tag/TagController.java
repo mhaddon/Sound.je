@@ -23,10 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@RequestMapping("api/v1/Tags/")
+@RequestMapping("/api/v1/Tags")
 @Slf4j
+@ApiIgnore
 public class TagController extends BaseController<Tag> {
 
     private final TagRepository tagRepository;

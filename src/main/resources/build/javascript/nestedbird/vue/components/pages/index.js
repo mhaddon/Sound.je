@@ -19,3 +19,4 @@ export * from "./vue.newsPage";
 export * from "./vue.recordsPage";
 export * from "./vue.searchPage";
 export * from "./vue.adminPage";
+export * from "./vue.apiPage";

@@ -39,6 +39,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -49,8 +50,9 @@ import java.util.stream.Collectors;
  * The type Scanned page controller.
  */
 @RestController
-@RequestMapping("api/v1/ScannedPages/")
+@RequestMapping("/api/v1/ScannedPages")
 @Slf4j
+@ApiIgnore
 public class ScannedPageController extends BaseController<ScannedPage> {
     private final ScannedPageRepository scannedPageRepository;
 
@@ -120,7 +122,7 @@ public class ScannedPageController extends BaseController<ScannedPage> {
      * @param request the request
      * @return the scanned page
      */
-    @RequestMapping(value = "parseurl", method = RequestMethod.POST,
+    @RequestMapping(value = "/parseurl", method = RequestMethod.POST,
             headers = "content-type=application/x-www-form-urlencoded",
             consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ScannedPage parseUrl(final HttpServletRequest request) {
@@ -149,7 +151,7 @@ public class ScannedPageController extends BaseController<ScannedPage> {
     /**
      * Manual request.
      */
-    @RequestMapping(value = "manualrequest", method = RequestMethod.GET)
+    @RequestMapping(value = "/manualrequest", method = RequestMethod.GET)
     void manualRequest() {
         retrieveEventsToDatabase();
     }
@@ -196,7 +198,7 @@ public class ScannedPageController extends BaseController<ScannedPage> {
      *
      * @return the list
      */
-    @RequestMapping(value = "testrequest", method = RequestMethod.GET)
+    @RequestMapping(value = "/testrequest", method = RequestMethod.GET)
     List<FacebookEvent> testRequest() {
         return facebookScanner.scan(getFacebookPages()).getEvents();
     }

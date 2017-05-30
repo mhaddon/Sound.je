@@ -2,7 +2,7 @@
  *  NestedBird  Copyright (C) 2016-2017  Michael Haddon
  *
  *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License version 3 
+ *  it under the terms of the GNU Affero General Public License version 3
  *  as published by the Free Software Foundation.
  *
  *  This program is distributed in the hope that it will be useful,
@@ -132,6 +132,14 @@ export default {
             currentPage:          Page.MUSIC,
             requireAuthorisation: false,
             title:                `Sound of Jersey | Media`
+        }
+    },
+    [`/api`]:                  {
+        state: {
+            currentModal:         Modal.NONE,
+            currentPage:          Page.API,
+            requireAuthorisation: false,
+            title:                `Sound of Jersey | API`
         }
     },
     [`/login`]:                {

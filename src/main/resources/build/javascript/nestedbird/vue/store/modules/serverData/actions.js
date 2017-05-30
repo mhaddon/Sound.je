@@ -231,7 +231,7 @@ export default {
     getArtistEvents({ dispatch }: VuexActionOperations<ServerDataState>, { page = 0, limit = 15, id, sort = `` }: ServerDataPaginatedRequestObjectOfSpecific): Promise<string
         | RESTObject<Occurrence>> {
         return dispatch(`getPagedDataContent`, {
-            apiurl: `/api/v1/Artists/${id}/Events`,
+            apiurl: `/api/v1/Artists/${id}/Events/Upcoming`,
             page,
             limit,
             sort,
@@ -247,7 +247,7 @@ export default {
     getArtists({ dispatch, state }: VuexActionOperations<ServerDataState>, { page = 0, limit = 100, sort = `` }: ServerDataPaginatedRequestObject): Promise<string
         | Artist[]> {
         return dispatch(`getAllPagedDataContent`, {
-            apiurl:          `/api/v1/Artists/`,
+            apiurl:          `/api/v1/Artists`,
             page,
             limit,
             sort,
@@ -266,7 +266,7 @@ export default {
     getLocations({ dispatch, state }: VuexActionOperations<ServerDataState>, { page = 0, limit = 100, sort = `` }: ServerDataPaginatedRequestObject): Promise<string
         | Location[]> {
         return dispatch(`getAllPagedDataContent`, {
-            apiurl:          `/api/v1/Locations/`,
+            apiurl:          `/api/v1/Locations`,
             page,
             limit,
             sort,
@@ -283,7 +283,7 @@ export default {
     getLocationEvents({ dispatch }: VuexActionOperations<ServerDataState>, { page = 0, limit = 15, id, sort = `` }: ServerDataPaginatedRequestObjectOfSpecific): Promise<string
         | RESTObject<Occurrence>> {
         return dispatch(`getPagedDataContent`, {
-            apiurl: `/api/v1/Locations/${id}/Events`,
+            apiurl: `/api/v1/Locations/${id}/Events/Upcoming`,
             page,
             limit,
             sort,
@@ -301,7 +301,7 @@ export default {
     getSongs({ dispatch, state }: VuexActionOperations<ServerDataState>, { page = 0, limit = 100, sort = `` }: ServerDataPaginatedRequestObject): Promise<string
         | Song[]> {
         return dispatch(`getAllPagedDataContent`, {
-            apiurl:          `/api/v1/Songs/`,
+            apiurl:          `/api/v1/Songs`,
             page,
             limit,
             sort,
@@ -326,7 +326,7 @@ export default {
     getRoles({ dispatch, state }: VuexActionOperations<ServerDataState>, { page = 0, limit = 100, sort = `` }: ServerDataPaginatedRequestObject): Promise<string
         | Role[]> {
         return dispatch(`getAllPagedDataContent`, {
-            apiurl:          `/api/v1/Roles/`,
+            apiurl:          `/api/v1/Roles`,
             page,
             limit,
             sort,
@@ -351,7 +351,7 @@ export default {
     getPrivileges({ dispatch, state }: VuexActionOperations<ServerDataState>, { page = 0, limit = 100, sort = `` }: ServerDataPaginatedRequestObject): Promise<string
         | Privilege[]> {
         return dispatch(`getAllPagedDataContent`, {
-            apiurl:          `/api/v1/Privileges/`,
+            apiurl:          `/api/v1/Privileges`,
             page,
             limit,
             sort,
@@ -376,7 +376,7 @@ export default {
     getTags({ dispatch, state }: VuexActionOperations<ServerDataState>, { page = 0, limit = 100, sort = `` }: ServerDataPaginatedRequestObject): Promise<string
         | Tag[]> {
         return dispatch(`getAllPagedDataContent`, {
-            apiurl:          `/api/v1/Tags/`,
+            apiurl:          `/api/v1/Tags`,
             page,
             limit,
             sort,

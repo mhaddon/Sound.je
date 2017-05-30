@@ -1,0 +1,74 @@
+<!--
+  ~  NestedBird  Copyright (C) 2016-2017  Michael Haddon
+  ~
+  ~  This program is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU Affero General Public License version 3
+  ~  as published by the Free Software Foundation.
+  ~
+  ~  This program is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU Affero General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU Affero General Public License
+  ~  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml"
+>
+<head>
+    <title>Ploinki</title>
+</head>
+<body>
+<script type='text/x-template' id='apiPage-template' th:fragment="apiPage">
+    <article class="article aboutPage">
+        <p class="article__title">Developers Developers Developers Developers</p>
+        <div class="article__textbox">
+            <p class="article__text" style="text-align: left; font-size: 14px;">
+                We love fellow developers and want to do as much as we can to help support anyone wanting to help promote local music.
+                <br/>
+                <br/>
+                This document describes how to use the API which is publicly accessible and used by this very website.
+                The API lets developers request information about certain resources on this website.
+                <br/>
+                <br/>
+                This API is free for non-commercial and personal use.
+                <br/>
+                Access to the API is not guaranteed and is neither a right, excessive use may result in your connection being throttled or even rejected.
+                Extreme misuse of the API may result in legal action.
+                <br/>
+                <b>Contact us if you want to use the API for commercial or public use.</b>
+                <br/>
+                <br/>
+                Thankyou, but more importantly, good luck
+            </p>
+            <p class="article__text" style="font-size:0.8em;">
+                Please understand that the API is under development and may be subject to bugs or change.<br/>
+                Furthermore, this document itself is also under development and may contain mistakes.
+            </p>
+            <a href="https://developers.sound.je" class="article__text" style="display: block;">
+                <b>Click here to get started!</b>
+            </a>
+            <a href="/swagger-ui.html" class="article__text" style="display: block;">
+                <b>Or here if that doesnt work</b>
+            </a>
+            <p class="article__text">
+                <iframe width="560" height="315" th:src="@{'https://www.youtube-nocookie.com/embed/KMU0tzLwhbE'(rel='0',showinfo='0')}" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+            </p>
+        </div>
+        <div class="socialbox">
+            <a class="socialbox__link" href="https://www.facebook.com/SoundofJerseyCI/" target="_blank">
+                <i class="fa fa-facebook-square" aria-hidden="true"></i>
+            </a>
+            <a class="socialbox__link" href="https://twitter.com/SoundJersey" target="_blank">
+                <i class="fa fa-twitter-square" aria-hidden="true"></i>
+            </a>
+            <a class="socialbox__link" href="https://github.com/mhaddon/Sound.je" target="_blank">
+                <i class="fa fa-github-square" aria-hidden="true"></i>
+            </a>
+        </div>
+    </article>
+</script>
+</body>
+</html>

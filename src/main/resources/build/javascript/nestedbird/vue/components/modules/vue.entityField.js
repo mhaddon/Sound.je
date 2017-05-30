@@ -156,7 +156,7 @@ export const EntityField = {
                 name: value
             };
 
-            Ajax.createPromise(`/api/v1/Tags/`, `POST`, data)
+            Ajax.createPromise(`/api/v1/Tags`, `POST`, data)
                 .then((response: string) =>
                     Util.tryParseJSON(response)
                         .ifPresent((object) => {
