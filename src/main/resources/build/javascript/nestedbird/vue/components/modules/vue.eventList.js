@@ -65,7 +65,13 @@ export const EventList = {
              * @member module:Vue/Components.EventList#eventsRequestPage
              * @type number
              */
-            eventsRequestPage: 0
+            eventsRequestPage: 0,
+            /**
+             * Should past events be shown
+             * @member module:Vue/Components.EventList#showPastEvents
+             * @type boolean
+             */
+            showPastEvents:    false
         };
     },
     created() {
@@ -125,7 +131,8 @@ export const EventList = {
          */
         isEventBlockVisible(index: number): boolean {
             const isMobile = this.isMobile;
-            const isAroundCurrentElement = index >= this.eventOffset && index < this.eventOffset + this.getEventBlockCount();
+            const isAroundCurrentElement = index >= this.eventOffset &&
+                index < this.eventOffset + this.getEventBlockCount();
 
             return isMobile || isAroundCurrentElement;
         },
@@ -232,6 +239,24 @@ export const EventList = {
                 });
         },
         /**
+         * Checks to see if at least one of the locations events are visible
+         * @member module:Vue/Components.EventList#isLocationVisible
+         * @method
+         * @returns boolean
+         */
+        isLocationVisible(location: Object): boolean {
+            return location.Events.some(this.isEventVisible);
+        },
+        /**
+         * Checks if this event has already happened and if past events are hidden
+         * @member module:Vue/Components.EventList#isEventVisible
+         * @method
+         * @returns boolean
+         */
+        isEventVisible(event: NBEvent): boolean {
+            return event.startTime > (new Date()).getTime() || this.showPastEvents;
+        },
+        /**
          * Parses the upcoming events converting them to EventBlocks
          * @member module:Vue/Components.EventList#parseEvents
          * @method
@@ -263,14 +288,26 @@ export const EventList = {
 
                 const currentPlace = currentDay.Places.get(event.location.id);
 
-                const eventNames: string[] = Util.stripArray(event.name.split(`;`)
-                    .concat(event.artists.map((a: Artist): string => a.name)));
+                const normalEvents = event.name.split(`;`)
+                    .map(name => ({
+                        name: name.trim(),
+                        url:  { page: `Events`, name: event.name, id: event.id, query: { startTime: event.startTime } }
+                    }));
 
-                for (let i = 0; i < eventNames.length; i++) {
-                    const eventName = eventNames[i];
-                    if (eventName.trim()) {
+                const artistEvents = event.artists
+                    .map((artist: Artist) => ({
+                        name: artist.name.trim(),
+                        url:  { page: `Artists`, name: artist.name, id: artist.id }
+                    }));
+
+                const events = normalEvents.concat(artistEvents);
+
+                for (let i = 0; i < events.length; i++) {
+                    const eventInfo = events[i];
+                    if (eventInfo.name) {
                         const newEvent = JSON.parse(JSON.stringify(event));
-                        newEvent.name = eventName;
+                        newEvent.name = eventInfo.name;
+                        newEvent.url = eventInfo.url;
                         delete newEvent.location;
                         currentPlace.Events.set(`${event.id}#${i}`, Object.assign(newEvent, {
                             facebookUrl: `https://www.facebook.com/${event.location.facebookId}`

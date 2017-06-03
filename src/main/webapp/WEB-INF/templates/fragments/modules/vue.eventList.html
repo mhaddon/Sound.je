@@ -40,8 +40,13 @@
                         <a class="location__title">▒▒▒▒▒▒▒▒▒▒▒</a>
                         <ul class="location__events">
                             <li class="event" v-for="o in 2">
-                                <a class="event__title">▒▒▒▒▒▒▒▒▒</a>
-                                <p class="event__starttime">░░░░░░░</p>
+                                <a class="event__calendar">
+                                    ▒▒
+                                </a>
+                                <a class="event__titlebox">
+                                    <p class="event__title">▒▒▒▒▒▒▒▒▒</p>
+                                    <p class="event__starttime">░░░░░░░</p>
+                                </a>
                             </li>
                         </ul>
                     </li>
@@ -51,15 +56,31 @@
                 v-for="(Date, index) in currentEvents"
                 v-show="isEventBlockVisible(index)">
                 <p class="date__title" v-text='Date.displayDateTime'></p>
+                <div class="hiddenevents" v-if="index === 0">
+                    <input class="hiddenevents__checkbox" type="checkbox" v-model="showPastEvents"/>
+                    <p class="hiddenevents__status">
+                        <i class="fa fa-check" aria-hidden="true" v-if="showPastEvents"></i>
+                        <i class="fa fa-times" aria-hidden="true" v-if="!showPastEvents"></i>
+                    </p>
+                    <p class="hiddenevents__title">
+                        Show Past Events
+                    </p>
+                </div>
                 <ul class="date__locations">
-                    <li class="location" v-for="Place in Date.Places">
+                    <li class="location" v-for="Place in Date.Places" v-show="isLocationVisible(Place)">
                         <a v-href="{ page: 'Locations', name: Place.name, id: Place.id }" class="location__title"
                            v-text='Place.name'></a>
                         <ul class="location__events">
-                            <li class="event" v-for="Event in Place.Events">
-                                <a v-href="{ page: 'Events', name: Event.name, id: Event.id, query: { startTime: Event.startTime } }"
-                                   class="event__title" v-text='Event.name'></a>
-                                <p class="event__starttime" v-text="parseStartTime(Event.startTime)"></p>
+                            <li class="event" v-for="Event in Place.Events" v-show="isEventVisible(Event)">
+                                <a class="event__calendar"
+                                   v-href="{ page: 'Events', name: Event.name, id: Event.id, query: { startTime: Event.startTime } }">
+                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                </a>
+                                <a v-href="Event.url"
+                                   class="event__titlebox">
+                                    <p class="event__title" v-text='Event.name'></p>
+                                    <p class="event__starttime" v-text="parseStartTime(Event.startTime)"></p>
+                                </a>
                             </li>
                         </ul>
                     </li>

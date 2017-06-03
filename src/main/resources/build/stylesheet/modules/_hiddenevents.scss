@@ -14,61 +14,44 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.event {
+.hiddenevents {
   display: flex;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
   align-items: center;
+  position: relative;
+  background: #f9f9f9;
+  padding: 12px 15px;
+  border: 1px solid rgba(0,0,0,.1);
+  cursor: pointer;
+  color: #3e74a1;
 
-  &__title {
-    display: inline-flex;
-    flex-grow: 100;
+  &:hover, &--selected {
+    color: #448bc7;
   }
 
-  &__calendar {
-    color: #3e74a1;
+  &__status {
     border-right: 1px solid #3e74a1;
     padding: 0 15px;
     font-size: 22px;
-
-    &:hover, &--selected {
-      color: #448bc7;
-    }
+    width: 52px;
   }
 
-  &__titlebox {
+  &__title {
     padding: 5px 0;
     text-align: center;
-    color: inherit;
-    font-weight: 300;
     font-size: 1.125em;
     line-height: 1.5;
     flex-grow: 100;
-    flex-direction: row;
-
-    &:hover, &--selected {
-      background-color: rgba(0, 0, 0, 0.05);
-    }
+    color: black;
   }
 
-  &__description {
-    display: inline-flex;
-    padding: 12px 15px;
-    background: white;
-    border: 1px solid #376890;
-    font-size: 16px;
-    width: 50px;
-  }
-
-  &__starttime {
-    align-self: flex-end;
-    font-size: 12px;
-    font-weight: 400;
-    color: rgba(0, 0, 0, 0.65);
-    pointer-events: none;
-  }
-
-  &:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
+  &__checkbox {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    opacity: 0;
+    cursor: pointer;
   }
 }

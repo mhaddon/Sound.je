@@ -182,23 +182,24 @@ export default class Util {
      */
     static convertMapToArray(e: Map): Array<mixed> {
         const arr = [];
-        for (const key of e.keys()) {
-            if (e.has(key)) {
-                const newObject = {};
-                const objectElement = e.get(key);
+        if (typeof e.keys === `function`) {
+            for (const key of e.keys()) {
+                if (e.has(key)) {
+                    const newObject = {};
+                    const objectElement = e.get(key);
 
-                for (const objectKey in objectElement) {
-                    if (objectElement.hasOwnProperty(objectKey)) {
-                        if ((typeof objectElement[objectKey] === `object`) &&
-                            objectElement[objectKey] !== null && !Array.isArray(objectElement[objectKey])) {
-                            newObject[objectKey] = Util.convertMapToArray(objectElement[objectKey]);
-                        } else {
-                            newObject[objectKey] = objectElement[objectKey];
+                    for (const objectKey in objectElement) {
+                        if (objectElement.hasOwnProperty(objectKey)) {
+                            if (objectElement[objectKey] instanceof Map) {
+                                newObject[objectKey] = Util.convertMapToArray(objectElement[objectKey]);
+                            } else {
+                                newObject[objectKey] = objectElement[objectKey];
+                            }
                         }
                     }
-                }
 
-                arr.push(newObject);
+                    arr.push(newObject);
+                }
             }
         }
         return arr;
