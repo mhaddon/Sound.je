@@ -37,6 +37,7 @@ import java.util.Set;
 
 /**
  * This abstract class adds tagable fields
+ *
  * @author Michael Haddon
  */
 @Entity

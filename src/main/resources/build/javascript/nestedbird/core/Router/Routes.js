@@ -184,6 +184,14 @@ export default {
             title:                `Sound of Jersey | Medium | $2`
         }
     },
+    [`*index.html`]:           {
+        state: {
+            currentModal:         Modal.NONE,
+            currentPage:          Page.EVENTS,
+            requireAuthorisation: false,
+            title:                `Sound of Jersey`
+        }
+    },
     [`/`]:                     {
         state: {
             currentModal:         Modal.NONE,

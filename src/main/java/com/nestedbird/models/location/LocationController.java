@@ -91,7 +91,7 @@ public class LocationController extends BaseController<Location> {
     @RequestMapping(value = "/{id}/Events/Upcoming", method = RequestMethod.GET)
     @SuppressWarnings("unchecked")
     public Page<Occurrence> listUpcomingEvents(final Pageable pageable,
-                                       @ApiParam("UUID Id of Location") @PathVariable final String id) {
+                                               @ApiParam("UUID Id of Location") @PathVariable final String id) {
         final List<Occurrence> occurrences = locationService.findOne(id)
                 .filter(AuditedEntity::getActive)
                 .map(eventService::retrieveUpcomingByLocation)

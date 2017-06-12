@@ -41,5 +41,6 @@ com.nestedbird.modules.schema.annotations
 com.nestedbird.modules.sitemap
 com.nestedbird.modules.soundcloudreader
 com.nestedbird.modules.youtubereader
+com.nestedbird.testcategory
 com.nestedbird.util
 com.nestedbird.views

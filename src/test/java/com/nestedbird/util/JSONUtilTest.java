@@ -16,11 +16,13 @@
 
 package com.nestedbird.util;
 
+import com.nestedbird.testcategory.Fast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
@@ -28,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(Enclosed.class)
 public class JSONUtilTest {
+    @Category(Fast.class)
     public static class deepMerge {
         @Before
         public void setUp() throws Exception {

@@ -16,8 +16,10 @@
 
 package com.nestedbird.util;
 
+import com.nestedbird.testcategory.Fast;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
@@ -27,6 +29,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Enclosed.class)
 public class MutableTest {
 
+    @Category(Fast.class)
     public static class mutate {
         @Before
         public void setUp() throws Exception {

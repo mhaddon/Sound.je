@@ -142,7 +142,9 @@ gulp.task(`scripts:analyse`, () => gulp
                 path.resolve(jsSourceDirectory)
             ]
         },
-        plugins: [new BundleAnalyzerPlugin()]
+        plugins: [new BundleAnalyzerPlugin({
+            analyzerHost: `0.0.0.0`
+        })]
     }))
 );
 

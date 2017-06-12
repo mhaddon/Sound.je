@@ -16,24 +16,23 @@
 -- It may not know exactly when they are, as it does not parse the event times in detail
 
 DELIMITER $$
-CREATE PROCEDURE `getUpcomingEvents` ()
-BEGIN
-  SELECT DISTINCT SQL_CACHE
-    e.*
-  FROM
-    NestedBird.events AS e
-  JOIN
-    NestedBird.event_times AS t ON e.id = t.event_id
-  WHERE (
-    e.active = 1
-  ) AND (
-    (
-        t.start_time >= CURDATE()
-      OR
-        t.start_time >= t.repeat_end
-    ) OR (
-        t.repeat_end >= CURDATE()
-    )
-  );
-END$$
+CREATE PROCEDURE `getUpcomingEvents`()
+  BEGIN
+    SELECT DISTINCT SQL_CACHE e.*
+    FROM
+      NestedBird.events AS e
+      JOIN
+      NestedBird.event_times AS t ON e.id = t.event_id
+    WHERE (
+            e.active = 1
+          ) AND (
+            (
+              t.start_time >= CURDATE()
+              OR
+              t.start_time >= t.repeat_end
+            ) OR (
+              t.repeat_end >= CURDATE()
+            )
+          );
+  END$$
 DELIMITER ;

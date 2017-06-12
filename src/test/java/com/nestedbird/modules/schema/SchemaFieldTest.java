@@ -17,8 +17,10 @@
 package com.nestedbird.modules.schema;
 
 import com.nestedbird.modules.schema.annotations.SchemaView;
+import com.nestedbird.testcategory.Fast;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
@@ -30,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Enclosed.class)
 public class SchemaFieldTest {
 
+    @Category(Fast.class)
     public static class isArray {
         private SchemaField testClass_testSet;
 
@@ -46,6 +49,7 @@ public class SchemaFieldTest {
         }
     }
 
+    @Category(Fast.class)
     public static class getFieldName {
         private SchemaField testClass_testSet;
         private SchemaField testClass_testOverridenName;
@@ -80,6 +84,7 @@ public class SchemaFieldTest {
         }
     }
 
+    @Category(Fast.class)
     public static class getTypeOverride {
         private SchemaField testClass_testSet;
         private SchemaField testClass_testOverridenName;
@@ -109,6 +114,7 @@ public class SchemaFieldTest {
         }
     }
 
+    @Category(Fast.class)
     public class testClass {
         @SchemaView(value = "Array", type = String.class)
         public Set<String> testSet = new HashSet<>(0);

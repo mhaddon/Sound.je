@@ -16,6 +16,7 @@
 // @flow
 // Node Modules
 import Vue from "vue/dist/vue";
+import Optional from "optional-js";
 // Site Modules
 import { Util } from "nestedbird/core/Util";
 import { Ajax } from "nestedbird/core/Ajax";
@@ -156,7 +157,7 @@ export const SearchPage = {
                 this.searchData = this.searchData.concat(data.content
                     .map(e => Util.clean(e))
                     .map(e => {
-                        e.entity = store.dispatch(`save${e.category}`, e.entity);
+                        store.dispatch(`save${e.category}`, e.entity);
                         return e;
                     }));
             });
@@ -243,6 +244,20 @@ export const SearchPage = {
             return Util.getNextEventTime(eventTimes)
                 .map(time => (new Date()).getTime() < time)
                 .orElse(false);
+        },
+        /**
+         * Retrieves the artist name for a medium
+         * @member module:Vue/Components.SearchPage#getMediumArtistName
+         * @method
+         * @param {Medium} medium       medium to evaluate
+         * @returns {string}
+         */
+        getMediumArtistName(medium: Medium): string {
+            return Optional.ofNullable(medium || null)
+                .map(e => e.song)
+                .map(e => e.artist)
+                .map(e => e.name)
+                .orElse(``);
         }
     }
 };

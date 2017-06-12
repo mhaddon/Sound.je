@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 public class StandardEndpointPermissions implements EndpointPermissions {
     @Override
     public String[] ignore() {
-        return new String[] {
+        return new String[]{
                 "/**/*.css",
                 "/**/*.js",
                 "/**/*.png",
@@ -42,7 +42,7 @@ public class StandardEndpointPermissions implements EndpointPermissions {
 
     @Override
     public String[] publicGET() {
-        return new String[] {
+        return new String[]{
                 "/session",
                 "/login/register",
                 "/login/reset",
@@ -52,8 +52,6 @@ public class StandardEndpointPermissions implements EndpointPermissions {
                 "/api/*/search/",
                 "/api/*/search/*/",
                 "/api/documentation",
-
-
 
 
                 "/",
@@ -92,7 +90,7 @@ public class StandardEndpointPermissions implements EndpointPermissions {
 
     @Override
     public String[] moderatorGET() {
-        return new String[] {
+        return new String[]{
                 "/Records",
                 "/Records/*",
                 "/records/*/*"

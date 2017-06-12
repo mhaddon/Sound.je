@@ -4,7 +4,8 @@
   "description": "NestedBird",
   "main": "src/main/resources/static/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp": "gulp sass && gulp scripts"
   },
   "repository": {
     "type": "git",

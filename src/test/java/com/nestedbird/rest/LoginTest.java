@@ -16,11 +16,13 @@
 
 package com.nestedbird.rest;
 
+import com.nestedbird.testcategory.Integration;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
@@ -28,6 +30,7 @@ import static junit.framework.TestCase.assertEquals;
 
 @RunWith(Enclosed.class)
 public class LoginTest {
+    @Category(Integration.class)
     public static class check {
         @Before
         public void setUp() throws Exception {

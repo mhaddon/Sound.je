@@ -32,19 +32,19 @@ public class ScannedPageEndpointPermissions extends BaseEndpointPermissions {
     }
 
     @Override
+    public String[] adminGET() {
+        return new String[]{
+                APIUrl + "/manualrequest",
+                APIUrl + "/testrequest"
+        };
+    }
+
+    @Override
     public String[] moderatorGET() {
         return new String[]{
                 APIUrl,
                 APIUrl + "/schema",
                 APIItemUrl
-        };
-    }
-
-    @Override
-    public String[] adminGET() {
-        return new String[] {
-                APIUrl + "/manualrequest",
-                APIUrl + "/testrequest"
         };
     }
 

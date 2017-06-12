@@ -16,14 +16,17 @@
 
 package com.nestedbird.formparser;
 
+import com.nestedbird.testcategory.Fast;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
 @RunWith(Enclosed.class)
 public class ParameterMapParser {
+    @Category(Fast.class)
     public static class parse {
         @Before
         public void setUp() throws Exception {

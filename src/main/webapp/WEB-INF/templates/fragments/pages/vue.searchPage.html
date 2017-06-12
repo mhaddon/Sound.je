@@ -34,11 +34,21 @@
                         <p class="searchpage__category">▒▒▒▒▒▒▒</p>
                         <p class="searchpage__name">░░░░░░░░░░░░░░░░</p>
                     </a>
-                    <div>
-                        <a v-for="(data, index) in searchData" class="searchpage__container article__textbox"
-                           v-href="data.url">
-                            <p v-text="data.category" class="searchpage__category"></p>
+                    <div v-for="(data, index) in searchData">
+                        <a v-if="data.category === 'Location'"
+                           class="searchpage__container article__textbox" v-href="data.url">
+                            <p v-text="data.name" class="searchpage__category"></p>
+                            <!--<p v-text="data.name" class="searchpage__name"></p>-->
+                        </a>
+                        <a v-if="data.category === 'Medium'"
+                           class="searchpage__container article__textbox" v-href="data.url">
+                            <p v-text="getMediumArtistName(data.entity)" class="searchpage__category"></p>
                             <p v-text="data.name" class="searchpage__name"></p>
+                        </a>
+                        <a v-if="data.category === 'Artist'"
+                           class="searchpage__container article__textbox" v-href="data.url">
+                            <p v-text="data.name" class="searchpage__category"></p>
+                            <!--<p v-text="data.name" class="searchpage__name"></p>-->
                         </a>
                     </div>
                 </div>

@@ -81,7 +81,7 @@ public abstract class BaseController<E extends BaseEntity> {
      */
     @ApiOperation("Retrieve this specific element")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public E get(@ApiParam("UUID Id of Element") @PathVariable final String id) {
+    public E get(@ApiParam(value = "UUID Id of Element", required = true) @PathVariable final String id) {
         return getRepository().findOne(id);
     }
 

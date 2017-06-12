@@ -34,111 +34,6 @@ import java.util.*;
 
 @Component
 public class DatabaseJunkLoader implements ApplicationRunner {
-    private final ArtistRepository artistRepository;
-
-    private final EventRepository eventRepository;
-
-    private final LocationRepository locationRepository;
-
-
-    @Autowired
-    public DatabaseJunkLoader(final ArtistRepository artistRepository,
-                              final EventRepository eventRepository,
-                              final LocationRepository locationRepository) {
-        this.artistRepository = artistRepository;
-        this.eventRepository = eventRepository;
-        this.locationRepository = locationRepository;
-    }
-
-
-    @Override
-    public void run(final ApplicationArguments applicationArguments) throws Exception {
-        generateArtists();
-        generateLocations();
-        generateEvents();
-    }
-
-
-    private Location getRandomLocation() {
-        final Random random = new Random();
-        final List<Location> locations = locationRepository.findAll();
-        return locations.get(random.nextInt(locations.size()));
-    }
-
-    private Artist getRandomArtist() {
-        final Random random = new Random();
-        final List<Artist> artists = artistRepository.findAll();
-        return artists.get(random.nextInt(artists.size()));
-    }
-
-    private Set<Artist> getRandomArtistSet() {
-        final HashSet<Artist> set = new HashSet<>();
-
-        for (Integer i = 0; i < Math.random() * 4; i++) {
-            set.add(getRandomArtist());
-        }
-
-        return set;
-    }
-
-    private Set<EventTime> getRandomEventTimeSet() {
-        final HashSet<EventTime> set = new HashSet<>();
-
-        set.add(
-                EventTime.builder()
-                        .active(true)
-                        .startTime(DateTime.now().plusDays((int) (100 * Math.random())))
-                        .build()
-        );
-
-        return set;
-    }
-
-    private void generateEvents() {
-        if (eventRepository.findAll().isEmpty()) {
-            for (Integer i = 0; i < 350; i++) {
-                eventRepository.saveAndFlush(
-                        Event.builder()
-                                .active(true)
-                                .artists(getRandomArtistSet())
-                                .location(getRandomLocation())
-                                .description("test event")
-                                .times(getRandomEventTimeSet())
-                                .build()
-                );
-            }
-        }
-    }
-
-    private void generateLocations() {
-        if (locationRepository.findAll().isEmpty()) {
-            for (Integer i = 0; i < 10; i++) {
-                locationRepository.saveAndFlush(
-                        Location.builder()
-                                .active(true)
-                                .description("test location")
-                                .name(LocationNameGenerator.generate())
-                                .coordinates("49.2144,2.1312")
-                                .build()
-                );
-            }
-        }
-    }
-
-    private void generateArtists() {
-        if (artistRepository.findAll().isEmpty()) {
-            for (Integer i = 0; i < 50; i++) {
-                artistRepository.saveAndFlush(
-                        Artist.builder()
-                                .active(true)
-                                .description("test artist")
-                                .name(ArtistNameGenerator.generate())
-                                .build()
-                );
-            }
-        }
-    }
-
     @UtilityClass
     static final private class LocationNameGenerator {
         static final String[] firstWords = new String[]{
@@ -185,5 +80,105 @@ public class DatabaseJunkLoader implements ApplicationRunner {
         static private String secondWord() {
             return secondWords[new Random().nextInt(secondWords.length)];
         }
+    }
+    private final ArtistRepository artistRepository;
+    private final EventRepository eventRepository;
+    private final LocationRepository locationRepository;
+
+
+    @Autowired
+    public DatabaseJunkLoader(final ArtistRepository artistRepository,
+                              final EventRepository eventRepository,
+                              final LocationRepository locationRepository) {
+        this.artistRepository = artistRepository;
+        this.eventRepository = eventRepository;
+        this.locationRepository = locationRepository;
+    }
+
+    @Override
+    public void run(final ApplicationArguments applicationArguments) throws Exception {
+        generateArtists();
+        generateLocations();
+        generateEvents();
+    }
+
+    private void generateArtists() {
+        if (artistRepository.findAll().isEmpty()) {
+            for (Integer i = 0; i < 50; i++) {
+                artistRepository.saveAndFlush(
+                        Artist.builder()
+                                .active(true)
+                                .description("test artist")
+                                .name(ArtistNameGenerator.generate())
+                                .build()
+                );
+            }
+        }
+    }
+
+    private void generateLocations() {
+        if (locationRepository.findAll().isEmpty()) {
+            for (Integer i = 0; i < 10; i++) {
+                locationRepository.saveAndFlush(
+                        Location.builder()
+                                .active(true)
+                                .description("test location")
+                                .name(LocationNameGenerator.generate())
+                                .coordinates("49.2144,2.1312")
+                                .build()
+                );
+            }
+        }
+    }
+
+    private void generateEvents() {
+        if (eventRepository.findAll().isEmpty()) {
+            for (Integer i = 0; i < 350; i++) {
+                eventRepository.saveAndFlush(
+                        Event.builder()
+                                .active(true)
+                                .artists(getRandomArtistSet())
+                                .location(getRandomLocation())
+                                .description("test event")
+                                .times(getRandomEventTimeSet())
+                                .build()
+                );
+            }
+        }
+    }
+
+    private Set<Artist> getRandomArtistSet() {
+        final HashSet<Artist> set = new HashSet<>();
+
+        for (Integer i = 0; i < Math.random() * 4; i++) {
+            set.add(getRandomArtist());
+        }
+
+        return set;
+    }
+
+    private Location getRandomLocation() {
+        final Random random = new Random();
+        final List<Location> locations = locationRepository.findAll();
+        return locations.get(random.nextInt(locations.size()));
+    }
+
+    private Set<EventTime> getRandomEventTimeSet() {
+        final HashSet<EventTime> set = new HashSet<>();
+
+        set.add(
+                EventTime.builder()
+                        .active(true)
+                        .startTime(DateTime.now().plusDays((int) (100 * Math.random())))
+                        .build()
+        );
+
+        return set;
+    }
+
+    private Artist getRandomArtist() {
+        final Random random = new Random();
+        final List<Artist> artists = artistRepository.findAll();
+        return artists.get(random.nextInt(artists.size()));
     }
 }

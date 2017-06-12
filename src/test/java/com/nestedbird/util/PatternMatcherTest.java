@@ -16,8 +16,10 @@
 
 package com.nestedbird.util;
 
+import com.nestedbird.testcategory.Fast;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
@@ -31,6 +33,7 @@ public class PatternMatcherTest {
     private static Pattern uuidPattern = Pattern.compile("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f‌​]{4}-[0-9a-f]{12}$");
     private static String validPattern = "5aa5f535-da28-42bf-8d85-ac58d81b1a1e";
 
+    @Category(Fast.class)
     public static class matches {
         @Before
         public void setUp() throws Exception {
@@ -66,6 +69,7 @@ public class PatternMatcherTest {
         }
     }
 
+    @Category(Fast.class)
     public static class then {
         @Before
         public void setUp() throws Exception {
@@ -95,6 +99,7 @@ public class PatternMatcherTest {
         }
     }
 
+    @Category(Fast.class)
     public static class otherwise {
         @Before
         public void setUp() throws Exception {
@@ -123,5 +128,4 @@ public class PatternMatcherTest {
             assertEquals("values must match", expected, compared.get());
         }
     }
-
 }

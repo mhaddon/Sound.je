@@ -43,17 +43,21 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    @UtilityClass
+    static final private class Permissions {
+        static private final String PRIV_ADMIN = "PRIV_ADMIN";
+        static private final String PRIV_MODERATOR = "PRIV_MODERATOR";
+        static private final String PRIV_CREATE_ENTITY = "PRIV_CREATE_ENTITY";
+        static private final String PRIV_UPDATE_ENTITY = "PRIV_UPDATE_ENTITY";
+        static private final String PRIV_DELETE_ENTITY = "PRIV_DELETE_ENTITY";
+    }
     /**
      * Will we use a secure cookie
      */
     private final Boolean secureCookie;
-
     private final DetailsService userDetailsService;
-
     private final DataSource dataSource;
-
     private final ServerConfigSettings serverConfigSettings;
-
     private final EndpointPermissionsManifest endpointPermissions;
 
     /**
@@ -76,16 +80,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         this.endpointPermissions = endpointPermissionsManifest;
     }
 
+    //    @Override
+    //    public void configure(WebSecurity web) throws Exception {
+    //        web.debug(true);
+    //    }
+
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
                 .passwordEncoder(User.PASSWORD_ENCODER);
     }
-
-    //    @Override
-    //    public void configure(WebSecurity web) throws Exception {
-    //        web.debug(true);
-    //    }
 
     @Override
     public void configure(final WebSecurity web) {
@@ -201,14 +205,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
         jdbcTokenRepository.setDataSource(dataSource);
         return jdbcTokenRepository;
-    }
-
-    @UtilityClass
-    static final private class Permissions {
-        static private final String PRIV_ADMIN = "PRIV_ADMIN";
-        static private final String PRIV_MODERATOR = "PRIV_MODERATOR";
-        static private final String PRIV_CREATE_ENTITY = "PRIV_CREATE_ENTITY";
-        static private final String PRIV_UPDATE_ENTITY = "PRIV_UPDATE_ENTITY";
-        static private final String PRIV_DELETE_ENTITY = "PRIV_DELETE_ENTITY";
     }
 }

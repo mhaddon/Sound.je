@@ -16,8 +16,10 @@
 
 package com.nestedbird.util;
 
+import com.nestedbird.testcategory.Fast;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
@@ -26,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(Enclosed.class)
 public class UUIDConverterTest {
 
+    @Category(Fast.class)
     public static class toBase64 {
         @Before
         public void setUp() throws Exception {
@@ -50,6 +53,7 @@ public class UUIDConverterTest {
     }
 
 
+    @Category(Fast.class)
     public static class fromBase64 {
         @Before
         public void setUp() throws Exception {
@@ -73,6 +77,7 @@ public class UUIDConverterTest {
         }
     }
 
+    @Category(Fast.class)
     public static class isUUID {
         @Before
         public void setUp() throws Exception {
