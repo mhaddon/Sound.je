@@ -1,5 +1,6 @@
 ## NestedBird - Sound.je
 ##### VERSION: RELEASE-CANDIDATE-2
+![Travis Tests](https://travis-ci.org/mhaddon/Sound.je.svg?branch=master)
 This project contains the code for the website hosted at https://www.sound.je. It is a simple application to help bring together the musical community of Jersey (Channel Islands). This application has been a good learning experience for me in learning more about Java, Spring Boot and ECMAScript 6. Hopefully this project will also be of use to other people.
 
 This website makes use of many technologies built by other wonderful people, please review this page (credits link pending), to see a list of all of the people who deserve credit. *(If your name/project isnt there and should be, please tell me and i will add it).*
